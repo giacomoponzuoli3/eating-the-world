@@ -37,13 +37,14 @@ const App = () => {
           },
           tabBarActiveTintColor: '#000', // Colore quando è selezionato
           tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
+          headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
           
         })}
       >
-        <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerTitle: 'Eating The World' }}/>
-        <Tab.Screen name="Maps" component={MapsScreen} options={{ headerTitle: 'Eating The World' }}/>
-        <Tab.Screen name="Bookings" component={BookingsScreen} options={{ headerTitle: 'Eating The World' }}/>
-        <Tab.Screen name="Favorites" component={FavoritesScreen} options={{ headerTitle: 'Eating The World' }}/>
+        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Maps" component={MapsScreen} />
+        <Tab.Screen name="Bookings" component={BookingsScreen} />
+        <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
