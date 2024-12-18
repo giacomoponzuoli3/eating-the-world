@@ -10,64 +10,12 @@ import { MapsScreen } from './src/components/MapsScreen';
 import { BookingsScreen } from './src/components/BookingScreen';
 import { FavoritesScreen } from './src/components/FavoritesScreen';
 
-import * as SQLite from 'expo-sqlite'
-
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
 
-import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
-
-const dbPath = `${FileSystem.documentDirectory}db.db`;
-
-
-async function copyDatabaseFile() {
-  const fileInfo = await FileSystem.getInfoAsync(dbPath);
-  
-  if (!fileInfo.exists) {
-    console.log('Copia del file db.db in corso...');
-    const asset = Asset.fromModule(require('./assets/db.db'));
-      await asset.downloadAsync(); // Assicurati che l'asset venga scaricato
-      await FileSystem.copyAsync({
-        from: asset.localUri ? asset.localUri : "",
-        to: dbPath
-      });
-    console.log(dbPath);
-    console.log('File db.db copiato con successo.');
-  } else {
-    console.log('Il file db.db esiste già.');
-  }
-}
-
-async function openDatabase() {
-  await copyDatabaseFile();
-  return await SQLite.openDatabaseAsync(`db.db`, undefined, `${FileSystem.documentDirectory}`);
-}
 
 const App = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
-
-  useEffect(() => {
-    const loadRestaurants = async () => {
-      try {
-        await FileSystem.deleteAsync(dbPath, {idempotent: true});
-        
-        const db = await openDatabase();
-        
-        // Esegui la query SELECT * FROM restaurants
-        const results = await db.getAllAsync('SELECT * FROM restaurants', []);
-        console.log('Ristoranti trovati:', results);
-        
-        setRestaurants(results);
-
-        console.log("result: " + results);
-      } catch (error) {
-        console.error('Errore durante il caricamento dei ristoranti:', error);
-      }
-    };
-
-    loadRestaurants();
-  }, []);
   
   return (
     <NavigationContainer>
