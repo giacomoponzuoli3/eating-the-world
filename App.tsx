@@ -6,9 +6,9 @@ import { Ionicons } from '@expo/vector-icons'; // Icone da Expo
 
 //components
 import { ProfileScreen } from './src/components/ProfileScreen';
-import { MapsScreen } from './src/components/MapsScreen';
 import { BookingsScreen } from './src/components/BookingScreen';
 import { FavoritesScreen } from './src/components/FavoritesScreen';
+import MapsScreen from './src/components/MapsScreen';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
