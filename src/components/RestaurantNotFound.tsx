@@ -8,7 +8,8 @@ const RestaurantNotFound: React.FC<RestaurantNotFoundProps> = ({ onClose }) => {
     return (
         <View style={styles.overlay}>
             <View style={styles.notFound}>
-                <Text style={styles.text}>
+                <Text style={styles.textTitle}>Not Found 😭</Text>
+                <Text style={styles.textDescription}>
                     Ehi GuGu volevi provare a cercare un ristorante eh?
                 </Text>
                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -41,16 +42,21 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 3,
         elevation: 5,
+        display: "flex",
+        justifyContent:"center",
         alignItems: "center",
+        gap: 20,
     },
-    text: {
+    textTitle:{
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+    textDescription: {
         fontSize: 16,
-        marginBottom: 20,
         textAlign: "center",
     },
     closeButton: {
-        marginTop: 10,
-        backgroundColor: "#ff6347", // Colore del pulsante
+        backgroundColor: "#ff6347", 
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
