@@ -41,4 +41,4 @@ const getDatabase = (() => {
   
   export default getDatabase;
 
-  //nei dao usare -> import getDatabase from './connectionDB.ts';
+  //nei dao usare -> import getDatabase from './connectionDB';

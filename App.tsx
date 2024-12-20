@@ -14,8 +14,29 @@ import { FavoritesScreen } from './src/components/FavoritesScreen';
 const Tab = createBottomTabNavigator();
 
 
+//dao
+import { getRestaurants } from './src/dao/restaurantsDAO';
+
+
 const App = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [user, setUser] = useState(); //prende il primo utente presente nel db
+
+  useEffect(() => {
+    //recupero tutti i ristoranti all'atto della creazione dell'applicazione
+    try{
+      
+      const allRestaurants = getRestaurants();
+      if(allRestaurants && Array.isArray(allRestaurants)){
+        setRestaurants(allRestaurants);
+      }else{
+        console.error('Error in the response format of the getRestaurants');
+      }
+      
+    }catch(error){
+      console.error('Error in the getRestaurants: ', error);
+    }
+  }, [])
   
   return (
     <NavigationContainer>
