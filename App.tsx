@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons'; // Icone da Expo
+import { Ionicons } from '@expo/vector-icons'; 
 
 //components
-import { ProfileScreen } from './src/components/ProfileScreen';
-import { BookingsScreen } from './src/components/BookingScreen';
-import { FavoritesScreen } from './src/components/FavoritesScreen';
-import MapsScreen from './src/components/MapsScreen';
+import { ProfileScreen } from './src/tabs/ProfileScreen';
+import { BookingsScreen } from './src/tabs/BookingScreen';
+import { FavoritesScreen } from './src/tabs/FavoritesScreen';
+import MapsScreen from './src/tabs/MapsScreen';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();

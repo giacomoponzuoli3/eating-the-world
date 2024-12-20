@@ -30,6 +30,7 @@
       "supportsTablet": true
       
     },
+    
     "web": {
       "favicon": "./src/assets/favicon.png"
     }
