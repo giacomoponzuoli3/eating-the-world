@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Icone da Expo
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //components
 import { ProfileScreen } from './src/components/ProfileScreen';
 import { MapsScreen } from './src/components/MapsScreen';
@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator();
 
 const App = () => {
   return (
+  <GestureHandlerRootView>
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -47,6 +48,7 @@ const App = () => {
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 
