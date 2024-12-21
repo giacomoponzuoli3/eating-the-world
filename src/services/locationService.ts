@@ -4,13 +4,13 @@ export const requestLocationPermission = async (): Promise<boolean> => {
     const { status } = await Location.requestForegroundPermissionsAsync();
   
     if (status !== "granted") {
-      console.log("Permission to access location was denied.");
+      console.error("Permission to access location was denied.");
       return false;
     }
   
     const isLocationEnabled = await Location.hasServicesEnabledAsync();
     if (!isLocationEnabled) {
-      console.log("Location services are disabled.");
+      console.error("Location services are disabled.");
       return false;
     }
   
@@ -25,18 +25,18 @@ export const requestLocationPermission = async (): Promise<boolean> => {
       return location.coords;
     } catch (error: any) {
       if (error.code === 1) {
-        console.log("Permission denied.");
+        console.error("Permission denied.");
       } else if (error.code === 2) {
-        console.log("Position unavailable. Ensure GPS is enabled.");
+        console.error("Position unavailable. Ensure GPS is enabled.");
       } else {
-        console.log("Unknown error while fetching location:", error);
+        console.error("Unknown error while fetching location:", error);
       }
       return undefined;
     }
   };
 
   // Sostituisci con la tua chiave API di Google Maps
-const GOOGLE_API_KEY = "QUI METTETE LA API KEY";
+const GOOGLE_API_KEY = "Here add the API KEY";
 
 // Funzione per ottenere coordinate da un indirizzo
 const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
@@ -72,11 +72,10 @@ const placeMarker = async () => {
   const coordinates = await getCoordinatesFromAddress(address);
 
   if (coordinates) {
-    console.log("Coordinates:", coordinates);
     // Usali per creare un marker personalizzato sulla tua mappa
     // Esempio: map.addMarker(coordinates.lat, coordinates.lng);
   } else {
-    console.log("Impossibile ottenere coordinate per l'indirizzo fornito.");
+    console.error("Impossibile ottenere coordinate per l'indirizzo fornito.");
   }
 };
 

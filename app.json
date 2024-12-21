@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "52.0.0",  
     "name": "eating-the-world",
     "slug": "eating-the-world",
     "version": "1.0.0",
@@ -24,7 +25,7 @@
           "locationWhenInUsePermission": "Show current loation on map."
         }
       ],
-      "expo-sqlite",
+      ["expo-sqlite",
       {
         "enableFTS": true,
         "useSQLCipher": true,
@@ -36,12 +37,16 @@
           "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
         }
       }
+    ]
     ],
     "ios": {
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./src/assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,7 +13,35 @@ import MapsScreen from './src/tabs/MapsScreen';
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
 
+
+//dao
+import { getRestaurants } from './src/dao/restaurantsDAO';
+import { Restaurant } from './src/utils/interfaces';
+
+
 const App = () => {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [user, setUser] = useState(); //prende il primo utente presente nel db
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const allRestaurants = await getRestaurants(); 
+  
+        if (allRestaurants && Array.isArray(allRestaurants)) {
+          setRestaurants(allRestaurants); 
+        } else {
+          console.error('Error in the response format of getRestaurants');
+        }
+      } catch (error) {
+        console.error('Error in getRestaurants: ', error);
+      }
+    };
+  
+    fetchRestaurants(); 
+  }, []);
+  
+  
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -42,7 +70,9 @@ const App = () => {
         })}
       >
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Maps" component={MapsScreen} />
+        <Tab.Screen name="Maps">
+            {() => <MapsScreen restaurants={restaurants}/>}
+        </Tab.Screen>
         <Tab.Screen name="Bookings" component={BookingsScreen} />
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
