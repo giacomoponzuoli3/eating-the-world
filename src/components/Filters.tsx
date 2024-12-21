@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction, useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { CheckBox } from "react-native-elements";
 
@@ -35,9 +35,22 @@ const distance = [
 ];
 
 const Filters: FC<FiltersProps> = ({}) => {
-  const [value, setValue] = useState<string | undefined>(undefined);
+  const [mealType, setMealType] = useState<string | undefined>(undefined);
+  const [foodRestriction, setFoodRestriction] = useState<string | undefined>(undefined);
+  const [priceRangeValue, setPriceRangeValue] = useState<string | undefined>(undefined);
+  const [distanceValue, setDistanceValue] = useState<string | undefined>(undefined); 
   const [specialExperienceFilter, setSpecialExperienceFilter] = useState<boolean>(false);
   const [openNowFlter, setOpenNowFilter] = useState<boolean>(false);
+  
+
+  const handleResetButton = () => {
+    setMealType(undefined);
+    setFoodRestriction(undefined);
+    setPriceRangeValue(undefined);
+    setDistanceValue(undefined);
+    setSpecialExperienceFilter(false);
+    setOpenNowFilter(false);
+  }
 
   return (
     <View style={styles.filtersWindow}>
@@ -50,7 +63,8 @@ const Filters: FC<FiltersProps> = ({}) => {
             data={typeOfMeal}
             labelField={"label"}
             valueField={"value"}
-            onChange={item => setValue(item.value)}
+            value={mealType}
+            onChange={item => setMealType(item.value)}
           />
         </View>
         <View style={styles.dropdownContainer}>
@@ -59,7 +73,8 @@ const Filters: FC<FiltersProps> = ({}) => {
             data={foodRestrictions}
             labelField={"label"}
             valueField={"value"}
-            onChange={item => setValue(item.value)}
+            value={foodRestriction}
+            onChange={item => setFoodRestriction(item.value)}
           />
         </View>
         <View style={styles.dropdownContainer}>
@@ -68,7 +83,8 @@ const Filters: FC<FiltersProps> = ({}) => {
             data={priceRange}
             labelField={"label"}
             valueField={"value"}
-            onChange={item => setValue(item.value)}
+            value={priceRangeValue}
+            onChange={item => setPriceRangeValue(item.value)}
           />
         </View>
         <View style={styles.dropdownContainer}>
@@ -77,23 +93,35 @@ const Filters: FC<FiltersProps> = ({}) => {
             data={distance}
             labelField={"label"}
             valueField={"value"}
-            onChange={item => setValue(item.value)}
+            value={distanceValue}
+            onChange={item => setDistanceValue(item.value)}
           />
         </View>
         <View style={styles.checkboxContainer}>
-        <CheckBox 
-            center 
-            title={<Text>Personal Experience</Text>}
-            checked={specialExperienceFilter}
-            onPress={() => setSpecialExperienceFilter(prev => ! prev)}/>
+            <CheckBox 
+                title={<Text>Personal Experience</Text>}
+                checked={specialExperienceFilter}
+                onPress={() => setSpecialExperienceFilter(prev => ! prev)}
+            />
         </View>
         <View style={styles.checkboxContainer}>
-          <CheckBox 
-            center 
-            title={<Text>Open Now</Text>}
-            checked={openNowFlter}
-            onPress={() => setOpenNowFilter(prev => ! prev)}/>
+            <CheckBox 
+                title={<Text>Open Now</Text>}
+                checked={openNowFlter}
+                onPress={() => setOpenNowFilter(prev => ! prev)}
+                />
         </View>
+      </View>
+      <View style={styles.buttonsContainer}>
+        <Button 
+            title="Reset" 
+            onPress={() => handleResetButton()}
+            color={"red"}
+        />
+        <Button 
+            title="Apply" 
+            onPress={() => {}}
+        />
       </View>
     </View>
   );
@@ -133,16 +161,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   filtersDropdowns: {
-    gap: 10,
+    gap: 12,
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between", 
   },
   dropdownContainer: {
     width: "48%", 
   },
   checkboxContainer:{
-    width: "48%",
+    width: "48%"
+  },
+  buttonsContainer:{
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row"
   }
 });
 
