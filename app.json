@@ -13,25 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "platforms": [
- "ios",
- "android",
- "web"
- ],
-    "plugins": [
-      [
-        "expo-location",
-        { 
-          "locationWhenInUsePermission": "Show current loation on map."
-        }
-      ]
-      
-    ],
     "ios": {
       "supportsTablet": true
-      
     },
-    
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
