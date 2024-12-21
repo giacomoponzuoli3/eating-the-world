@@ -34,4 +34,52 @@ export const requestLocationPermission = async (): Promise<boolean> => {
       return undefined;
     }
   };
+
+  // Sostituisci con la tua chiave API di Google Maps
+const GOOGLE_API_KEY = "QUI METTETE LA API KEY";
+
+// Funzione per ottenere coordinate da un indirizzo
+const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`
+    );
+
+    if (!response.ok) {
+      console.error("HTTP error:", response.status, response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data.status === "OK") {
+      const location = data.results[0].geometry.location;
+      return { lat: location.lat, lng: location.lng };
+    } else {
+      console.error("Geocoding error:", data.status);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching coordinates:", error);
+    return null;
+  }
+};
+
+export default getCoordinatesFromAddress;
+
+const placeMarker = async () => {
+  const address = "1600 Amphitheatre Parkway, Mountain View, CA";
+  const coordinates = await getCoordinatesFromAddress(address);
+
+  if (coordinates) {
+    console.log("Coordinates:", coordinates);
+    // Usali per creare un marker personalizzato sulla tua mappa
+    // Esempio: map.addMarker(coordinates.lat, coordinates.lng);
+  } else {
+    console.log("Impossibile ottenere coordinate per l'indirizzo fornito.");
+  }
+};
+
+placeMarker();
+
   

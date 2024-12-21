@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Alert, TouchableOpacity, Text } from "react-native";
 import MapView, { Marker, Region } from 'react-native-maps';
-import { getCurrentLocation, requestLocationPermission } from '../services/locationService';
+import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import SearchWithFilter from '../components/SearchWithFilter';
 import RestaurantNotFound from '../components/RestaurantNotFound';
@@ -9,6 +9,7 @@ import RestaurantNotFound from '../components/RestaurantNotFound';
 const MapScreen = () => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
+  const [markers, setMarkers] = useState<{lat: number; lng: number}[]>([])
   const mapRef = React.useRef<MapView>(null);
 
   useEffect(() => {
@@ -39,6 +40,16 @@ const MapScreen = () => {
     };
 
     setupLocation();
+    const exampleMarker = async () => {
+      const address = "Via del Clasio 21";
+      const coordinates = await getCoordinatesFromAddress(address);
+
+    if (coordinates) {
+      setMarkers((prev) => [...prev, coordinates]);
+    }
+    }
+    exampleMarker()
+    
   }, []);
 
   const centerOnUserLocation = async () => {
@@ -67,8 +78,18 @@ const MapScreen = () => {
           loadingEnabled={true}
           initialRegion={initialRegion}
           showsUserLocation={true}
+          showsPointsOfInterest={false}
           showsCompass={false}
-        />
+        >
+          {markers.map((marker, index) => (
+          <Marker
+            key={index}
+            coordinate={{ latitude: marker.lat, longitude: marker.lng }}
+            title="Custom Marker"
+            description="This is a custom marker!"
+          />
+        ))}
+        </MapView>
       )}
       {/* Searchbar */}
       <SearchWithFilter setShowRestaurantNotFound={setShowRestaurantNotFound}/>

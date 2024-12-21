@@ -9,9 +9,9 @@ interface FiltersProps {
 
 const typeOfMeal = [
   { label: 'Breakfast', value: '1' },
-  { label: 'Lunch', value: '2' },
-  { label: 'Dinner', value: '3' },
-  { label: 'Aperitif', value: '4' },
+  { label: 'Brunch', value: '2' },
+  { label: 'Lunch', value: '3' },
+  { label: 'Dinner', value: '4' },
 ];
 
 const foodRestrictions = [

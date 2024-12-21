@@ -13,24 +13,33 @@
       "backgroundColor": "#ffffff"
     },
     "platforms": [
- "ios",
- "android",
- "web"
- ],
+      "ios",
+      "android",
+      "web"
+    ],
     "plugins": [
       [
         "expo-location",
-        { 
+        {
           "locationWhenInUsePermission": "Show current loation on map."
         }
-      ]
-      
+      ],
+      "expo-sqlite",
+      {
+        "enableFTS": true,
+        "useSQLCipher": true,
+        "android": {
+          "enableFTS": false,
+          "useSQLCipher": false
+        },
+        "ios": {
+          "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+        }
+      }
     ],
     "ios": {
       "supportsTablet": true
-      
     },
-    
     "web": {
       "favicon": "./src/assets/favicon.png"
     }
