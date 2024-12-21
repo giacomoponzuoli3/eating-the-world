@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "52.0.0",  
     "name": "eating-the-world",
     "slug": "eating-the-world",
     "version": "1.0.0",
@@ -23,6 +24,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
   }
 }

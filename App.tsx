@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,7 +13,31 @@ import { FavoritesScreen } from './src/components/FavoritesScreen';
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
 
+
+//dao
+import { getRestaurants } from './src/dao/restaurantsDAO';
+
+
 const App = () => {
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [user, setUser] = useState(); //prende il primo utente presente nel db
+
+  useEffect(() => {
+    //recupero tutti i ristoranti all'atto della creazione dell'applicazione
+    try{
+      
+      const allRestaurants = getRestaurants();
+      if(allRestaurants && Array.isArray(allRestaurants)){
+        setRestaurants(allRestaurants);
+      }else{
+        console.error('Error in the response format of the getRestaurants');
+      }
+      
+    }catch(error){
+      console.error('Error in the getRestaurants: ', error);
+    }
+  }, [])
+  
   return (
   <GestureHandlerRootView>
     <NavigationContainer>
