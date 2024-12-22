@@ -6,11 +6,10 @@ import getDatabase from './connectionDB';
  */
 const getRestaurants = async () => {
     try{
+        console.log("entra in getRestaurants");
         const db = await getDatabase();
-
         const results: any[] = await db.getAllAsync('SELECT * FROM restaurants', []);
-        console.log('Ristoranti trovati:', results);
-
+        
         return results ?? null;
     } catch (error) {
         console.error('Error in the getRestaurants: ', error);
