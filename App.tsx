@@ -23,20 +23,21 @@ const App = () => {
   const [user, setUser] = useState(); //prende il primo utente presente nel db
 
   useEffect(() => {
-    //recupero tutti i ristoranti all'atto della creazione dell'applicazione
-    try{
-      
-      const allRestaurants = getRestaurants();
-      if(allRestaurants && Array.isArray(allRestaurants)){
-        setRestaurants(allRestaurants);
-      }else{
-        console.error('Error in the response format of the getRestaurants');
+    const fetchRestaurants = async () => {
+      try {
+        const allRestaurants = await getRestaurants();
+        if (allRestaurants && Array.isArray(allRestaurants)) {
+          setRestaurants(allRestaurants);
+        } else {
+          console.error('Error in the response format of the getRestaurants');
+        }
+      } catch (error) {
+        console.error('Error in the getRestaurants: ', error);
       }
-      
-    }catch(error){
-      console.error('Error in the getRestaurants: ', error);
-    }
-  }, [])
+    };
+
+    fetchRestaurants();
+  }, []);
   
   return (
   <GestureHandlerRootView>
