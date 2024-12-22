@@ -87,5 +87,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.medium,
     fontSize: fontSize.medium,
-  }
+  },
+  scrollViewContent: {
+    flexGrow: 1
+  },
 });
