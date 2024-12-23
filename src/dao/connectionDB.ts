@@ -9,17 +9,12 @@ async function copyDatabaseFile() {
   const fileInfo = await FileSystem.getInfoAsync(dbPath);
   
   if (!fileInfo.exists) {
-    console.log('Copia del file db.db in corso...');
     const asset = Asset.fromModule(require('../../assets/db.db'));
       await asset.downloadAsync(); // Assicurati che l'asset venga scaricato
       await FileSystem.copyAsync({
         from: asset.localUri ? asset.localUri : "",
         to: dbPath
       });
-    console.log(dbPath);
-    console.log('File db.db copiato con successo.');
-  } else {
-    console.log('Il file db.db esiste già.');
   }
 }
 

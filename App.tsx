@@ -5,10 +5,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons'; // Icone da Expo
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //components
-import { ProfileScreen } from './src/components/ProfileScreen';
-import { MapsScreen } from './src/components/MapsScreen';
-import { BookingsScreen } from './src/components/BookingScreen';
-import { FavoritesScreen } from './src/components/FavoritesScreen';
+import { ProfileScreen } from './src/tabs/ProfileScreen';
+import  MapsScreen  from './src/tabs/MapsScreen';
+import { BookingsScreen } from './src/tabs/BookingScreen';
+import { FavoritesScreen } from './src/tabs/FavoritesScreen';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
@@ -16,28 +16,30 @@ const Tab = createBottomTabNavigator();
 
 //dao
 import { getRestaurants } from './src/dao/restaurantsDAO';
+import { Restaurant } from './src/utils/interfaces';
 
 
 const App = () => {
-  const [restaurants, setRestaurants] = useState<any[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [user, setUser] = useState(); //prende il primo utente presente nel db
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const allRestaurants = await getRestaurants();
+        const allRestaurants = await getRestaurants(); 
         if (allRestaurants && Array.isArray(allRestaurants)) {
-          setRestaurants(allRestaurants);
+          setRestaurants(allRestaurants); 
         } else {
-          console.error('Error in the response format of the getRestaurants');
+          console.error('Error in the response format of getRestaurants');
         }
       } catch (error) {
-        console.error('Error in the getRestaurants: ', error);
+        console.error('Error in getRestaurants: ', error);
       }
     };
-
-    fetchRestaurants();
+  
+    fetchRestaurants(); 
   }, []);
+  
   
   return (
   <GestureHandlerRootView>
@@ -68,7 +70,9 @@ const App = () => {
         })}
       >
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Maps" component={MapsScreen} />
+        <Tab.Screen name="Maps">
+            {() => <MapsScreen restaurants={restaurants}/>}
+        </Tab.Screen>
         <Tab.Screen name="Bookings" component={BookingsScreen} />
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
