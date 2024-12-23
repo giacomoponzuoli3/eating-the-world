@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons'; 
-
+import { Ionicons } from '@expo/vector-icons'; // Icone da Expo
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 //components
 import { ProfileScreen } from './src/tabs/ProfileScreen';
+import  MapsScreen  from './src/tabs/MapsScreen';
 import { BookingsScreen } from './src/tabs/BookingScreen';
 import { FavoritesScreen } from './src/tabs/FavoritesScreen';
-import MapsScreen from './src/tabs/MapsScreen';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
@@ -42,6 +42,7 @@ const App = () => {
   
   
   return (
+  <GestureHandlerRootView>
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -76,6 +77,7 @@ const App = () => {
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 

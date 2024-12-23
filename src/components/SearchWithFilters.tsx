@@ -1,4 +1,4 @@
-import { Button, SearchBar } from 'react-native-elements';
+import {  SearchBar } from 'react-native-elements';
 import { SearchBarBaseProps } from 'react-native-elements/dist/searchbar/SearchBar';
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Dispatch, FC, SetStateAction, useState } from "react";

@@ -3,7 +3,7 @@ import { StyleSheet, View, Alert, TouchableOpacity, Image} from "react-native";
 import MapView, { Marker, Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
-import SearchWithFilter from '../components/SearchWithFilter';
+import SearchWithFilter from '../components/SearchWithFilters';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { Restaurant, RestaurantMarker } from '../utils/interfaces';
 
