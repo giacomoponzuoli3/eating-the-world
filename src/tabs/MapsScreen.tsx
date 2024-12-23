@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
-import { StyleSheet, View, Alert, TouchableOpacity, Text, Image, ImageBackground } from "react-native";
+import { StyleSheet, View, Alert, TouchableOpacity, Image} from "react-native";
 import MapView, { Marker, Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
-import { FontAwesome5 } from '@expo/vector-icons'; 
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
 import SearchWithFilter from '../components/SearchWithFilter';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { Restaurant, RestaurantMarker } from '../utils/interfaces';
@@ -15,6 +15,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants}) => {
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
   const [restaurantMarkers, setRestaurantMarkers] = useState<RestaurantMarker[]>([])
   const mapRef = React.useRef<MapView>(null);
+  
 
   useEffect(() => {
     const setupLocation = async () => {
@@ -47,21 +48,20 @@ const MapScreen: FC<MapScreenProps> = ({restaurants}) => {
   }, []);
 
   useEffect(() => {
-    const updateMarkers = () => {
-      const newMarkers: RestaurantMarker[] = [];
-      restaurants.map( async (restaurant) => {
+    const updateMarkers = async () => {
+      for (const restaurant of restaurants) {
         const coordinates = await getCoordinatesFromAddress(restaurant.address);
-        if(coordinates){
-          newMarkers.push({
-            restaurant,
-            coordinates
-          });
+        if (coordinates) {
+          setRestaurantMarkers((prevMarkers) => [
+            ...prevMarkers,
+            { restaurant, coordinates },
+          ]);
         }
-      })
-      setRestaurantMarkers(newMarkers);
-    }
+      }
+    };
+  
     updateMarkers();
-  }, [restaurants])
+  }, [restaurants]);
 
   const centerOnUserLocation = async () => {
     const location = await getCurrentLocation();
@@ -103,7 +103,9 @@ const MapScreen: FC<MapScreenProps> = ({restaurants}) => {
               title={restaurantMarker.restaurant.name}
               description={restaurantMarker.restaurant.description}
             >
-              <Image source={require('../../assets/fork_knife.png')} style={{height: 35, width:35 }} />
+              {/* <View style={{width: 15, height: 15}}>
+                <Image style={{width: 35, height: 35}} source={require("../../assets/forknife.png")}/>
+              </View> */}
             </Marker>
           ))}
         </MapView>

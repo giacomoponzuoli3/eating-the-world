@@ -20,7 +20,7 @@ export const requestLocationPermission = async (): Promise<boolean> => {
   export const getCurrentLocation = async (): Promise<Location.LocationObjectCoords | undefined> => {
     try {
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High, // Richiede alta precisione
+        accuracy: Location.Accuracy.Balanced, // Richiede alta precisione
       });
       return location.coords;
     } catch (error: any) {
@@ -36,7 +36,7 @@ export const requestLocationPermission = async (): Promise<boolean> => {
   };
 
   // Sostituisci con la tua chiave API di Google Maps
-const GOOGLE_API_KEY = "Here add the API KEY";
+const GOOGLE_API_KEY = "";
 
 // Funzione per ottenere coordinate da un indirizzo
 const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {

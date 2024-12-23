@@ -27,7 +27,6 @@ const App = () => {
     const fetchRestaurants = async () => {
       try {
         const allRestaurants = await getRestaurants(); 
-  
         if (allRestaurants && Array.isArray(allRestaurants)) {
           setRestaurants(allRestaurants); 
         } else {
