@@ -40,8 +40,8 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, icon, placeholder, typ
   );
 };
 
-const ProfileScreen = () => (
-  <KeyboardAwareScrollView
+const ProfileScreen = () => {
+  return (<KeyboardAwareScrollView
     contentContainerStyle={styles.scrollViewContent}
     enableOnAndroid={true}
   >
@@ -67,7 +67,7 @@ const ProfileScreen = () => (
         <CustomInput label='Your Password' placeholder='*******' type="password" icon={<Feather name="lock" size={iconSize.medium} />} />
       </View>
     </View>
-  </KeyboardAwareScrollView>
-);
+  </KeyboardAwareScrollView>);
+};
 
 export { ProfileScreen };

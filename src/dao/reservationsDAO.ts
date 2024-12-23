@@ -1,5 +1,30 @@
 import getDatabase from './connectionDB';
 
+
+/**
+ * get table reservations by username
+ * @param username username dell'utente loggato 
+ * @returns the array of rows that represent the table reservations of a specific client
+ */
+const getTableReservartionsByUsername = async (username: string) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT * FROM table_reservations
+            WHERE username = ? 
+        `;
+
+        const tableReservations = await db.getAllAsync(sql, [username]);
+
+        return tableReservations;
+
+    }catch(error){
+        console.error("Error in getTableReservartionsByUsername: ", error);
+        return error;
+    }
+}
+
 /**
  * 
  * @param username username dell'utente che vuole prenotare un tavolo
@@ -103,7 +128,32 @@ const deleteCulinaryExperienceReservation = async (username: string, id_restaura
     }
 }
 
+/**
+ * get culinary experience reservations by username
+ * @param username username dell'utente loggato 
+ * @returns the array of rows that represent the culinary experience reservations of a specific client
+ */
+const getCulinaryExperienceReservartionsByUsername = async (username: string) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT * FROM culinary_experience_reservations
+            WHERE username = ? 
+        `;
+
+        const tableReservations = await db.getAllAsync(sql, [username]);
+
+        return tableReservations;
+
+    }catch(error){
+        console.error("Error in culinary_experience_reservations: ", error);
+        return error;
+    }
+}
+
+
 export {
-    insertTableReservation, deleteTableReservation,
-    insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation
+    insertTableReservation, deleteTableReservation, getTableReservartionsByUsername,
+    insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation, getCulinaryExperienceReservartionsByUsername
 }
