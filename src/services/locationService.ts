@@ -67,18 +67,4 @@ const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number
 
 export default getCoordinatesFromAddress;
 
-const placeMarker = async () => {
-  const address = "1600 Amphitheatre Parkway, Mountain View, CA";
-  const coordinates = await getCoordinatesFromAddress(address);
-
-  if (coordinates) {
-    // Usali per creare un marker personalizzato sulla tua mappa
-    // Esempio: map.addMarker(coordinates.lat, coordinates.lng);
-  } else {
-    console.error("Impossibile ottenere coordinate per l'indirizzo fornito.");
-  }
-};
-
-placeMarker();
-
   

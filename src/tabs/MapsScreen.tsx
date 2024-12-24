@@ -53,6 +53,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, setRestaurants}) => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
+        console.log(filters);
         const restaurants = await getRestaurants(filters);
         if (restaurants) {
           const restaurantMarkers = (await Promise.all(
@@ -65,6 +66,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, setRestaurants}) => {
             })
           ))
           .filter((marker): marker is RestaurantMarker => marker !== null);
+          console.log(restaurantMarkers);
           setRestaurantMarkers(restaurantMarkers);
         }
       } catch (err) {

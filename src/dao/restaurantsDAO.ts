@@ -8,16 +8,24 @@ import getDatabase from './connectionDB';
 const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | null> => {
     try{
         const db = await getDatabase();
+        const query = "SELECT r.name FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce WHERE";
+        let conditions = [];
         let results: Restaurant[] = []
         if(filters){
-            if(filters.specialExperience){
-                //restaurantsFiltered = await db.getAllAsync("SELECT * FROM culinary_experience ce, restaurants r WHERE ce.id_restaurant = r.id")
-                results = await db.getAllAsync("SELECT * FROM restaurants r WHERE name = 'La Cantina del Vino'")
+            if(filters.typeOfMeal){
+                conditions.push(` dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = '${filters.typeOfMeal}' `);
             }
+            if(filters.specialExperience){
+                conditions.push(" ce.id_restaurant = r.id ");
+            }
+            // if(filters.openNow){
+            //     const hours = new Date().getHours();
+            //     conditions.push(` hour_start_deal <= ${hours} AND hour_end_deal >= ${hours} `);
+            // }
+            results = await db.getAllAsync(query + conditions.join("AND"), []);
         }else{
             results = await db.getAllAsync('SELECT * FROM restaurants', []);
         }
-        
         return results ?? null;
     } catch (error) {
         console.error('Error in the getRestaurants: ', error);

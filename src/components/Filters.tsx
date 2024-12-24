@@ -44,8 +44,7 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
   const [specialExperienceFilter, setSpecialExperienceFilter] = useState<boolean>(false);
   const [openNowFlter, setOpenNowFilter] = useState<boolean>(false);
   
-
-  const handleResetButton = () => {
+  const reset = () => {
     setMealType(undefined);
     setFoodRestriction(undefined);
     setPriceRangeValue(undefined);
@@ -53,9 +52,12 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
     setSpecialExperienceFilter(false);
     setOpenNowFilter(false);
   }
+  const handleResetButton = () => {
+    reset();
+  }
 
   const handleApplyButton = async () => {
-    onClose()
+    console.log("Filters Applied");
     setFilters({
       typeOfMeal: mealType,
       foodRestrictions: foodRestriction,
@@ -64,6 +66,8 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
       specialExperience: specialExperienceFilter,
       openNow: openNowFlter,
     });
+    reset();
+    onClose();
   }
 
   return (
