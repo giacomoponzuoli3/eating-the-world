@@ -3,15 +3,17 @@ import { SearchBarBaseProps } from 'react-native-elements/dist/searchbar/SearchB
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
+import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import Filters from './Filters';
 
 const SafeSearchBar = (SearchBar as unknown) as React.FC<SearchBarBaseProps>;
 
 interface SearchWithFilterProps{
+    setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
     setShowRestaurantNotFound: Dispatch<SetStateAction<boolean>>;
 }
 
-const SearchWithFilter: FC<SearchWithFilterProps> = ({setShowRestaurantNotFound}) => {
+const SearchWithFilter: FC<SearchWithFilterProps> = ({setFilters, setShowRestaurantNotFound}) => {
     const [search, setSearch] = useState<string>("");
     const [showFilters, setShowFilters] = useState<boolean>(false);
 
@@ -27,7 +29,7 @@ const SearchWithFilter: FC<SearchWithFilterProps> = ({setShowRestaurantNotFound}
                 placeholder={"Search here"}
                 platform="ios"
                 value={search}
-                searchIcon={<FontAwesome5 name={"search-location"} size={25} color={"black"} />}
+                searchIcon={<FontAwesome5 name={"search-location"} size={20} color={"gray"} />}
                 onChangeText={updateSearch}
                 containerStyle={styles.containerStyle}
                 inputContainerStyle={styles.inputContainerStyle}
@@ -38,11 +40,14 @@ const SearchWithFilter: FC<SearchWithFilterProps> = ({setShowRestaurantNotFound}
             {/* Filters Button */}
             <View style={styles.filtersButtonContainer}>
                 <TouchableOpacity onPress={() => setShowFilters(prev => !prev)}>
-                    <Ionicons name="options" size={35} color="black" />
+                    <Ionicons name="options" size={35} color="gray" />
                 </TouchableOpacity>
             </View> 
             {showFilters && (
-                <Filters />
+                <Filters 
+                    setFilters={setFilters}
+                    onClose={() => setShowFilters(false)}
+                />
             )}
         </View>
     );

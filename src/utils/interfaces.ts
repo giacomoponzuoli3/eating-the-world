@@ -21,6 +21,15 @@ export interface Restaurant{
 }
 
 export interface RestaurantMarker{
-    restaurant: Restaurant;
-    coordinates: Coordinates;
+    restaurant: Restaurant,
+    coordinates: Coordinates,
+}
+
+export interface FiltersOptions{
+    typeOfMeal?: string;
+    foodRestrictions?: string;
+    priceRange?: string;
+    distance?: string;
+    specialExperience?: boolean;
+    openNow?: boolean;
 }

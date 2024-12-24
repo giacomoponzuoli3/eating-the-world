@@ -71,7 +71,7 @@ const App = () => {
       >
         <Tab.Screen name="Profile" component={ProfileScreen} />
         <Tab.Screen name="Maps">
-            {() => <MapsScreen restaurants={restaurants}/>}
+            {() => <MapsScreen restaurants={restaurants} setRestaurants={setRestaurants}/>}
         </Tab.Screen>
         <Tab.Screen name="Bookings" component={BookingsScreen} />
         <Tab.Screen name="Favorites" component={FavoritesScreen} />

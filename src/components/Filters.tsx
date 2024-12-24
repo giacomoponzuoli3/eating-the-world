@@ -2,29 +2,31 @@ import { Dispatch, FC, SetStateAction, useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { CheckBox } from "react-native-elements";
+import { FiltersOptions, Restaurant } from "../utils/interfaces";
 
 interface FiltersProps {
-  // Here props
+  setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
+  onClose: () => void;
 }
 
 const typeOfMeal = [
-  { label: 'Breakfast', value: '1' },
-  { label: 'Brunch', value: '2' },
-  { label: 'Lunch', value: '3' },
-  { label: 'Dinner', value: '4' },
+  { label: 'Breakfast', value: 'Breakfast' },
+  { label: 'Brunch', value: 'Brunch' },
+  { label: 'Lunch', value: 'Lunch' },
+  { label: 'Dinner', value: 'Dinner' },
 ];
 
 const foodRestrictions = [
-  { label: 'Vegan', value: '1' },
-  { label: 'Celiac', value: '2' },
-  { label: 'Lactose free', value: '3' },
+  { label: 'Vegan', value: 'Vegan' },
+  { label: 'Celiac', value: 'Celiac' },
+  { label: 'Lactose free', value: 'Lactose Free' },
 ];
 
 const priceRange = [
-  { label: '0 - 10 $', value: '1' },
-  { label: '10 - 30 $', value: '2' },
-  { label: '30 - 80 $', value: '3' },
-  { label: '80+ $', value: '4' },
+  { label: '0 - 10 $', value: 'low' },
+  { label: '10 - 30 $', value: 'mid' },
+  { label: '30 - 80 $', value: 'high' },
+  { label: '80+ $', value: 'rich' },
 ];
 
 const distance = [
@@ -34,7 +36,7 @@ const distance = [
   { label: 'Any distance', value: '4' },
 ];
 
-const Filters: FC<FiltersProps> = ({}) => {
+const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
   const [mealType, setMealType] = useState<string | undefined>(undefined);
   const [foodRestriction, setFoodRestriction] = useState<string | undefined>(undefined);
   const [priceRangeValue, setPriceRangeValue] = useState<string | undefined>(undefined);
@@ -50,6 +52,18 @@ const Filters: FC<FiltersProps> = ({}) => {
     setDistanceValue(undefined);
     setSpecialExperienceFilter(false);
     setOpenNowFilter(false);
+  }
+
+  const handleApplyButton = async () => {
+    onClose()
+    setFilters({
+      typeOfMeal: mealType,
+      foodRestrictions: foodRestriction,
+      priceRange: priceRangeValue,
+      distance: distanceValue,
+      specialExperience: specialExperienceFilter,
+      openNow: openNowFlter,
+    });
   }
 
   return (
@@ -99,7 +113,7 @@ const Filters: FC<FiltersProps> = ({}) => {
         </View>
         <View style={styles.checkboxContainer}>
             <CheckBox 
-                title={<Text>Personal Experience</Text>}
+                title={<Text>Special Experience</Text>}
                 checked={specialExperienceFilter}
                 onPress={() => setSpecialExperienceFilter(prev => ! prev)}
             />
@@ -120,7 +134,7 @@ const Filters: FC<FiltersProps> = ({}) => {
         />
         <Button 
             title="Apply" 
-            onPress={() => {}}
+            onPress={() => handleApplyButton()}
         />
       </View>
     </View>

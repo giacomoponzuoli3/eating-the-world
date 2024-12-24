@@ -1,15 +1,22 @@
-import { Restaurant } from '../utils/interfaces';
+import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 
 /**
  * 
  * @returns array di tutti i ristoranti presenti nel db
  */
-const getRestaurants = async (): Promise<Restaurant[] | null> => {
+const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | null> => {
     try{
         const db = await getDatabase();
-
-        const results: Restaurant[] = await db.getAllAsync('SELECT * FROM restaurants', []);
+        let results: Restaurant[] = []
+        if(filters){
+            if(filters.specialExperience){
+                //restaurantsFiltered = await db.getAllAsync("SELECT * FROM culinary_experience ce, restaurants r WHERE ce.id_restaurant = r.id")
+                results = await db.getAllAsync("SELECT * FROM restaurants r WHERE name = 'La Cantina del Vino'")
+            }
+        }else{
+            results = await db.getAllAsync('SELECT * FROM restaurants', []);
+        }
         
         return results ?? null;
     } catch (error) {

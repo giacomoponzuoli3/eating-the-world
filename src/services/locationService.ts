@@ -39,7 +39,7 @@ export const requestLocationPermission = async (): Promise<boolean> => {
 const GOOGLE_API_KEY = "";
 
 // Funzione per ottenere coordinate da un indirizzo
-const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
+const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | undefined> => {
   try {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`
@@ -47,7 +47,7 @@ const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number
 
     if (!response.ok) {
       console.error("HTTP error:", response.status, response.statusText);
-      return null;
+      return undefined;
     }
 
     const data = await response.json();
@@ -57,11 +57,11 @@ const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number
       return { lat: location.lat, lng: location.lng };
     } else {
       console.error("Geocoding error:", data.status);
-      return null;
+      return undefined;
     }
   } catch (error) {
     console.error("Error fetching coordinates:", error);
-    return null;
+    return undefined;
   }
 };
 
