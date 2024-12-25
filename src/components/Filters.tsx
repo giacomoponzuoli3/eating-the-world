@@ -3,6 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, Button } from "react-n
 import { Dropdown } from "react-native-element-dropdown";
 import { CheckBox } from "react-native-elements";
 import { FiltersOptions, Restaurant } from "../utils/interfaces";
+import { rgbaColor } from "react-native-reanimated/lib/typescript/Colors";
 
 interface FiltersProps {
   setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
@@ -74,20 +75,31 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
     <View style={styles.filtersWindow}>
       <View style={styles.arrow}></View>
       <Text style={styles.filtersTitle}>Filter Options</Text>
-      <View style={styles.filtersDropdowns}>
+      <View style={styles.filtersDropdownRow}>
         <View style={styles.dropdownContainer}>
           <Dropdown
+            style={[
+              styles.dropdown,
+              mealType ? styles.dropdownSelected : null,
+            ]}
+            selectedTextStyle={{fontWeight: "bold"}}
             placeholder="Type of Meal"
             data={typeOfMeal}
             labelField={"label"}
             valueField={"value"}
             value={mealType}
             onChange={item => setMealType(item.value)}
+            activeColor="lightblue"
           />
         </View>
         <View style={styles.dropdownContainer}>
           <Dropdown
-            placeholder="Food Restrictions"
+            style={[
+              styles.dropdown,
+              foodRestriction ? styles.dropdownSelected : null,
+            ]}
+            selectedTextStyle={{fontWeight: "bold"}}
+            placeholder="Restrictions"
             data={foodRestrictions}
             labelField={"label"}
             valueField={"value"}
@@ -95,41 +107,58 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
             onChange={item => setFoodRestriction(item.value)}
           />
         </View>
-        <View style={styles.dropdownContainer}>
-          <Dropdown
-            placeholder="Price Range"
-            data={priceRange}
-            labelField={"label"}
-            valueField={"value"}
-            value={priceRangeValue}
-            onChange={item => setPriceRangeValue(item.value)}
-          />
         </View>
-        <View style={styles.dropdownContainer}>
-          <Dropdown
-            placeholder="Distance"
-            data={distance}
-            labelField={"label"}
-            valueField={"value"}
-            value={distanceValue}
-            onChange={item => setDistanceValue(item.value)}
-          />
-        </View>
-        <View style={styles.checkboxContainer}>
-            <CheckBox 
-                title={<Text>Special Experience</Text>}
-                checked={specialExperienceFilter}
-                onPress={() => setSpecialExperienceFilter(prev => ! prev)}
+        <View style={styles.filtersDropdownRow}>
+          <View style={styles.dropdownContainer}>
+            <Dropdown
+              style={[
+                styles.dropdown,
+                priceRangeValue ? styles.dropdownSelected : null,
+              ]}
+              selectedTextStyle={{fontWeight: "bold"}}
+              placeholder="Price Range"
+              data={priceRange}
+              labelField={"label"}
+              valueField={"value"}
+              value={priceRangeValue}
+              onChange={item => setPriceRangeValue(item.value)}
             />
+          </View>
+          <View style={styles.dropdownContainer}>
+            <Dropdown
+              style={[
+                styles.dropdown,
+                distanceValue ? styles.dropdownSelected : null,
+              ]}
+              selectedTextStyle={{fontWeight: "bold"}}
+              placeholder="Distance"
+              data={distance}
+              labelField={"label"}
+              valueField={"value"}
+              value={distanceValue}
+              onChange={item => setDistanceValue(item.value)}
+            />
+          </View>
         </View>
-        <View style={styles.checkboxContainer}>
-            <CheckBox 
-                title={<Text>Open Now</Text>}
-                checked={openNowFlter}
-                onPress={() => setOpenNowFilter(prev => ! prev)}
-                />
+        <View style={styles.filtersDropdownRow}>
+          <View style={styles.checkboxContainer}>
+              <CheckBox 
+                  containerStyle={styles.checkbox}
+                  style={styles.checkbox}
+                  title={<Text>Special Experience</Text>}
+                  checked={specialExperienceFilter}
+                  onPress={() => setSpecialExperienceFilter(prev => ! prev)}
+              />
+          </View>
+          <View style={styles.checkboxContainer}>
+              <CheckBox 
+                  containerStyle={styles.checkbox}
+                  title={<Text>Open Now</Text>}
+                  checked={openNowFlter}
+                  onPress={() => setOpenNowFilter(prev => ! prev)}
+                  />
+          </View>
         </View>
-      </View>
       <View style={styles.buttonsContainer}>
         <Button 
             title="Reset" 
@@ -175,19 +204,45 @@ const styles = StyleSheet.create({
   filtersTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
+    marginBottom: 20,
+    textAlign: "left",
   },
-  filtersDropdowns: {
-    gap: 12,
+  filtersDropdownRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignContent: "center",
     flexDirection: "row",
-    flexWrap: "wrap",
   },
   dropdownContainer: {
-    width: "48%", 
+    width: "50%", 
+    padding: 7,
+  },
+  dropdown: {
+    borderWidth: 1,
+    padding: 10,
+    borderStyle: "solid",
+    borderColor: "black",
+    borderRadius: 10,
+  },
+  dropdownSelected:{
+    backgroundColor: "lightgray",
+    transform: [{ scale: 1.05 }], // Ingrandisci leggermente l'elemento
+    shadowColor: "#000", // Aggiungi un'ombra
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5, // Ombra specifica per Android
   },
   checkboxContainer:{
-    width: "48%"
+    width: "50%"
+  },
+  checkbox:{
+    borderWidth: 1,
+    padding: 11,
+    marginLeft: 7, 
+    borderStyle: "solid",
+    borderColor: "black",
+    borderRadius: 10,
   },
   buttonsContainer:{
     display: "flex",
