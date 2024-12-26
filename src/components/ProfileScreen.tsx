@@ -1,10 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity
-} from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { styles } from "../styles/styles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
@@ -12,7 +7,7 @@ import { iconSize } from "../constants/dimensions";
 import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Picker } from "@react-native-picker/picker";
-import { getUsers } from "../dao/usersDAO";
+import { User } from "../../App";
 
 type CustomInputProps = {
   label: string;
@@ -57,13 +52,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
   );
 };
 
-type User = {
-  name: string;
-  surname: string;
-  username: string;
-  email: string;
-};
-
 const Dropdown = ({ users, selectedValue, onValueChange }: any) => {
   return (
     <View style={styles.container3}>
@@ -75,44 +63,40 @@ const Dropdown = ({ users, selectedValue, onValueChange }: any) => {
       >
         {/* Popola il Picker con gli username degli utenti */}
         {users.map((user: User) => (
-          <Picker.Item key={user.username} label={user.username} value={user.username} />
+          <Picker.Item
+            key={user.username}
+            label={user.username}
+            value={user.username}
+          />
         ))}
       </Picker>
     </View>
   );
 };
 
-const ProfileScreen = () => {
-  const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
-  const [user, setUser] = useState<User | undefined>(undefined);
-  const [selectedUser, setSelectedUser] = useState<string | undefined>(undefined);
+interface ProfileScreenProps {
+  user: User | undefined;
+  users: User[];
+  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+}
+
+const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
+  const [selectedUser, setSelectedUser] = useState<string | undefined>(
+    user?.username
+  );
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const allUsers = await getUsers();
-        if (allUsers && Array.isArray(allUsers)) {
-          setUsers(allUsers);
-          setUser(allUsers[0]); // Imposta il primo utente come quello corrente
-          setSelectedUser(allUsers[0]?.username); // Imposta l'utente selezionato al primo utente
-        } else {
-          console.error("Error in the response format of the getUsers");
-        }
-      } catch (error) {
-        console.error("Error in the getUsers: ", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  useEffect(() => {
-    if (selectedUser) {
-      // Quando l'utente seleziona un username, trova l'utente corrispondente
-      const foundUser = users.find((user) => user.username === selectedUser);
-      setUser(foundUser);
+    if (user) {
+      setSelectedUser(user.username);
     }
-  }, [selectedUser, users]);
+  }, [user]);
+
+  useEffect(() => {
+    const selected = users.find((u) => u.username === selectedUser);
+    if (selected) {
+      setUser(selected);
+    }
+  }, [selectedUser, users, setUser]);
 
   return (
     <KeyboardAwareScrollView
@@ -151,8 +135,12 @@ const ProfileScreen = () => {
         {/* Profile details container */}
         <View style={styles.nameRoleContainer}>
           {/* Visualizza il nome dell'utente selezionato */}
-          <Text style={styles.name}>{user?.name || "Nome non disponibile"}</Text>
-          <Text style={styles.role}>{user?.surname || "Cognome non disponibile"}</Text>
+          <Text style={styles.name}>
+            {user?.name || "Nome non disponibile"}
+          </Text>
+          <Text style={styles.role}>
+            {user?.surname || "Cognome non disponibile"}
+          </Text>
         </View>
         {/* Input fields container */}
         <View>
