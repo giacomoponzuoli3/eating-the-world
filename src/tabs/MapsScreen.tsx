@@ -1,13 +1,14 @@
 import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
-import { StyleSheet, View, Alert, TouchableOpacity, Image} from "react-native";
-import MapView, { MapMarker, Marker, Region } from 'react-native-maps';
+import { StyleSheet, View, Alert, TouchableOpacity} from "react-native";
+import MapView, { Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
+import { FontAwesome5 } from '@expo/vector-icons'; 
 import SearchWithFilter from '../components/SearchWithFilters';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interfaces';
 import { getRestaurants } from '../dao/restaurantsDAO';
 import RestaurantMarkers from '../components/RestaurantMarkers';
+import FiltersApplied from '../components/FiltersApplied';
 
 interface MapScreenProps{
   restaurants: Restaurant[];
@@ -121,6 +122,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, setRestaurants}) => {
       {showRestaurantNotFound && (
         <RestaurantNotFound onClose={() => setShowRestaurantNotFound(false)}/>
       )}
+      {filters && (<FiltersApplied filters={filters}/>)}
     </View>
   );
 };

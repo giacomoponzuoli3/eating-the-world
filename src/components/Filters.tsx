@@ -24,17 +24,17 @@ const foodRestrictions = [
 ];
 
 const priceRange = [
-  { label: '0 - 10 $', value: 'low' },
-  { label: '10 - 30 $', value: 'mid' },
-  { label: '30 - 80 $', value: 'high' },
-  { label: '80+ $', value: 'rich' },
+  { label: '0 - 10 $', value: '0-10 $' },
+  { label: '10 - 30 $', value: '10-30 $' },
+  { label: '30 - 80 $', value: '30-80 $' },
+  { label: '80+ $', value: '80+ $' },
 ];
 
 const distance = [
-  { label: 'Nearby', value: '1' },
-  { label: 'Within 5km', value: '2' },
-  { label: 'Within 10km', value: '3' },
-  { label: 'Any distance', value: '4' },
+  { label: 'Nearby', value: 'Nearby' },
+  { label: 'Within 5km', value: 'Within 5km' },
+  { label: 'Within 10km', value: 'Within 10km' },
+  { label: 'Any distance', value: 'Any distance' },
 ];
 
 const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3,
     elevation: 5,
+    zIndex: 2,
   },
   arrow: {
     position: "absolute",
@@ -224,13 +225,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   dropdownSelected:{
-    backgroundColor: "lightgray",
-    transform: [{ scale: 1.05 }], // Ingrandisci leggermente l'elemento
-    shadowColor: "#000", // Aggiungi un'ombra
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5, // Ombra specifica per Android
+    transform: [{ scale: 1.05 }], 
+    
   },
   checkboxContainer:{
     width: "50%"
