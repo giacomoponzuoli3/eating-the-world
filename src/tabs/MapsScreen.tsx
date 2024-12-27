@@ -54,6 +54,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, setRestaurants}) => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
+        console.log(filters)
         const restaurants = await getRestaurants(filters);
         console.log(restaurants?.length)
         if (restaurants) {
@@ -122,7 +123,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, setRestaurants}) => {
       {showRestaurantNotFound && (
         <RestaurantNotFound onClose={() => setShowRestaurantNotFound(false)}/>
       )}
-      {filters && (<FiltersApplied filters={filters}/>)}
+      {filters && (<FiltersApplied filters={filters} setFilters={setFilters}/>)}
     </View>
   );
 };

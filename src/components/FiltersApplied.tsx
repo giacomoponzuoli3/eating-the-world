@@ -1,44 +1,69 @@
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { FiltersOptions } from "../utils/interfaces";
-import { View, ScrollView, StyleSheet, Text, Image } from "react-native";
+import { View, ScrollView, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
 
 interface FilterAppliedProps {
   filters: FiltersOptions;
+  setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
 }
 
-const FilterApplied: FC<FilterAppliedProps> = ({ filters }) => {
+const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
   const appliedFilters = [
     {
+      key: "typeOfMeal",
       label: filters.typeOfMeal,
       displayName: filters.typeOfMeal,
       image: require("../../assets/fork_knife.png"),
     },
     {
+      key: "foodRestrictions",
       label: filters.foodRestrictions,
       displayName: filters.foodRestrictions,
       image: require("../../assets/restrictions.png"),
     },
     {
+      key: "priceRange",
       label: filters.priceRange,
       displayName: filters.priceRange,
       image: require("../../assets/priceRange.png"),
     },
     {
+      key: "distance",
       label: filters.distance,
       displayName: filters.distance,
       image: require("../../assets/distance.png"),
     },
     {
+      key: "specialExperience",
       label: filters.specialExperience,
       displayName: "Special Experience",
       image: require("../../assets/special_experience.png"),
     },
     {
+      key: "openNow",
       label: filters.openNow,
       displayName: "Open Now",
       image: require("../../assets/open_now.png"),
     },
-  ].filter((filter) => filter.label); // Rimuove i filtri non applicati.
+  ].filter((filter) => filter.label); 
+
+  const handleRemoveFilter = (key: string) => {
+    setFilters((prevFilters) => {
+      const updatedFilters = {
+        ...prevFilters,
+        [key]: undefined, // Rimuove il filtro specifico.
+      };
+  
+      // Controlla se tutti i valori di updatedFilters sono undefined o false.
+      const isFiltersEmpty = Object.values(updatedFilters).every(
+        (value) => value === undefined || value === false
+      );
+  
+      // Se tutti i valori sono undefined/false, resettare lo stato.
+      return isFiltersEmpty ? undefined : updatedFilters;
+    });
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -51,6 +76,9 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters }) => {
           <View key={index} style={styles.filterBox}>
             <Image source={filter.image} style={styles.image} />
             <Text style={styles.text}>{filter.displayName}</Text>
+            <TouchableOpacity onPress={() => handleRemoveFilter(filter.key)}>
+              <Text style={styles.removeButton}>X</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -85,7 +113,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3, // Effetto ombra per Android.
+    elevation: 3,
   },
   text: {
     fontSize: 12,
@@ -93,9 +121,15 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   image: {
-    width: 20, // Larghezza fissa per ridimensionare correttamente l'immagine.
-    height: 20, // Altezza fissa.
-    resizeMode: "contain", // Mantiene le proporzioni dell'immagine.
+    width: 20,
+    height: 20,
+    resizeMode: "contain",
+  },
+  removeButton: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "red",
+    marginLeft: 10,
   },
 });
 

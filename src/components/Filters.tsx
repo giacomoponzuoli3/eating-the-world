@@ -1,9 +1,8 @@
 import { Dispatch, FC, SetStateAction, useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { CheckBox } from "react-native-elements";
-import { FiltersOptions, Restaurant } from "../utils/interfaces";
-import { rgbaColor } from "react-native-reanimated/lib/typescript/Colors";
+import { FiltersOptions } from "../utils/interfaces";
 
 interface FiltersProps {
   setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;

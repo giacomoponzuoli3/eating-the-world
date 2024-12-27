@@ -9,7 +9,7 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
     try {
         const db = await getDatabase();
         let results: Restaurant[] = [];
-
+        console.log(filters)
         if (!filters) {
             // Nessun filtro applicato
             results = await db.getAllAsync('SELECT * FROM restaurants', []);
@@ -24,7 +24,8 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
                     `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
                      WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
                      AND ce.id_restaurant = r.id 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [typeOfMeal, hours, hours]
                 );
             } else if (typeOfMeal && specialExperience) {
@@ -32,7 +33,8 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
                 results = await db.getAllAsync(
                     `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
                      WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
-                     AND ce.id_restaurant = r.id`,
+                     AND ce.id_restaurant = r.id
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [typeOfMeal]
                 );
             } else if (typeOfMeal && openNow) {
@@ -40,7 +42,8 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
                 results = await db.getAllAsync(
                     `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
                      WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [typeOfMeal, hours, hours]
                 );
             } else if (specialExperience && openNow) {
@@ -48,21 +51,24 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
                 results = await db.getAllAsync(
                     `SELECT * FROM deals_restaurants dr, restaurants r, culinary_experience ce 
                      WHERE ce.id_restaurant = r.id 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [hours, hours]
                 );
             } else if (typeOfMeal) {
                 // Solo filtro su typeOfMeal
                 results = await db.getAllAsync(
                     `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
-                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ?`,
+                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ?
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [typeOfMeal]
                 );
             } else if (specialExperience) {
                 // Solo filtro su specialExperience
                 results = await db.getAllAsync(
                     `SELECT * FROM restaurants r, culinary_experience ce 
-                     WHERE ce.id_restaurant = r.id`,
+                     WHERE ce.id_restaurant = r.id
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     []
                 );
             } else if (openNow) {
@@ -70,7 +76,8 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
                 results = await db.getAllAsync(
                     `SELECT * FROM deals_restaurants dr, restaurants r 
                      WHERE dr.id_restaurant = r.id
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?
+                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
                     [hours, hours]
                 );
             }
