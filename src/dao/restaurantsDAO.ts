@@ -6,32 +6,83 @@ import getDatabase from './connectionDB';
  * @returns array di tutti i ristoranti presenti nel db
  */
 const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | null> => {
-    try{
+    try {
         const db = await getDatabase();
-        const query = "SELECT r.name FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce WHERE";
-        let conditions = [];
-        let results: Restaurant[] = []
-        if(filters){
-            if(filters.typeOfMeal){
-                conditions.push(` dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = '${filters.typeOfMeal}' `);
-            }
-            if(filters.specialExperience){
-                conditions.push(" ce.id_restaurant = r.id ");
-            }
-            // if(filters.openNow){
-            //     const hours = new Date().getHours();
-            //     conditions.push(` hour_start_deal <= ${hours} AND hour_end_deal >= ${hours} `);
-            // }
-            results = await db.getAllAsync(query + conditions.join("AND"), []);
-        }else{
+        let results: Restaurant[] = [];
+
+        if (!filters) {
+            // Nessun filtro applicato
             results = await db.getAllAsync('SELECT * FROM restaurants', []);
+        } else {
+            const { typeOfMeal, specialExperience, openNow } = filters;
+            const hours = new Date().getHours();
+
+            // Calcola i diversi percorsi in base ai filtri
+            if (typeOfMeal && specialExperience && openNow) {
+                // Tutti i filtri applicati
+                results = await db.getAllAsync(
+                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
+                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
+                     AND ce.id_restaurant = r.id 
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                    [typeOfMeal, hours, hours]
+                );
+            } else if (typeOfMeal && specialExperience) {
+                // Filtro su typeOfMeal e specialExperience
+                results = await db.getAllAsync(
+                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
+                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
+                     AND ce.id_restaurant = r.id`,
+                    [typeOfMeal]
+                );
+            } else if (typeOfMeal && openNow) {
+                // Filtro su typeOfMeal e openNow
+                results = await db.getAllAsync(
+                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
+                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                    [typeOfMeal, hours, hours]
+                );
+            } else if (specialExperience && openNow) {
+                // Filtro su specialExperience e openNow
+                results = await db.getAllAsync(
+                    `SELECT * FROM deals_restaurants dr, restaurants r, culinary_experience ce 
+                     WHERE ce.id_restaurant = r.id 
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                    [hours, hours]
+                );
+            } else if (typeOfMeal) {
+                // Solo filtro su typeOfMeal
+                results = await db.getAllAsync(
+                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
+                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ?`,
+                    [typeOfMeal]
+                );
+            } else if (specialExperience) {
+                // Solo filtro su specialExperience
+                results = await db.getAllAsync(
+                    `SELECT * FROM restaurants r, culinary_experience ce 
+                     WHERE ce.id_restaurant = r.id`,
+                    []
+                );
+            } else if (openNow) {
+                // Solo filtro su openNow
+                results = await db.getAllAsync(
+                    `SELECT * FROM deals_restaurants dr, restaurants r 
+                     WHERE dr.id_restaurant = r.id
+                     AND hour_start_deal <= ? AND hour_end_deal >= ?`,
+                    [hours, hours]
+                );
+            }
         }
+
         return results ?? null;
     } catch (error) {
         console.error('Error in the getRestaurants: ', error);
         return null;
     }
-}
+};
+
 
 /**
  * 

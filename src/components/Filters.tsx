@@ -58,7 +58,6 @@ const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
   }
 
   const handleApplyButton = async () => {
-    console.log("Filters Applied");
     setFilters({
       typeOfMeal: mealType,
       foodRestrictions: foodRestriction,
