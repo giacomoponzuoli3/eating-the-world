@@ -8,12 +8,14 @@ import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Picker } from "@react-native-picker/picker";
 import { User } from "../../App";
+import { updateUser } from "../dao/usersDAO";
 
 type CustomInputProps = {
   label: string;
   icon: React.ReactNode;
   placeholder: string;
   type?: string;
+  value?: string;
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -103,7 +105,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
       contentContainerStyle={styles.scrollViewContent}
       enableOnAndroid={true}
     >
-      <Text>Logged in User: {user?.username || "N/A"}</Text>
+
 
       <View
         style={{
@@ -149,16 +151,25 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             label="Your Email"
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
+            value = {user?.email}
           />
           <CustomInput
             label="Your Name"
-            placeholder="John Doe"
+            placeholder="John"
             icon={<Ionicons name="person-outline" size={iconSize.medium} />}
+            value = {user?.name}
           />
           <CustomInput
-            label="Your Phone"
-            placeholder="+1234567890"
-            icon={<Ionicons name="call-outline" size={iconSize.medium} />}
+            label="Your Surname"
+            placeholder="Doe"
+            icon={<Ionicons name="person-outline" size={iconSize.medium} />}
+            value = {user?.surname}
+          />
+           <CustomInput
+            label="Your Username"
+            placeholder="John001"
+            icon={<Ionicons name="person-outline" size={iconSize.medium} />}
+            value = {user?.username}
           />
           <CustomInput
             label="Your Password"

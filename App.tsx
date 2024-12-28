@@ -61,6 +61,12 @@ const App = () => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    console.log("entra nel secondo useeffect");
+    console.log("users: ", users);
+    console.log("user: ", user);
+  } , [users, user]);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
