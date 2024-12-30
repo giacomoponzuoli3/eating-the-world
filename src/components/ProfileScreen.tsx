@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, Modal } from "react-native";
 import { styles } from "../styles/styles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
@@ -91,9 +91,27 @@ const qrCodes: string[] = [
 ];
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
+
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
+
+  // Stato per il QR Code selezionato e la visibilità del Modal
+  const [selectedQR, setSelectedQR] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Funzione per aprire il Modal
+  const openModal = (code) => {
+    setSelectedQR(code);
+    setModalVisible(true);
+  };
+
+  // Funzione per chiudere il Modal
+  const closeModal = () => {
+    setSelectedQR(null);
+    setModalVisible(false);
+  };
+
 
   useEffect(() => {
     if (user) {
@@ -175,20 +193,44 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           />*/}
         </View>
       </View>
-      {/*Qr codes */}
-      <Text style = {styles.text}>Your coupons</Text>
-      <ScrollView 
-        horizontal // Abilita lo scrolling orizzontale
-        showsHorizontalScrollIndicator={false} // Nasconde la barra di scorrimento
+       {/* QR codes */}
+       <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.qrList}
       >
         {qrCodes.map((code, index) => (
-          <View key={index} style={styles.qrContainer}>
+          <TouchableOpacity 
+            key={index} 
+            style={styles.qrContainer} 
+            onPress={() => openModal(code)} // Apre il Modal al clic
+          >
             <QRCode value={code} size={150} />
             <Text style={styles.qrText}>QR Code {index + 1}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Modal per mostrare il QR Code ingrandito */}
+      <Modal
+        visible={modalVisible}
+        transparent={true} // Sfondo trasparente
+        animationType="fade" // Animazione
+        onRequestClose={closeModal} // Chiude il Modal
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {/* QR Code ingrandito */}
+            {selectedQR && <QRCode value={selectedQR} size={300} />}
+            <Text style={styles.modalText}>Scansiona il QR Code</Text>
+            {/* Bottone per chiudere il Modal */}
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Chiudi</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    
 
     </KeyboardAwareScrollView>
   );
