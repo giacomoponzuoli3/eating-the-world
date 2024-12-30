@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#6200ee",
+    marginBottom: 20,
   },
   button: {
     backgroundColor: "#6200ee",
@@ -101,4 +102,18 @@ export const styles = StyleSheet.create({
   container3: { padding: 20, zIndex: 1 , marginBottom: 110, justifyContent: "center", alignItems: "center" },
   label: { fontSize: 16 },
   picker: { height: 50, width: 200 },
+  qrList: {
+    flexDirection: 'row', // Dispone gli elementi in fila orizzontale
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  qrContainer: {
+    marginRight: 20,
+    alignItems: 'center',
+  },
+  qrText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#333',
+  },
 });

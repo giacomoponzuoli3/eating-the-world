@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { styles } from "../styles/styles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
@@ -9,6 +9,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Picker } from "@react-native-picker/picker";
 import { User } from "../../App";
 import { updateUser } from "../dao/usersDAO";
+import QRCode from 'react-native-qrcode-svg';
 
 type CustomInputProps = {
   label: string;
@@ -57,7 +58,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
 const Dropdown = ({ users, selectedValue, onValueChange }: any) => {
   return (
     <View style={styles.container3}>
-      <Text style={styles.label}> Seleziona un utente:</Text>
+      <Text style={styles.label}> Select a user:</Text>
       <Picker
         selectedValue={selectedValue}
         onValueChange={onValueChange}
@@ -81,6 +82,13 @@ interface ProfileScreenProps {
   users: User[];
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
+
+const qrCodes: string[] = [
+  'https://example.com/profile/1',
+  'https://example.com/profile/2',
+  'https://example.com/profile/3',
+  'https://example.com/profile/4',
+];
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
@@ -153,32 +161,35 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
             value = {user?.email}
           />
-          <CustomInput
-            label="Your Name"
-            placeholder="John"
-            icon={<Ionicons name="person-outline" size={iconSize.medium} />}
-            value = {user?.name}
-          />
-          <CustomInput
-            label="Your Surname"
-            placeholder="Doe"
-            icon={<Ionicons name="person-outline" size={iconSize.medium} />}
-            value = {user?.surname}
-          />
            <CustomInput
             label="Your Username"
             placeholder="John001"
             icon={<Ionicons name="person-outline" size={iconSize.medium} />}
             value = {user?.username}
           />
-          <CustomInput
+         {/* <CustomInput
             label="Your Password"
             placeholder="*******"
             type="password"
             icon={<Feather name="lock" size={iconSize.medium} />}
-          />
+          />*/}
         </View>
       </View>
+      {/*Qr codes */}
+      <Text style = {styles.text}>Your coupons</Text>
+      <ScrollView 
+        horizontal // Abilita lo scrolling orizzontale
+        showsHorizontalScrollIndicator={false} // Nasconde la barra di scorrimento
+        contentContainerStyle={styles.qrList}
+      >
+        {qrCodes.map((code, index) => (
+          <View key={index} style={styles.qrContainer}>
+            <QRCode value={code} size={150} />
+            <Text style={styles.qrText}>QR Code {index + 1}</Text>
+          </View>
+        ))}
+      </ScrollView>
+
     </KeyboardAwareScrollView>
   );
 };
