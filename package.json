@@ -26,11 +26,8 @@
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
-<<<<<<< HEAD
-    "react-native-qrcode-svg": "^6.3.12",
-=======
     "react-native-maps": "1.18.0",
->>>>>>> b830d175a3cf7f997599285ac1bf3a58306c1ff0
+    "react-native-qrcode-svg": "^6.3.12",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.1.0",

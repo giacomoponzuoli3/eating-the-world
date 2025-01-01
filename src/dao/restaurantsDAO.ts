@@ -18,7 +18,7 @@ const getRestaurants = async () => {
         `;
 
         const results: any[] = await db.getAllAsync(sql, []);
-        console.log('Ristoranti trovati:', results);
+        //console.log('Ristoranti trovati:', results);
 
         return results ?? null;
     } catch (error) {
