@@ -123,7 +123,7 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Sfondo semi-trasparente
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#333',
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
@@ -140,9 +140,38 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
   },
+  pickerItem: {
+    color: '#000', // Colore del testo degli elementi del Picker
+  },
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  confirmButton: {
+    
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  confirmButtonText: {
+    
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  
 });

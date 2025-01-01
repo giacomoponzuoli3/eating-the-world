@@ -1,5 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+} from "react-native";
 import { styles } from "../styles/styles";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
@@ -9,7 +16,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Picker } from "@react-native-picker/picker";
 import { User } from "../../App";
 import { updateUser } from "../dao/usersDAO";
-import QRCode from 'react-native-qrcode-svg';
+import QRCode from "react-native-qrcode-svg";
 
 type CustomInputProps = {
   label: string;
@@ -58,7 +65,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
 const Dropdown = ({ users, selectedValue, onValueChange }: any) => {
   return (
     <View style={styles.container3}>
-      <Text style={styles.label}> Select a user:</Text>
+      <Text style={styles.modalTitle}> Select a user:</Text>
       <Picker
         selectedValue={selectedValue}
         onValueChange={onValueChange}
@@ -84,14 +91,13 @@ interface ProfileScreenProps {
 }
 
 const qrCodes: string[] = [
-  'https://example.com/profile/1',
-  'https://example.com/profile/2',
-  'https://example.com/profile/3',
-  'https://example.com/profile/4',
+  "https://example.com/profile/1",
+  "https://example.com/profile/2",
+  "https://example.com/profile/3",
+  "https://example.com/profile/4",
 ];
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
-
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
@@ -99,6 +105,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   // Stato per il QR Code selezionato e la visibilità del Modal
   const [selectedQR, setSelectedQR] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalUserChoice, setModalUserChoice] = useState(false);
 
   // Funzione per aprire il Modal
   const openModal = (code) => {
@@ -111,7 +118,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
     setSelectedQR(null);
     setModalVisible(false);
   };
-
 
   useEffect(() => {
     if (user) {
@@ -131,8 +137,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
       contentContainerStyle={styles.scrollViewContent}
       enableOnAndroid={true}
     >
-
-
       <View
         style={{
           flex: 1,
@@ -140,13 +144,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           justifyContent: "flex-start",
         }}
       >
-        {/* Dropdown per selezionare l'utente */}
-        <Dropdown
-          users={users} // Passiamo gli utenti al Dropdown
-          selectedValue={selectedUser} // Valore selezionato nel dropdown
-          onValueChange={setSelectedUser} // Funzione per aggiornare la selezione
-        />
-
         <View style={styles.profileImageContainer}>
           <Image
             source={require("../../assets/profile-screenshot.png")}
@@ -162,13 +159,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         </View>
         {/* Profile details container */}
         <View style={styles.nameRoleContainer}>
-          {/* Visualizza il nome dell'utente selezionato */}
-          <Text style={styles.name}>
-            {user?.name || "Nome non disponibile"}
-          </Text>
-          <Text style={styles.role}>
-            {user?.surname || "Cognome non disponibile"}
-          </Text>
+          <TouchableOpacity onPress={() => setModalUserChoice(true)}>
+            {/* Visualizza il nome dell'utente selezionato */}
+            <Text style={styles.name}>
+              {user?.name || "Nome non disponibile"}
+            </Text>
+            <Text style={styles.role}>
+              {user?.surname || "Cognome non disponibile"}
+            </Text>
+          </TouchableOpacity>
         </View>
         {/* Input fields container */}
         <View>
@@ -177,15 +176,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             label="Your Email"
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
-            value = {user?.email}
+            value={user?.email}
           />
-           <CustomInput
+          <CustomInput
             label="Your Username"
             placeholder="John001"
             icon={<Ionicons name="person-outline" size={iconSize.medium} />}
-            value = {user?.username}
+            value={user?.username}
           />
-         {/* <CustomInput
+          {/* <CustomInput
             label="Your Password"
             placeholder="*******"
             type="password"
@@ -193,16 +192,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           />*/}
         </View>
       </View>
-       {/* QR codes */}
-       <ScrollView 
-        horizontal 
+      {/* QR codes */}
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.qrList}
       >
         {qrCodes.map((code, index) => (
-          <TouchableOpacity 
-            key={index} 
-            style={styles.qrContainer} 
+          <TouchableOpacity
+            key={index}
+            style={styles.qrContainer}
             onPress={() => openModal(code)} // Apre il Modal al clic
           >
             <QRCode value={code} size={150} />
@@ -230,7 +229,65 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           </View>
         </View>
       </Modal>
-    
+
+      <Modal
+  visible={modalUserChoice}
+  transparent={true} // Sfondo trasparente
+  animationType="fade" // Animazione
+  onRequestClose={() => setModalUserChoice(false)} // Chiude il Modal
+>
+  <View style={styles.modalContainer}>
+   
+    <View style={styles.modalContent}>
+      {/* Dropdown per selezionare l'utente */}
+     <Dropdown
+        users={users} // Passiamo gli utenti al Dropdown
+        selectedValue={selectedUser} // Valore selezionato nel dropdown
+        onValueChange={setSelectedUser} // Funzione per aggiornare la selezione
+       
+      />
+  {/*<Picker
+        selectedValue={selectedUser}
+        onValueChange={setSelectedUser}
+        style={styles.picker}
+        itemStyle={styles.pickerItem} // Applica lo stile personalizzato agli elementi
+      >
+        {users.map((user: User) => (
+          <Picker.Item
+            key={user.username}
+            label={`${user.name} ${user.surname}`}
+            value={user.username}
+            color={styles.modalText.color} // Applica il colore del testo
+          />
+        ))}
+      </Picker>*/}
+
+      <View style={styles.modalButtonsContainer}>
+        {/* Bottone per confermare la selezione */}
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={() => {
+            const selected = users.find((u) => u.username === selectedUser);
+            if (selected) {
+              setUser(selected);
+            }
+            setModalUserChoice(false); // Chiudi il Modal
+          }}
+        >
+          <Text style={styles.confirmButtonText}>Conferma</Text>
+        </TouchableOpacity>
+
+        {/* Bottone per chiudere il Modal senza salvare */}
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => setModalUserChoice(false)}
+        >
+          <Text style={styles.closeButtonText}>Annulla</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
 
     </KeyboardAwareScrollView>
   );
