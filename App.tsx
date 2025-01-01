@@ -17,6 +17,7 @@ export type User = {
   surname: string;
   username: string;
   email: string;
+  phone_number: string;
 };
 
 //dao

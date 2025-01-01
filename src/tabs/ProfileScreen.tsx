@@ -19,7 +19,7 @@ import { updateUser } from "../dao/usersDAO";
 import QRCode from "react-native-qrcode-svg";
 
 type CustomInputProps = {
-  label: string;
+  label?: string;
   icon: React.ReactNode;
   placeholder: string;
   type?: string;
@@ -173,17 +173,21 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         <View>
           {/* All the input fields */}
           <CustomInput
-            label="Your Email"
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
             value={user?.email}
           />
           <CustomInput
-            label="Your Username"
             placeholder="John001"
             icon={<Ionicons name="person-outline" size={iconSize.medium} />}
             value={user?.username}
           />
+          <CustomInput
+            placeholder="+39 1234567890"
+            icon={<Feather name="phone" size={iconSize.medium} />}
+            value={user?.phone_number}
+          />
+
           {/* <CustomInput
             label="Your Password"
             placeholder="*******"
@@ -231,22 +235,20 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
       </Modal>
 
       <Modal
-  visible={modalUserChoice}
-  transparent={true} // Sfondo trasparente
-  animationType="fade" // Animazione
-  onRequestClose={() => setModalUserChoice(false)} // Chiude il Modal
->
-  <View style={styles.modalContainer}>
-   
-    <View style={styles.modalContent}>
-      {/* Dropdown per selezionare l'utente */}
-     <Dropdown
-        users={users} // Passiamo gli utenti al Dropdown
-        selectedValue={selectedUser} // Valore selezionato nel dropdown
-        onValueChange={setSelectedUser} // Funzione per aggiornare la selezione
-       
-      />
-  {/*<Picker
+        visible={modalUserChoice}
+        transparent={true} // Sfondo trasparente
+        animationType="fade" // Animazione
+        onRequestClose={() => setModalUserChoice(false)} // Chiude il Modal
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {/* Dropdown per selezionare l'utente */}
+            <Dropdown
+              users={users} // Passiamo gli utenti al Dropdown
+              selectedValue={selectedUser} // Valore selezionato nel dropdown
+              onValueChange={setSelectedUser} // Funzione per aggiornare la selezione
+            />
+            {/*<Picker
         selectedValue={selectedUser}
         onValueChange={setSelectedUser}
         style={styles.picker}
@@ -262,33 +264,34 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         ))}
       </Picker>*/}
 
-      <View style={styles.modalButtonsContainer}>
-        {/* Bottone per confermare la selezione */}
-        <TouchableOpacity
-          style={styles.confirmButton}
-          onPress={() => {
-            const selected = users.find((u) => u.username === selectedUser);
-            if (selected) {
-              setUser(selected);
-            }
-            setModalUserChoice(false); // Chiudi il Modal
-          }}
-        >
-          <Text style={styles.confirmButtonText}>Conferma</Text>
-        </TouchableOpacity>
+            <View style={styles.modalButtonsContainer}>
+              {/* Bottone per confermare la selezione */}
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={() => {
+                  const selected = users.find(
+                    (u) => u.username === selectedUser
+                  );
+                  if (selected) {
+                    setUser(selected);
+                  }
+                  setModalUserChoice(false); // Chiudi il Modal
+                }}
+              >
+                <Text style={styles.confirmButtonText}>Conferma</Text>
+              </TouchableOpacity>
 
-        {/* Bottone per chiudere il Modal senza salvare */}
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => setModalUserChoice(false)}
-        >
-          <Text style={styles.closeButtonText}>Annulla</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
-
+              {/* Bottone per chiudere il Modal senza salvare */}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalUserChoice(false)}
+              >
+                <Text style={styles.closeButtonText}>Annulla</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAwareScrollView>
   );
 };
