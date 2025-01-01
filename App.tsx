@@ -17,12 +17,12 @@ const Tab = createBottomTabNavigator();
 //dao
 import { getRestaurants } from './src/dao/restaurantsDAO';
 import { Restaurant } from './src/utils/interfaces';
-
+import { insertFavoriteRestaurant } from './src/dao/favoritesDAO';
 
 const App = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [user, setUser] = useState(); //prende il primo utente presente nel db
-
+/*
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -39,7 +39,8 @@ const App = () => {
   
     fetchRestaurants(); 
   }, []);
-  
+  */
+
   
   return (
   <GestureHandlerRootView>

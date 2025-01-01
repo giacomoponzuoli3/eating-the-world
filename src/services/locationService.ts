@@ -79,6 +79,6 @@ const placeMarker = async () => {
   }
 };
 
-placeMarker();
+//placeMarker();
 
   

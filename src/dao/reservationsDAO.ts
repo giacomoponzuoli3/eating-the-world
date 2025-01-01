@@ -44,13 +44,13 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people)
                 VALUES(?, ?, ?, ?, ?)
             `;
-            await db.execAsync(sql, [id_restaurant, username, data, hour, number_people]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people]);
         }else{
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people, special_request)
                 VALUES(?, ?, ?, ?, ?, ?)
             `;
-            await db.execAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
         }
 
     }catch(error){
@@ -73,7 +73,7 @@ const deleteTableReservation = async (username: string, id_restaurant: number, d
 
         const sql = "DELETE FROM table_reservations WHERE username = ? AND id_restaurant = ? AND data = ? AND hour = ?";
         
-        await db.execAsync(sql, [username, id_restaurant, data, hour]);
+        await db.runAsync(sql, [username, id_restaurant, data, hour]);
 
     }catch(error){
         console.error("Error in deleteTableReservation: ", error);
@@ -99,7 +99,7 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
             VALUES(?, ?, ?, ?, ?, ?)
         `;
 
-        await db.execAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
+        await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
 
     }catch(error){
         console.error("Error in insertCulinaryExperienzeReservation: ", error);
@@ -120,7 +120,7 @@ const deleteCulinaryExperienceReservation = async (username: string, id_restaura
 
         const sql = "DELETE FROM culinary_experience_reservations WHERE username = ? AND id_restaurant = ? AND data = ?";
         
-        await db.execAsync(sql, [username, id_restaurant, data]);
+        await db.runAsync(sql, [username, id_restaurant, data]);
 
     }catch(error){
         console.error("Error in deleteCulinaryExperienceReservation: ", error);

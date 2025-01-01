@@ -1,5 +1,6 @@
 import getDatabase from './connectionDB';
 
+
 /**
  * 
  * @returns array di tutti i ristoranti presenti nel db

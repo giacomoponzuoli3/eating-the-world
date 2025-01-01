@@ -1,6 +1,5 @@
 import getDatabase from './connectionDB';
 
-
 /**
  * get all favorite restaurants of a specific client
  * @param username username dell'utente loggato
@@ -42,7 +41,7 @@ const deleteFavoriteRestaurant = async (username: string, id_restaurant: number)
             WHERE id_restaurant = ?
                 AND f.username = ?
         `;
-        await db.execAsync(sql, [id_restaurant, username]);
+        await db.runAsync(sql, [id_restaurant, username]);
 
     }catch(error){
         console.error("Error in deleteFavoriteRestaurant: ", error);
@@ -58,12 +57,19 @@ const deleteFavoriteRestaurant = async (username: string, id_restaurant: number)
  */
 const insertFavoriteRestaurant = async (username: string, id_restaurant: number) => {
     try{
+        console.log("Inserting data:", { username, id_restaurant });
         const db = await getDatabase();
+        
+
+        
+        const sqlCheck = "SELECT * FROM favorites";
+        const result = await db.getAllAsync(sqlCheck, []);
+        console.log("Current data in favorites:", result);
 
         const sql = `
             INSERT INTO favorites(username, id_restaurant) VALUES(?, ?)
         `;
-        await db.execAsync(sql, [username, id_restaurant]);
+        await db.runAsync(sql, [username, id_restaurant]);
 
     }catch(error){
         console.error("Error in insertFavoriteRestaurant: ", error);
