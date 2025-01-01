@@ -5,7 +5,7 @@ import getDatabase from './connectionDB';
  * @param id_restaurant id del ristorante a cui voglio estrarre i piatti
  * @returns un array dei piatti di uno specifico ristorante 
  */
-const getDishesById = async (id_restaurant: number) => {
+const getDishesByRestaurant = async (id_restaurant: number) => {
     try{
         const db = await getDatabase();
 
@@ -30,4 +30,4 @@ const getDishesById = async (id_restaurant: number) => {
 }
 
 
-export { getDishesById }
+export { getDishesByRestaurant }
