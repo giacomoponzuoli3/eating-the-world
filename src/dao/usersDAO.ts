@@ -27,7 +27,7 @@ const getUsers = async () => {
         WHERE id = ?
       `;
       const params = [user.name, user.surname, user.email, user.username, user.id];
-      await db.executeAsync(query, params);
+      await db.runAsync(query, params);
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user: ', error);

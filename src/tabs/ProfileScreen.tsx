@@ -97,6 +97,14 @@ const qrCodes: string[] = [
   "https://example.com/profile/4",
 ];
 
+// Mapping delle immagini
+const userImages: { [key: string]: any } = {
+  "giacomo_gugu": require("../../assets/giacomo_gugu.png"),
+  "alice_gugu": require("../../assets/alice_gugu.png"),
+  "lorenzo_gugu": require("../../assets/lorenzo_gugu.png"),
+  "francesca_gugu": require("../../assets/francesca_gugu.png"),
+};
+
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
@@ -146,7 +154,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
       >
         <View style={styles.profileImageContainer}>
           <Image
-            source={require("../../assets/profile-screenshot.png")}
+            source={user ? userImages[user.username] : require("../../assets/profile-screenshot.png")}
             style={styles.profileImage}
           />
           <TouchableOpacity style={styles.editIconContainer}>
@@ -278,7 +286,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
                   setModalUserChoice(false); // Chiudi il Modal
                 }}
               >
-                <Text style={styles.confirmButtonText}>Conferma</Text>
+                <Text style={styles.confirmButtonText}>Confirm</Text>
               </TouchableOpacity>
 
               {/* Bottone per chiudere il Modal senza salvare */}
@@ -286,7 +294,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
                 style={styles.closeButton}
                 onPress={() => setModalUserChoice(false)}
               >
-                <Text style={styles.closeButtonText}>Annulla</Text>
+                <Text style={styles.closeButtonText}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
