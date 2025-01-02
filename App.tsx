@@ -31,7 +31,7 @@ const App = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
 
   const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
-  const [user, setUser] = useState<User | undefined>(undefined);
+  const [user, setUser] = useState<User | undefined>({username: "giacomo_gugu", name: "Giacomo", surname: "Ponzuoli", email: "ponzuoligiacomo@studenti.polito.it", phone_number: '+39 3665293460'}); //prende il primo utente presente nel db
 
 
   useEffect(() => {
@@ -101,7 +101,9 @@ const App = () => {
             {() => <MapsScreen restaurants={restaurants}/>}
         </Tab.Screen>
         <Tab.Screen name="Bookings" component={BookingsScreen} />
-        <Tab.Screen name="Favorites" component={FavoritesScreen} />
+        <Tab.Screen name="Favorites">
+          {() => <FavoritesScreen user={user}/>}
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
     </GestureHandlerRootView>
