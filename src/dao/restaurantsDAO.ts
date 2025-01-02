@@ -70,7 +70,7 @@ const getRestaurantById = async (id_restaurant: number) => {
                 GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
         
-        const restaurant = await db.getAsync(sql, [id_restaurant]);
+        const restaurant = await db.getAllAsync(sql, [id_restaurant]);
         
         return restaurant;
         

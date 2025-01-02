@@ -9,13 +9,24 @@ import getDatabase from './connectionDB';
 const getTableReservartionsByUsername = async (username: string) => {
     try{
         const db = await getDatabase();
-
+       
         const sql = `
             SELECT * FROM table_reservations
             WHERE username = ? 
         `;
+        let reservations = await db.getAllAsync(sql, [username]);
+        reservations = Array.isArray(reservations) ? reservations : [reservations];
 
-        const tableReservations = await db.getAllAsync(sql, [username]);
+        const tableReservations = await Promise.all(
+            reservations.map(async (res: { id_restaurant: number; }) => {
+                const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
+                return {
+                    ...res,
+                    restaurant_name: restaurantName[0].name,
+                    // image_url: restaurant.image_url
+                };
+            })
+        );
 
         return tableReservations;
 
@@ -142,9 +153,23 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
             WHERE username = ? 
         `;
 
-        const tableReservations = await db.getAllAsync(sql, [username]);
+        let reservations = await db.getAllAsync(sql, [username]);
+        reservations = Array.isArray(reservations) ? reservations : [reservations];
 
-        return tableReservations;
+        const specialReservations = await Promise.all(
+            reservations.map(async (res: { id_restaurant: number, id_language_selected: number; }) => {
+                const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
+                const languageName = await db.getAllAsync(`SELECT name FROM languages WHERE id = ?`, [res.id_language_selected]);
+                const result = {
+                    ...res,
+                    restaurant_name: restaurantName[0].name,
+                    language_name: languageName[0].name,
+                    // image_url: restaurant.image_url
+                };
+                return result;
+            })
+        );
+        return specialReservations;
 
     }catch(error){
         console.error("Error in culinary_experience_reservations: ", error);

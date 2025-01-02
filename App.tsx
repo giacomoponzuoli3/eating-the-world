@@ -13,16 +13,27 @@ import { FavoritesScreen } from './src/tabs/FavoritesScreen';
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
 
+export type User = {
+  name: string;
+  surname: string;
+  username: string;
+  email: string;
+};
 
 //dao
 import { getRestaurants } from './src/dao/restaurantsDAO';
+import { getUsers } from './src/dao/usersDAO';
 import { Restaurant } from './src/utils/interfaces';
 import { insertFavoriteRestaurant } from './src/dao/favoritesDAO';
+import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
 
 const App = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [user, setUser] = useState(); //prende il primo utente presente nel db
-/*
+  const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [tableReservations, setTableReservations] = useState<any[]>([]);
+  const [specialReservations, setSpecialReservations] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
@@ -38,8 +49,43 @@ const App = () => {
     };
   
     fetchRestaurants(); 
+
+    const fetchUsers = async () => {
+      try {
+        const allUsers = await getUsers();
+        if (allUsers && Array.isArray(allUsers)) {
+          setUsers(allUsers);
+          setUser(allUsers[0]); // Imposta il primo utente come quello corrente
+        } else {
+          console.error("Error in the response format of the getUsers");
+        }
+      } catch (error) {
+        console.error("Error in the getUsers: ", error);
+      }
+    };
+
+    fetchUsers();
   }, []);
-  */
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        if(user){
+          const tableRes = await getTableReservartionsByUsername(user.username);
+          const specialRes = await getCulinaryExperienceReservartionsByUsername(user.username);
+          if (Array.isArray(tableRes)) {
+            setTableReservations(tableRes);
+          }        
+          if(Array.isArray(specialRes)){       
+            setSpecialReservations(specialRes);     
+          }
+        }
+      } catch (error) {
+        console.error("Error in the getBookings: ", error);
+      }
+    };
+    fetchBookings();
+  }, [user]);
 
   
   return (
@@ -74,7 +120,9 @@ const App = () => {
         <Tab.Screen name="Maps">
             {() => <MapsScreen restaurants={restaurants}/>}
         </Tab.Screen>
-        <Tab.Screen name="Bookings" component={BookingsScreen} />
+        <Tab.Screen name="Bookings">
+            {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} /> : <Text>Login for view your reservations</Text>}
+        </Tab.Screen> 
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
     </NavigationContainer>

@@ -1,63 +1,118 @@
-import React, { useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {deleteTableReservation, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import { Reservation } from '../utils/interfaces';
+import { useIsFocused } from '@react-navigation/native';
 
 // Abilita LayoutAnimation su Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-interface Reservation {
-  id: number;
-  restaurantId: number;
-  restaurantName: string;
-  date: string; // Formato: 'YYYY-MM-DD'
-  time: string; // Formato: 'HH:mm'
-  numberOfGuests: number;
-  isSpecialExperience: boolean;
-  imageUrl: string; // URL immagine ristorante
+interface BookingScreenProps{
+  username: string;
+  tableBookings: any[];
+  specialBookings: any[];
 }
 
-const mockReservations = [
-  {
-    id: 1,
-    restaurantId: 101,
-    restaurantName: 'La Dolce Vita',
-    date: '2024-12-25',
-    time: '19:30',
-    numberOfGuests: 4,
-    isSpecialExperience: false,
-    imageUrl: 'https://example.com/trattoria-mario.jpg', 
-  },
-  {
-    id: 2,
-    restaurantId: 102,
-    restaurantName: 'Gourmet Experience',
-    date: '2024-12-31',
-    time: '20:00',
-    numberOfGuests: 2,
-    isSpecialExperience: true,
-    imageUrl: "../../assets/profile-screenshot.png", // Cambia con l'immagine reale
-  },
-  {
-    id: 3,
-    restaurantId: 103,
-    restaurantName: 'Trattoria da Mario',
-    date: '2024-12-22',
-    time: '13:00',
-    numberOfGuests: 6,
-    isSpecialExperience: false,
-    imageUrl: 'src/images/Immagine WhatsApp 2024-12-23 ore 15.37.32_6a54259d.jpg', // Cambia con l'immagine reale
-  },
-];
-
-const formatDate = (date: string): string => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const [year, month, day] = date.split('-');
-  return `${year} ${months[parseInt(month) - 1]} ${day}`;
-};
-
-const BookingsScreen: React.FC = () => {
+const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specialBookings}) => {
   const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
+  //const [tableReservations, setTableReservations] = useState<Reservation[]>([]);
+  //const [specialReservations, setSpecialReservations] = useState<Reservation[]>([]);
+  const [allReservations, setAllReservations] = useState<Reservation[]>([]);
+  const isFocused = useIsFocused();
+
+  /*const loadTableReservations = async (): Promise<Reservation[]> => { 
+    try{
+      const dbReservations = await getTableReservartionsByUsername(username);
+
+      const formattedReservations: Reservation[] = (dbReservations as any[]).map((res, index) => ({
+        id: index, 
+        restaurantId: res.id_restaurant,
+        restaurantName: res.restaurant_name,
+        date: res.data, 
+        time: res.hour, 
+        numberOfGuests: res.number_people,
+        isSpecialExperience: false,
+        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
+      }));
+
+      return formattedReservations;
+    }catch(error){
+      console.error("Error loading table reservations: ", error);
+      return [];
+    }
+  };
+
+  const loadSpecialReservations = async (): Promise<Reservation[]> => {
+    try{
+      const dbReservations = await getCulinaryExperienceReservartionsByUsername(username);
+      const formattedReservations: Reservation[] = (dbReservations as any[]).map((res, index) => ({
+        id: index+2000,
+        restaurantId: res.id_restaurant,
+        restaurantName: res.restaurant_name,
+        date: res.data,  
+        numberOfGuests: res.number_people,
+        isSpecialExperience: true,
+        language: res.language,
+        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
+    }));
+
+      return formattedReservations;
+    }catch(error){
+      console.error("Error loading special reservations: ", error);
+      return [];
+    }
+  }*/
+
+  const loadReservations = async () => {
+    const tableReservations: Reservation[] = (tableBookings as any[]).map((res, index) => ({
+      id: index, 
+      restaurantId: res.id_restaurant,
+      restaurantName: res.restaurant_name,
+      date: res.data, 
+      time: res.hour, 
+      numberOfGuests: res.number_people,
+      isSpecialExperience: false,
+      imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
+    }));
+
+    const specialReservations: Reservation[] = (specialBookings as any[]).map((res, index) => ({
+      id: index+2000,
+      restaurantId: res.id_restaurant,
+      restaurantName: res.restaurant_name,
+      date: res.data,  
+      numberOfGuests: res.number_people,
+      isSpecialExperience: true,
+      language: res.language,
+      imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
+    }));
+
+    //setTableReservations(await loadTableReservations());
+    //setSpecialReservations(await loadSpecialReservations());
+
+    const combinedReservations = [...tableReservations, ...specialReservations];
+
+    const sortedReservations = combinedReservations.sort((a, b) => {
+      const dateA = new Date(`${a.date} ${a.time}`).getTime();
+      const dateB = new Date(`${b.date} ${b.time}`).getTime();
+      return dateA - dateB;
+    });
+
+    setAllReservations(sortedReservations);
+  };
+
+  useEffect(() => {
+    if(isFocused){
+      loadReservations();
+    }
+  }, [isFocused]);  
+
+  const formatDate = (date: string): string => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const [year, month, day] = date.split('-');
+    return `${year} ${months[parseInt(month) - 1]} ${day}`;
+  };  
 
   const toggleCard = (id: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -66,6 +121,14 @@ const BookingsScreen: React.FC = () => {
       [id]: !prevState[id],
     }));
   };
+
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>
+        You have no reservations yet.
+      </Text>
+    </View>
+  );
 
   const renderReservation = ({ item }: { item: Reservation }) => {
     const currentTime = new Date();
@@ -85,13 +148,23 @@ const BookingsScreen: React.FC = () => {
           </View>
         )}
         <Text style={styles.restaurantName}>{item.restaurantName}</Text>
-        <Text>{formatDate(item.date)} - {item.time}</Text>
+        <Text>{formatDate(item.date)}{item.time ? ` - ${item.time}` : ''}</Text>
         <Text>{item.numberOfGuests} Guests</Text>
       </View>
       </View>
       </TouchableOpacity>
 
       {isExpanded && (
+      /*<View>
+        {item.isSpecialExperience && (
+          <View style={styles.specialExperienceContainer}>
+            <Text style={styles.specialExperienceTitle}>Special Experience</Text>
+            <Text style={styles.specialExperienceDescription}>
+              {item.specialExperienceDetails}
+            </Text>
+          </View>
+        )}*/
+
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={[
@@ -134,6 +207,7 @@ const BookingsScreen: React.FC = () => {
           </View>
         </TouchableOpacity>
       </View>
+      //</View>
       )}
     </View>
     );
@@ -141,10 +215,11 @@ const BookingsScreen: React.FC = () => {
 
   return (
       <FlatList
-        data={mockReservations}
+        data={allReservations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderReservation}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={allReservations.length === 0 ? styles.emptyContainer : styles.container}
+        ListEmptyComponent={renderEmptyList}
       />
   );
 };
@@ -229,6 +304,18 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8, 
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#888",
+    textAlign: "center",
+    marginBottom: 20,
   },
 });
 
