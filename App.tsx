@@ -9,6 +9,7 @@ import { ProfileScreen } from './src/tabs/ProfileScreen';
 import  MapsScreen  from './src/tabs/MapsScreen';
 import { BookingsScreen } from './src/tabs/BookingScreen';
 import { FavoritesScreen } from './src/tabs/FavoritesScreen';
+import loadFonts from './src/styles/font';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
@@ -20,8 +21,10 @@ import { Restaurant } from './src/utils/interfaces';
 import { insertFavoriteRestaurant } from './src/dao/favoritesDAO';
 
 const App = () => {
+  const [fontsLoaded] = loadFonts(); // ✅ Questo è corretto
+
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [user, setUser] = useState(); //prende il primo utente presente nel db
+  const [user, setUser] = useState({username: "giacomo_gugu", name: "Giacomo", surname: "Ponzuoli", email: "ponzuoligiacomo@studenti.polito.it"}); //prende il primo utente presente nel db
 /*
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -75,7 +78,9 @@ const App = () => {
             {() => <MapsScreen restaurants={restaurants}/>}
         </Tab.Screen>
         <Tab.Screen name="Bookings" component={BookingsScreen} />
-        <Tab.Screen name="Favorites" component={FavoritesScreen} />
+        <Tab.Screen name="Favorites"> 
+          {() => <FavoritesScreen user={user}/>}
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
     </GestureHandlerRootView>
