@@ -19,7 +19,6 @@ import { updateUser } from "../dao/usersDAO";
 import QRCode from "react-native-qrcode-svg";
 
 type CustomInputProps = {
-  label?: string;
   icon: React.ReactNode;
   placeholder: string;
   type?: string;
@@ -27,36 +26,21 @@ type CustomInputProps = {
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
-  label,
   icon,
   placeholder,
   type,
   ...rest
 }) => {
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
-
   return (
     <View style={styles.container2}>
-      <Text style={styles.inputLabel}>{label}</Text>
       <View style={styles.inputFieldsContainer}>
-        {icon}
+        <View style={styles.icon}>{icon}</View>
         <TextInput
           style={styles.textInput}
           placeholder={placeholder}
           placeholderTextColor={colors.iconSecondary}
-          secureTextEntry={type === "password" ? secureTextEntry : false}
           {...rest}
         />
-        {type === "password" && (
-          <TouchableOpacity
-            onPress={() => setSecureTextEntry(!secureTextEntry)}
-          >
-            <Feather
-              name={secureTextEntry ? "eye" : "eye-off"}
-              size={iconSize.medium}
-            />
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -99,10 +83,10 @@ const qrCodes: string[] = [
 
 // Mapping delle immagini
 const userImages: { [key: string]: any } = {
-  "giacomo_gugu": require("../../assets/giacomo_gugu.png"),
-  "alice_gugu": require("../../assets/alice_gugu.png"),
-  "lorenzo_gugu": require("../../assets/lorenzo_gugu.png"),
-  "francesca_gugu": require("../../assets/francesca_gugu.png"),
+  giacomo_gugu: require("../../assets/giacomo_gugu.png"),
+  alice_gugu: require("../../assets/alice_gugu.png"),
+  lorenzo_gugu: require("../../assets/lorenzo_gugu.png"),
+  francesca_gugu: require("../../assets/francesca_gugu.png"),
 };
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
@@ -152,30 +136,34 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           justifyContent: "flex-start",
         }}
       >
-        <View style={styles.profileImageContainer}>
-          <Image
-            source={user ? userImages[user.username] : require("../../assets/profile-screenshot.png")}
-            style={styles.profileImage}
-          />
-          <TouchableOpacity style={styles.editIconContainer}>
-            <Feather
-              name="edit-3"
-              size={iconSize.medium}
-              color={colors.iconWhite}
+        <View style={styles.profileHeaderContainer}>
+          <View style={styles.nameRoleContainer}>
+            <TouchableOpacity onPress={() => setModalUserChoice(true)}>
+              <Text style={styles.name}>
+                {user?.username || "Username non disponibile"}
+              </Text>
+              <Text style={styles.role}>
+                {"Tap to change user"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={
+                user
+                  ? userImages[user.username]
+                  : require("../../assets/profile-screenshot.png")
+              }
+              style={styles.profileImage}
             />
-          </TouchableOpacity>
-        </View>
-        {/* Profile details container */}
-        <View style={styles.nameRoleContainer}>
-          <TouchableOpacity onPress={() => setModalUserChoice(true)}>
-            {/* Visualizza il nome dell'utente selezionato */}
-            <Text style={styles.name}>
-              {user?.name || "Nome non disponibile"}
-            </Text>
-            <Text style={styles.role}>
-              {user?.surname || "Cognome non disponibile"}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.editIconContainer}>
+              <Feather
+                name="edit-3"
+                size={iconSize.medium}
+                color={colors.iconWhite}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         {/* Input fields container */}
         <View>
@@ -195,13 +183,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             icon={<Feather name="phone" size={iconSize.medium} />}
             value={user?.phone_number}
           />
-
-          {/* <CustomInput
-            label="Your Password"
-            placeholder="*******"
-            type="password"
-            icon={<Feather name="lock" size={iconSize.medium} />}
-          />*/}
         </View>
       </View>
       {/* QR codes */}
@@ -256,22 +237,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
               selectedValue={selectedUser} // Valore selezionato nel dropdown
               onValueChange={setSelectedUser} // Funzione per aggiornare la selezione
             />
-            {/*<Picker
-        selectedValue={selectedUser}
-        onValueChange={setSelectedUser}
-        style={styles.picker}
-        itemStyle={styles.pickerItem} // Applica lo stile personalizzato agli elementi
-      >
-        {users.map((user: User) => (
-          <Picker.Item
-            key={user.username}
-            label={`${user.name} ${user.surname}`}
-            value={user.username}
-            color={styles.modalText.color} // Applica il colore del testo
-          />
-        ))}
-      </Picker>*/}
-
             <View style={styles.modalButtonsContainer}>
               {/* Bottone per confermare la selezione */}
               <TouchableOpacity
@@ -286,15 +251,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
                   setModalUserChoice(false); // Chiudi il Modal
                 }}
               >
-                <Text style={styles.confirmButtonText}>Confirm</Text>
-              </TouchableOpacity>
-
-              {/* Bottone per chiudere il Modal senza salvare */}
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalUserChoice(false)}
-              >
-                <Text style={styles.closeButtonText}>Delete</Text>
+                <Text style={styles.confirmButtonText}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>

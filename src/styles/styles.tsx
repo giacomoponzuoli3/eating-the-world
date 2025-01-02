@@ -31,6 +31,13 @@ export const styles = StyleSheet.create({
     width: 140,
     borderRadius: 15,
   },
+  profileHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
   editIconContainer: {
     height: 31,
     width: 31,
@@ -52,6 +59,7 @@ export const styles = StyleSheet.create({
   nameRoleContainer: {
     alignItems: "center",
     marginVertical: spacing.md,
+    marginLeft: 15,
   },
   name: {
     fontFamily: fontFamily.bold,
@@ -70,24 +78,20 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: spacing.sm,
-    marginVertical: spacing.md,
-  },
-  inputLabel: {
-    fontFamily: fontFamily.semiBold,
-    fontSize: fontSize.medium,
-    color: colors.textPrimary,
-    marginVertical: spacing.sm,
-  },
-  icon: {
-    marginHorizontal: spacing.sm,
-  },
-  container2: {
-    marginVertical: spacing.sm,
+    marginVertical: spacing.xs, // Riduci il margine verticale
   },
   textInput: {
     flex: 1,
     fontFamily: fontFamily.medium,
     fontSize: fontSize.medium,
+  },
+  container2: {
+    marginVertical: spacing.xs, // Riduci il margine verticale
+    marginBottom: 5,
+  },
+  icon: {
+    marginHorizontal: spacing.md
+  
   },
   scrollViewContent: {
     flexGrow: 1,
