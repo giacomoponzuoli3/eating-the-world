@@ -19,13 +19,15 @@ import { updateUser } from "../dao/usersDAO";
 import QRCode from "react-native-qrcode-svg";
 
 type CustomInputProps = {
-  icon: React.ReactNode;
+  label?: string;
+  icon?: React.ReactNode;
   placeholder: string;
   type?: string;
   value?: string;
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
+  label,
   icon,
   placeholder,
   type,
@@ -34,7 +36,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
   return (
     <View style={styles.container2}>
       <View style={styles.inputFieldsContainer}>
-        <View style={styles.icon}>{icon}</View>
+      {label && <Text style={styles.label2}>{label}</Text>}
+      {icon && <View style={styles.icon}>{icon}</View>}
         <TextInput
           style={styles.textInput}
           placeholder={placeholder}
@@ -74,12 +77,19 @@ interface ProfileScreenProps {
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
 
-const qrCodes: string[] = [
-  "https://example.com/profile/1",
-  "https://example.com/profile/2",
-  "https://example.com/profile/3",
-  "https://example.com/profile/4",
-];
+interface QRCodeData {
+  restaurantName: string;
+  discount: string;
+  expiryDate: string;
+  qrCodeLink: string;
+}
+
+const qrCode: QRCodeData = {
+  restaurantName: "Ristorante La Pergola",
+  discount: "20%",
+  expiryDate: "2025-01-31",
+  qrCodeLink: "https://example.com/profile/1",
+};
 
 // Mapping delle immagini
 const userImages: { [key: string]: any } = {
@@ -95,12 +105,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   );
 
   // Stato per il QR Code selezionato e la visibilità del Modal
-  const [selectedQR, setSelectedQR] = useState(null);
+  const [selectedQR, setSelectedQR] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalUserChoice, setModalUserChoice] = useState(false);
 
   // Funzione per aprire il Modal
-  const openModal = (code) => {
+  const openModal = (code: string) => {
     setSelectedQR(code);
     setModalVisible(true);
   };
@@ -142,9 +152,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
               <Text style={styles.name}>
                 {user?.username || "Username non disponibile"}
               </Text>
-              <Text style={styles.role}>
-                {"Tap to change user"}
-              </Text>
+              <Text style={styles.role}>{"Tap to change user"}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.profileImageContainer}>
@@ -169,15 +177,21 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         <View>
           {/* All the input fields */}
           <CustomInput
+            label="Name:"
+            placeholder="John"
+            value={user?.name}
+          />
+          <CustomInput
+            label="Surname:"
+            placeholder="Doe"
+            value={user?.surname}
+          />
+          <CustomInput
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
             value={user?.email}
           />
-          <CustomInput
-            placeholder="John001"
-            icon={<Ionicons name="person-outline" size={iconSize.medium} />}
-            value={user?.username}
-          />
+         
           <CustomInput
             placeholder="+39 1234567890"
             icon={<Feather name="phone" size={iconSize.medium} />}
@@ -185,23 +199,20 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           />
         </View>
       </View>
-      {/* QR codes */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.qrList}
+      {/* QR code data card */}
+      <TouchableOpacity
+        style={styles.qrDataCard}
+        onPress={() => openModal(qrCode.qrCodeLink)}
       >
-        {qrCodes.map((code, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.qrContainer}
-            onPress={() => openModal(code)} // Apre il Modal al clic
-          >
-            <QRCode value={code} size={150} />
-            <Text style={styles.qrText}>QR Code {index + 1}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+        <Text>Your coupon: </Text>
+        <QRCode value={qrCode.qrCodeLink} size={150} />
+        <Text style={styles.qrDataText}>
+          Restaurant: {qrCode.restaurantName}
+        </Text>
+        <Text style={styles.qrDataText}>Discount: {qrCode.discount}</Text>
+        <Text style={styles.qrDataText}>Expiry Date: {qrCode.expiryDate}</Text>
+        <Text>Show it at checkout! </Text>
+      </TouchableOpacity>
 
       {/* Modal per mostrare il QR Code ingrandito */}
       <Modal
@@ -217,7 +228,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             <Text style={styles.modalText}>Scansiona il QR Code</Text>
             {/* Bottone per chiudere il Modal */}
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>Chiudi</Text>
+              <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
