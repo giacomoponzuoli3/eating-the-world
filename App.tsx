@@ -8,6 +8,7 @@ import { ProfileScreen } from './src/tabs/ProfileScreen';
 import MapsScreen from './src/tabs/MapsScreen';
 import { BookingsScreen } from './src/tabs/BookingScreen';
 import { FavoritesScreen } from './src/tabs/FavoritesScreen';
+import loadFonts from './src/styles/font';
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
@@ -25,9 +26,13 @@ import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 
 const App = () => {
+  const [fontsLoaded] = loadFonts();
+
   const [restaurants, setRestaurants] = useState<any[]>([]);
+
   const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
   const [user, setUser] = useState<User | undefined>(undefined);
+
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -80,22 +85,25 @@ const App = () => {
                 iconName = focused ? "star" : "star-outline";
               }
 
-              // Restituiamo l'icona
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: "#000", // Colore quando è selezionato
-            tabBarInactiveTintColor: "gray", // Colore quando non è selezionato
-            headerTitle: "Eating The World", // Titolo impostato per tutti i tab
-          })}
-        >
-          <Tab.Screen name="Profile">
+            // Restituiamo l'icona
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#000', // Colore quando è selezionato
+          tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
+          headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
+          
+        })}
+      >
+        <Tab.Screen name="Profile">
             {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
           </Tab.Screen>
-          <Tab.Screen name="Maps" component={MapsScreen} />
-          <Tab.Screen name="Bookings" component={BookingsScreen} />
-          <Tab.Screen name="Favorites" component={FavoritesScreen} />
-        </Tab.Navigator>
-      </NavigationContainer>
+        <Tab.Screen name="Maps">
+            {() => <MapsScreen restaurants={restaurants}/>}
+        </Tab.Screen>
+        <Tab.Screen name="Bookings" component={BookingsScreen} />
+        <Tab.Screen name="Favorites" component={FavoritesScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
     </GestureHandlerRootView>
   );
 };

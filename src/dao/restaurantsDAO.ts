@@ -12,7 +12,7 @@ const getRestaurants = async () => {
 
         const sql = `
                 SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
-                FROM restaurants AS r, dishes d
+                FROM restaurants AS r, dishes AS d
                 WHERE r.id = d.id_restaurant
                 GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
