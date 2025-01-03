@@ -31,7 +31,7 @@ const App = () => {
   const [restaurants, setRestaurants] = useState<any[]>([]);
 
   const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
-  const [user, setUser] = useState<User | undefined>({username: "giacomo_gugu", name: "Giacomo", surname: "Ponzuoli", email: "ponzuoligiacomo@studenti.polito.it", phone_number: '+39 3665293460'}); //prende il primo utente presente nel db
+  const [user, setUser] = useState<User | undefined>(); //prende il primo utente presente nel db
 
 
   useEffect(() => {
