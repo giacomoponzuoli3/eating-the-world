@@ -23,11 +23,11 @@ const getUsers = async () => {
       const db = await getDatabase();
       const query = `
         UPDATE users
-        SET name = ?, surname = ?, email = ?, username = ?
-        WHERE id = ?
+        SET name = ?, surname = ?, email = ?, username = ?, phone_number = ?
+        WHERE username = ?
       `;
-      const params = [user.name, user.surname, user.email, user.username, user.id];
-      await db.executeAsync(query, params);
+      const params = [user.name, user.surname, user.email, user.username, user.phone_number, user.username];
+      await db.runAsync(query, params);
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user: ', error);

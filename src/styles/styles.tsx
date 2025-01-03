@@ -31,6 +31,13 @@ export const styles = StyleSheet.create({
     width: 140,
     borderRadius: 15,
   },
+  profileHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
   editIconContainer: {
     height: 31,
     width: 31,
@@ -39,7 +46,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: -18,
-    marginLeft: 60,
+    marginLeft: 120,
   },
   editIcon: {
     position: "absolute",
@@ -52,6 +59,7 @@ export const styles = StyleSheet.create({
   nameRoleContainer: {
     alignItems: "center",
     marginVertical: spacing.md,
+    marginLeft: 15,
   },
   name: {
     fontFamily: fontFamily.bold,
@@ -70,24 +78,25 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: spacing.sm,
-    marginVertical: spacing.md,
-  },
-  inputLabel: {
-    fontFamily: fontFamily.semiBold,
-    fontSize: fontSize.medium,
-    color: colors.textPrimary,
-    marginVertical: spacing.sm,
-  },
-  icon: {
-    marginHorizontal: spacing.sm,
-  },
-  container2: {
-    marginVertical: spacing.sm,
+    marginVertical: spacing.xs, // Riduci il margine verticale
   },
   textInput: {
     flex: 1,
     fontFamily: fontFamily.medium,
     fontSize: fontSize.medium,
+  },
+  container2: {
+    marginVertical: spacing.xs, // Riduci il margine verticale
+    marginBottom: 5,
+  },
+  icon: {
+    marginHorizontal: spacing.md
+  
+  },
+  label: {
+    marginRight: 10,
+    fontSize: 16,
+    color: colors.iconSecondary,
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -100,7 +109,7 @@ export const styles = StyleSheet.create({
     marginVertical: 20,
   },
   container3: { padding: 20, zIndex: 1 , marginBottom: 110, justifyContent: "center", alignItems: "center" },
-  label: { fontSize: 16 },
+  label2: { fontSize: 16, marginRight: 10 },
   picker: { height: 50, width: 200 },
   qrList: {
     flexDirection: 'row', // Dispone gli elementi in fila orizzontale
@@ -173,5 +182,57 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  
+  qrCardContainer: {
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginVertical: 20,
+  },
+  qrCardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  qrCardDiscount: {
+    fontSize: 16,
+    color: colors.textPrimary,
+    marginVertical: 5,
+  },
+  qrCardExpiry: {
+    fontSize: 14,
+    color: colors.iconSecondary,
+  },
+  qrCardButton: {
+    backgroundColor: colors.textPrimary,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 15,
+  },
+  qrCardButtonText: {
+    color: colors.iconWhite,
+    fontSize: 16,
+  },
+  qrDataCard: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  qrDataText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+  },
 });
