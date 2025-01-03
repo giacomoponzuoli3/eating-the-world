@@ -88,7 +88,7 @@ const App = () => {
             // Restituiamo l'icona
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#000', // Colore quando è selezionato
+          tabBarActiveTintColor: '#6200ee', // Colore quando è selezionato
           tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
           headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
           
