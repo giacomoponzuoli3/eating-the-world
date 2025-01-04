@@ -67,23 +67,24 @@ const App = () => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        if(user){
-          const tableRes = await getTableReservartionsByUsername(user.username);
-          const specialRes = await getCulinaryExperienceReservartionsByUsername(user.username);
-          if (Array.isArray(tableRes)) {
-            setTableReservations(tableRes);
-          }        
-          if(Array.isArray(specialRes)){       
-            setSpecialReservations(specialRes);     
-          }
+  async function fetchBookings(): Promise<void> {
+    try {
+      if(user){
+        const tableRes = await getTableReservartionsByUsername(user.username);
+        const specialRes = await getCulinaryExperienceReservartionsByUsername(user.username);
+        if (Array.isArray(tableRes)) {
+          setTableReservations(tableRes);
+        }        
+        if(Array.isArray(specialRes)){       
+          setSpecialReservations(specialRes);     
         }
-      } catch (error) {
-        console.error("Error in the getBookings: ", error);
       }
-    };
+    } catch (error) {
+      console.error("Error in the getBookings: ", error);
+    }
+  };
+
+  useEffect(() => {
     fetchBookings();
   }, [user]);
 
@@ -121,7 +122,7 @@ const App = () => {
             {() => <MapsScreen restaurants={restaurants}/>}
         </Tab.Screen>
         <Tab.Screen name="Bookings">
-            {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} /> : <Text>Login for view your reservations</Text>}
+            {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
         </Tab.Screen> 
         <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>

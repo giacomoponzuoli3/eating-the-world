@@ -1,9 +1,11 @@
-import React, { FC, useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager } from 'react-native';
+import React, { FC, useState, useEffect, useMemo } from 'react';
+import { View, Button, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {deleteTableReservation, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import {deleteTableReservation, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteCulinaryExperienceReservation, insertTableReservation} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
-import { useIsFocused } from '@react-navigation/native';
+import Modal from 'react-native-modal';
+import { getRestaurantById } from '../dao/restaurantsDAO';
+
 
 // Abilita LayoutAnimation su Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -13,59 +15,56 @@ interface BookingScreenProps{
   username: string;
   tableBookings: any[];
   specialBookings: any[];
+  fetchBookings: () => void;
 }
 
-const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specialBookings}) => {
+const ConfirmationModal = ({ isVisible, onConfirm, onCancel }: { isVisible: boolean, onConfirm: () => void, onCancel: () => void }) => {
+  return (
+    <Modal isVisible={isVisible} onBackdropPress={onCancel} style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <Text style={styles.modalText}>Are you sure to delete the reservation?</Text>
+        <View style={styles.buttonContainer}>
+          <Button title="No" onPress={onCancel} />
+          <Button title="Yes" onPress={onConfirm} />
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={onClose}
+      style={styles.modalOverlay}
+    >
+      <View style={styles.modalContent}>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <Icon name="close" size={30} color="black" />
+        </TouchableOpacity>
+
+        <Text style={styles.modalTitle}>{restaurantName}</Text>
+        <Text style={styles.modalDescription}>{description}</Text>
+        <Text style={styles.explanationText}>
+        Scan the QR code on the table to access a quick quiz about the history of the dishes and ingredients at our restaurant. If you score enough points, you'll receive a special discount at the checkout!
+        </Text>
+        <TouchableOpacity style={styles.scanButton} onPress={() => { /* Logica per aprire il QR scanner */ }}>
+          <Text style={styles.scanButtonText}>Scan QR Code</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
+
+const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specialBookings, fetchBookings}) => {
   const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
-  //const [tableReservations, setTableReservations] = useState<Reservation[]>([]);
-  //const [specialReservations, setSpecialReservations] = useState<Reservation[]>([]);
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
-  const isFocused = useIsFocused();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalQuizVisible, setIsModalQuizVisible] = useState(false);
+  const [restaurantDescription, setRestaurantDescription] = useState('');
 
-  /*const loadTableReservations = async (): Promise<Reservation[]> => { 
-    try{
-      const dbReservations = await getTableReservartionsByUsername(username);
-
-      const formattedReservations: Reservation[] = (dbReservations as any[]).map((res, index) => ({
-        id: index, 
-        restaurantId: res.id_restaurant,
-        restaurantName: res.restaurant_name,
-        date: res.data, 
-        time: res.hour, 
-        numberOfGuests: res.number_people,
-        isSpecialExperience: false,
-        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
-      }));
-
-      return formattedReservations;
-    }catch(error){
-      console.error("Error loading table reservations: ", error);
-      return [];
-    }
-  };
-
-  const loadSpecialReservations = async (): Promise<Reservation[]> => {
-    try{
-      const dbReservations = await getCulinaryExperienceReservartionsByUsername(username);
-      const formattedReservations: Reservation[] = (dbReservations as any[]).map((res, index) => ({
-        id: index+2000,
-        restaurantId: res.id_restaurant,
-        restaurantName: res.restaurant_name,
-        date: res.data,  
-        numberOfGuests: res.number_people,
-        isSpecialExperience: true,
-        language: res.language,
-        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
-    }));
-
-      return formattedReservations;
-    }catch(error){
-      console.error("Error loading special reservations: ", error);
-      return [];
-    }
-  }*/
-
-  const loadReservations = async () => {
+  const reservations = useMemo(() => {
     const tableReservations: Reservation[] = (tableBookings as any[]).map((res, index) => ({
       id: index, 
       restaurantId: res.id_restaurant,
@@ -88,25 +87,28 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
     }));
 
-    //setTableReservations(await loadTableReservations());
-    //setSpecialReservations(await loadSpecialReservations());
-
     const combinedReservations = [...tableReservations, ...specialReservations];
 
-    const sortedReservations = combinedReservations.sort((a, b) => {
+    return combinedReservations.sort((a, b) => {
       const dateA = new Date(`${a.date} ${a.time}`).getTime();
       const dateB = new Date(`${b.date} ${b.time}`).getTime();
       return dateA - dateB;
     });
+  }, [tableBookings, specialBookings]);
 
-    setAllReservations(sortedReservations);
-  };
+  const deleteReservation = async (item: Reservation) => {
+    if(item.isSpecialExperience){
+      await deleteCulinaryExperienceReservation(username, item.restaurantId, item.date);
+    }else{
+      await deleteTableReservation(username, item.restaurantId, item.date, item.time || '');
+    }
+    setIsModalVisible(false);
+    fetchBookings();
+  }
 
   useEffect(() => {
-    if(isFocused){
-      loadReservations();
-    }
-  }, [isFocused]);  
+    setAllReservations(reservations);
+  }, [reservations]);  
 
   const formatDate = (date: string): string => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -135,6 +137,12 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     const reservationTime = new Date(item.date + ' ' + item.time);
     const isLearnAndEarnEnabled = currentTime >= reservationTime;
     const isExpanded = expandedCards[item.id];
+
+    const openModalQuiz = async (id: number) => {
+      setIsModalQuizVisible(true);
+      const restaurant = await getRestaurantById(id);
+      setRestaurantDescription(restaurant[0].description);
+    }
 
     return (
     <View style={styles.card}>
@@ -172,7 +180,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
             { backgroundColor: isLearnAndEarnEnabled ? '#666666' : '#CCC' },
           ]}
           disabled={!isLearnAndEarnEnabled}
-          onPress={() => isLearnAndEarnEnabled && console.log('Learn&Earn')}
+          onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)}
         >
           <View style={styles.actionButtonContent}>
             <View style={styles.iconAndText}>
@@ -182,6 +190,12 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
             <Icon name="chevron-right" size={20} color="#FFF" />
           </View>
         </TouchableOpacity>
+        <RestaurantLearnModal
+          isVisible={isModalQuizVisible}
+          onClose={() => setIsModalQuizVisible(false)}
+          restaurantName={item.restaurantName}
+          description={restaurantDescription}
+        />
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => console.log('Modify Reservation')}
@@ -196,7 +210,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => console.log('Delete Reservation')}
+          onPress={() => setIsModalVisible(true)}
         >
           <View style={styles.actionButtonContent}>
             <View style={styles.iconAndText}>
@@ -206,6 +220,11 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
             <Icon name="chevron-right" size={20} color="#FFF" />
           </View>
         </TouchableOpacity>
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          onConfirm={() => deleteReservation(item)}
+          onCancel={() => setIsModalVisible(false)}
+        />
       </View>
       //</View>
       )}
@@ -316,6 +335,72 @@ const styles = StyleSheet.create({
     color: "#888",
     textAlign: "center",
     marginBottom: 20,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '90%',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '100%',
+  },
+  modalOverlay: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,  
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  explanationText: {
+    fontSize: 14,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+    fontStyle: 'italic', 
+    backgroundColor: '#f8f8f8',
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd', 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, 
+  },
+  scanButton: {
+    backgroundColor: '#FF0000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  scanButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
