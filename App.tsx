@@ -24,6 +24,7 @@ export type User = {
 //dao
 import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
+import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
@@ -32,6 +33,9 @@ const App = () => {
 
   const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
   const [user, setUser] = useState<User | undefined>(); //prende il primo utente presente nel db
+  const [tableReservations, setTableReservations] = useState<any[]>([]);
+  const [specialReservations, setSpecialReservations] = useState<any[]>([]);
+
 
 
   useEffect(() => {
@@ -66,6 +70,28 @@ const App = () => {
     fetchUsers();
   }, []);
 
+  async function fetchBookings(): Promise<void> {
+    try {
+      if(user){
+        const tableRes = await getTableReservartionsByUsername(user.username);
+        const specialRes = await getCulinaryExperienceReservartionsByUsername(user.username);
+        if (Array.isArray(tableRes)) {
+          setTableReservations(tableRes);
+        }        
+        if(Array.isArray(specialRes)){       
+          setSpecialReservations(specialRes);     
+        }
+      }
+    } catch (error) {
+      console.error("Error in the getBookings: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, [user]);
+
+  
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
@@ -100,7 +126,9 @@ const App = () => {
         <Tab.Screen name="Maps">
             {() => <MapsScreen restaurants={restaurants}/>}
         </Tab.Screen>
-        <Tab.Screen name="Bookings" component={BookingsScreen} />
+        <Tab.Screen name="Bookings">
+            {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
+        </Tab.Screen> 
         <Tab.Screen name="Favorites">
           {() => <FavoritesScreen user={user}/>}
         </Tab.Screen>

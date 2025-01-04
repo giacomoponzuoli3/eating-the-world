@@ -24,3 +24,15 @@ export interface RestaurantMarker{
     restaurant: Restaurant;
     coordinates: Coordinates;
 }
+export interface Reservation {
+    id: number;
+    restaurantId: number;
+    restaurantName: string;
+    date: string; // Formato: 'YYYY-MM-DD'
+    time?: string; // Formato: 'HH:mm'
+    numberOfGuests: number;
+    imageUrl: string; 
+    isSpecialExperience: boolean;
+    language?: string;
+  }
+  
