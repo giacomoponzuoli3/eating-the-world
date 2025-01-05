@@ -183,7 +183,7 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   qrCardContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: '#000',
     borderRadius: 10,
     padding: 20,
     alignItems: "center",
