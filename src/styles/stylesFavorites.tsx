@@ -1,9 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { fontSize, spacing } from '../constants/dimensions';
-import { colors } from '../constants/color';
-import { fontFamily } from '../constants/fontFamily';
-import loadFonts from './font';
-
 
 export const stylesFavorite = StyleSheet.create({
     container: {
@@ -55,9 +50,9 @@ export const stylesFavorite = StyleSheet.create({
     },
 
     restaurantImage: {
-      width: 60,
-      height: 60,
-      borderRadius: 20,
+      width: 65,
+      height: 65,
+      borderRadius: 8,
       marginRight: 15,
     },
 
@@ -71,7 +66,6 @@ export const stylesFavorite = StyleSheet.create({
         marginTop: 2,
         fontSize: 14,
         fontFamily: 'Poppins-MediumItalic',
-
     },
     
     ellipsis: {

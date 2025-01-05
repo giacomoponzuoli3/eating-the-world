@@ -8,6 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'; // Importa BottomTabNavigationProp
 import { Restaurant } from '../utils/interfaces';
 
+//images
+import imageMap from '../utils/imageMap';
+
 
 type RootTabParamList = {
   Profile: undefined;
@@ -20,6 +23,7 @@ const FavoritesScreen = (props: any) => {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Favorites'>>();
 
   const [favorites, setFavorites] = useState<Restaurant[] | null>(null);
+  const [images, setImages] = useState<any | null>(null);
 
   const goToMap = () => {
     navigation.navigate('Maps'); // Naviga alla tab "Maps"
@@ -77,7 +81,7 @@ const FavoritesScreen = (props: any) => {
     <View style={stylesFavorite.listItem}>
         <View style={stylesFavorite.gridElements}>
           <Image 
-            source={{uri: item.photo}} 
+            source={imageMap[item.name]} 
             style={stylesFavorite.restaurantImage} 
           />
           <View style={stylesFavorite.textElements}>
