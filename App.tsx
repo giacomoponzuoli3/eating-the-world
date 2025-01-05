@@ -70,6 +70,7 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Tab.Navigator
+          initialRouteName="Maps" // Imposta il tab iniziale su "Maps"
           screenOptions={({ route }) => ({
             // Aggiunta delle icone
             tabBarIcon: ({ focused, color, size }) => {
