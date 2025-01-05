@@ -30,8 +30,6 @@ const FavoritesScreen = (props: any) => {
 
       setFavorites(getFavorites);
 
-      getFavorites.map((result: any) => console.log(result))
-
     }catch(error){
       console.error("Error in the getFavoriteRestaurantsByUsername: ", error);
     }

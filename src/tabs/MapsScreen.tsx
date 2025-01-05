@@ -1,20 +1,24 @@
 import React, { FC, useEffect, useState } from 'react';
-import { StyleSheet, View, Alert, TouchableOpacity, Image} from "react-native";
-import MapView, { Marker, Region } from 'react-native-maps';
+import { StyleSheet, View, Alert, TouchableOpacity, Image, Text} from "react-native";
+import MapView, { Callout, Marker, Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons'; 
 import SearchWithFilter from '../components/SearchWithFilters';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { Restaurant, RestaurantMarker } from '../utils/interfaces';
+import { PageRestaurant } from '../components/PageRestaurant';
 
 interface MapScreenProps{
-  restaurants: Restaurant[];
+  restaurants: Restaurant[],
+  user: any
 }
-const MapScreen: FC<MapScreenProps> = ({restaurants}) => {
+const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
   const [restaurantMarkers, setRestaurantMarkers] = useState<RestaurantMarker[]>([])
   const mapRef = React.useRef<MapView>(null);
+
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   
 
   useEffect(() => {
@@ -82,42 +86,66 @@ const MapScreen: FC<MapScreenProps> = ({restaurants}) => {
 
   return (
     <View style={styles.container}>
-      {initialRegion && (
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          loadingEnabled={true}
-          initialRegion={initialRegion}
-          showsUserLocation={true}
-          showsPointsOfInterest={false}
-          showsCompass={false}
-        >
-          {restaurantMarkers.map((restaurantMarker, index) => (
-            <Marker
-              key={index}
-              coordinate={
-                {
-                  latitude: restaurantMarker.coordinates.lat, 
-                  longitude: restaurantMarker.coordinates.lng
-                }}
-              title={restaurantMarker.restaurant.name}
-              description={restaurantMarker.restaurant.description}
+      {selectedRestaurant ? (
+        <PageRestaurant
+          restaurant={selectedRestaurant}
+          user={user}
+          onClose={() => {
+            setSelectedRestaurant(null);
+          }} // Funzione per chiudere il componente
+        />
+      ) : (
+        <>
+          {initialRegion && (
+            <MapView
+              ref={mapRef}
+              style={styles.map}
+              loadingEnabled={true}
+              initialRegion={initialRegion}
+              showsUserLocation={true}
+              showsPointsOfInterest={false}
+              showsCompass={false}
             >
-              {/* <View style={{width: 15, height: 15}}>
-                <Image style={{width: 35, height: 35}} source={require("../../assets/forknife.png")}/>
-              </View> */}
-            </Marker>
-          ))}
-        </MapView>
-      )}
-      {/* Searchbar */}
-      <SearchWithFilter setShowRestaurantNotFound={setShowRestaurantNotFound}/>
-      {/* Center User Location Button */}
-      <TouchableOpacity style={styles.locationButton} onPress={centerOnUserLocation}>
-        <FontAwesome5 name={"location-arrow"} size={25} color={"black"} />
-      </TouchableOpacity>
-      {showRestaurantNotFound && (
-        <RestaurantNotFound onClose={() => setShowRestaurantNotFound(false)}/>
+              {restaurantMarkers.map((restaurantMarker, index) => (
+                <Marker
+                  key={index}
+                  coordinate={{
+                    latitude: restaurantMarker.coordinates.lat,
+                    longitude: restaurantMarker.coordinates.lng,
+                  }}
+                  title={restaurantMarker.restaurant.name}
+                  description={restaurantMarker.restaurant.description}
+                  
+                  
+                >
+                  <Callout
+                    onPress={() => {
+                      // Funzione chiamata quando si clicca sul popup
+                      setSelectedRestaurant(restaurantMarker.restaurant)
+                    }}
+                  >
+                    <View style={{ width: 150, padding: 5 }}>
+                      <Text style={{ fontWeight: "bold", fontSize: 16 }}>{restaurantMarker.restaurant.name}</Text>
+                      <Text numberOfLines={2} style={{ color: "gray" }}>
+                        {restaurantMarker.restaurant.description}
+                      </Text>
+                    </View>
+                  </Callout>
+
+                </Marker>
+              ))}
+            </MapView>
+          )}
+          {/* Searchbar */}
+          <SearchWithFilter setShowRestaurantNotFound={setShowRestaurantNotFound} />
+          {/* Center User Location Button */}
+          <TouchableOpacity style={styles.locationButton} onPress={centerOnUserLocation}>
+            <FontAwesome5 name={"location-arrow"} size={25} color={"black"} />
+          </TouchableOpacity>
+          {showRestaurantNotFound && (
+            <RestaurantNotFound onClose={() => setShowRestaurantNotFound(false)} />
+          )}
+        </>
       )}
     </View>
   );

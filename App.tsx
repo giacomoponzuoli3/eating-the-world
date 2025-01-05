@@ -126,7 +126,7 @@ const App = () => {
             {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
           </Tab.Screen>
         <Tab.Screen name="Maps">
-            {() => <MapsScreen restaurants={restaurants}/>}
+            {() => <MapsScreen restaurants={restaurants} user={user}/>}
         </Tab.Screen>
         <Tab.Screen name="Bookings">
             {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
