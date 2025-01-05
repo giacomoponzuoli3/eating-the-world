@@ -25,6 +25,7 @@ export type User = {
 import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
+import { Text } from "react-native";
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
