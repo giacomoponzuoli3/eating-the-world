@@ -1,4 +1,6 @@
+import { Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
+
 
 /**
  * get all favorite restaurants of a specific client
@@ -6,26 +8,32 @@ import getDatabase from './connectionDB';
  * @returns array dei ristoranti favoriti dell'utente specifico
  */
 const getFavoriteRestaurantsByUsername = async (username: string) => {
-    try{
+    try {
         const db = await getDatabase();
 
         const sql = `
-            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, AVG(d.price) AS price_range
+            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, r.photo, AVG(d.price) AS price_range
             FROM restaurants AS r, favorites AS f, dishes AS d
             WHERE r.id = f.id_restaurant AND r.id = d.id_restaurant
                 AND f.username = ?
-            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
+            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
         `;
 
         const favoritesRestaurants = await db.getAllAsync(sql, [username]);
 
-        return favoritesRestaurants;
+        // Assicurati che favoritesRestaurants sia un array prima di continuare
+        if (!Array.isArray(favoritesRestaurants)) {
+            throw new Error("Invalid database response");
+        }
 
-    }catch(error){
+        return favoritesRestaurants ?? []; // Restituisci un array vuoto se nulla è trovato
+
+    } catch (error) {
         console.error("Error in getFavoriteRestaurantsByUsername: ", error);
-        return error;
+        throw error;
     }
 }
+
 
 /**
  * delete a specific favorite restaurant 

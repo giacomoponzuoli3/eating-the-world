@@ -102,6 +102,11 @@ export const stylesFavorite = StyleSheet.create({
       fontFamily: 'Poppins-Light'
     },
 
-    
+    loadingText: {
+      marginTop: 10,
+      fontSize: 22,
+      fontFamily: 'Poppins-ExtraLight'
+  
+    }
       
   });

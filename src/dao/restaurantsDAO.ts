@@ -11,14 +11,13 @@ const getRestaurants = async () => {
         const db = await getDatabase();
 
         const sql = `
-                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
+                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
                 FROM restaurants AS r, dishes AS d
                 WHERE r.id = d.id_restaurant
-                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
+                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
         `;
 
         const results: any[] = await db.getAllAsync(sql, []);
-        //console.log('Ristoranti trovati:', results);
 
         return results ?? null;
     } catch (error) {
@@ -37,17 +36,17 @@ const getRestaurantsByTypeDeal = async (id_type_deal: number) => {
         const db = await getDatabase();
 
         const sql = `
-            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
+            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
             FROM restaurants AS r, dishes d, deals_restaurants dr
             WHERE r.id = d.id_restaurant 
                     AND dr.id_restaurant = r.id 
                     AND dr.id_deal = ?
-            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
+            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
         `;
 
-        const restaurantsByDeal = db.getAllAsync(sql, [id_type_deal]);
+        const restaurantsByDeal: any[] = db.getAllAsync(sql, [id_type_deal]);
 
-        return restaurantsByDeal;
+        return restaurantsByDeal ?? null;
 
     }catch (error) {
         console.error('Error in the getRestaurantsByTypeDeal: ', error);
@@ -65,15 +64,16 @@ const getRestaurantById = async (id_restaurant: number) => {
         const db = await getDatabase();
 
         const sql = `
-                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
+                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
                 FROM restaurants AS r, dishes d
                 WHERE r.id = d.id_restaurant AND r.id = ?
-                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
+                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
         `;
         
-        const restaurant = await db.getAllAsync(sql, [id_restaurant]);
-        
-        return restaurant;
+        const restaurant: any[] = await db.getAllAsync(sql, [id_restaurant]);
+
+
+        return restaurant ?? null;
         
     }catch(error){
         console.error("Error in the restaurantById: ", error);
@@ -81,43 +81,7 @@ const getRestaurantById = async (id_restaurant: number) => {
     }
 }
 
-
-/**
- * Insert a restaurant in the favorite list
- * @param username username dell'utente loggato
- * @param id_restaurant id del ristorante che l'utente vuole inserire nella lista 
- * @returns void
- */
-const insertFavoriteRestaurant = async (username: string, id_restaurant: number) => {
-    try{
-        const db = await getDatabase();
-        await db.execAsync("INSERT INTO favorites(username, id_restaurant) VALUES(?, ?)", [username, id_restaurant]);
-
-    }catch(error){
-        console.error('Error in the addFavorite: ', error);
-        return error;
-    }
-}
-
-/**
- * Delete a restaurant of the favorite list
- * @param username username dell'utente loggato
- * @param id_restaurant id del ristorante che l'utente vuole eliminare dalla lista 
- * @returns void
- */
-const deleteFavoriteRestaurant = async (username: string, id_restaurant: number) => {
-    try{
-        const db = await getDatabase();
-        await db.execAsync("DELETE FROM favorites WHERE username = ? AND id_restaurant = ?", [username, id_restaurant]);
-
-    }catch(error){
-        console.error('Error in the deleteFavoriteRestaurant: ', error);
-        return error;
-    }
-}
-
 export { 
     getRestaurants, getRestaurantById, getRestaurantsByTypeDeal,
-    insertFavoriteRestaurant, deleteFavoriteRestaurant 
 }
 
