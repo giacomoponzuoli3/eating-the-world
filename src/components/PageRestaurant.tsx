@@ -1,9 +1,11 @@
 import React, { FC } from "react";
 import { Restaurant } from "../utils/interfaces";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, ImageBackground } from "react-native";
 import { Icon } from "react-native-elements";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-
+import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
+import imagesRestaurants from "../utils/imagesRestaurants";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -13,11 +15,25 @@ interface PageRestaurantProps{
 
 const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: any) => {
     return (
-      <View style={{ flex: 1, padding: 20, backgroundColor: 'white' }}>
-        <TouchableOpacity onPress={onClose}>
-          <Icon name="close" size={30} color="black" />
-        </TouchableOpacity>
-        
+      <View style={stylesPageRestaurant.container}>
+        <View>
+          <ImageBackground 
+            source={imagesRestaurants[restaurant.name]} 
+            style={stylesPageRestaurant.imageBackground}
+          > 
+            <View style={stylesPageRestaurant.imagesStyle}>
+              <TouchableOpacity onPress={onClose} style={stylesPageRestaurant.iconWrapper}>
+                <Ionicons name="chevron-back-sharp" size={30} color="white" />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={onClose} style={stylesPageRestaurant.iconWrapper}>
+                <Ionicons name="star-outline" size={25} color="white" />
+              </TouchableOpacity>
+            </View>
+             
+          </ImageBackground>
+        </View>
+
         <Text style={{ fontSize: 24 }}>{restaurant.name}</Text>
         <Text style={{ fontSize: 16, marginVertical: 10 }}>{restaurant.description}</Text>
         <Text>{user.name}</Text>

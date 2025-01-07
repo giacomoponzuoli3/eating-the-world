@@ -23,8 +23,7 @@ const FavoritesScreen = (props: any) => {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Favorites'>>();
 
   const [favorites, setFavorites] = useState<Restaurant[] | null>(null);
-  const [images, setImages] = useState<any | null>(null);
-
+  
   const goToMap = () => {
     navigation.navigate('Maps'); // Naviga alla tab "Maps"
   };
