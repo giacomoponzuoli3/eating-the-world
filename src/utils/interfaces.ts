@@ -18,7 +18,6 @@ export interface Restaurant {
     capacity: number;
     culinary_experience: string;
     phone_number: string;
-    photo: string | null; // L'immagine può essere una stringa Base64
     price_range: number;
   }  
 

@@ -11,10 +11,10 @@ const getRestaurants = async () => {
         const db = await getDatabase();
 
         const sql = `
-                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
+                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
                 FROM restaurants AS r, dishes AS d
                 WHERE r.id = d.id_restaurant
-                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
+                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
 
         const results: any[] = await db.getAllAsync(sql, []);
@@ -36,12 +36,12 @@ const getRestaurantsByTypeDeal = async (id_type_deal: number) => {
         const db = await getDatabase();
 
         const sql = `
-            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
+            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
             FROM restaurants AS r, dishes d, deals_restaurants dr
             WHERE r.id = d.id_restaurant 
                     AND dr.id_restaurant = r.id 
                     AND dr.id_deal = ?
-            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
+            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
 
         const restaurantsByDeal: any[] = db.getAllAsync(sql, [id_type_deal]);
@@ -64,10 +64,10 @@ const getRestaurantById = async (id_restaurant: number) => {
         const db = await getDatabase();
 
         const sql = `
-                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo, AVG(d.price) AS price_range
+                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
                 FROM restaurants AS r, dishes d
                 WHERE r.id = d.id_restaurant AND r.id = ?
-                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
+                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
         
         const restaurant: any[] = await db.getAllAsync(sql, [id_restaurant]);
