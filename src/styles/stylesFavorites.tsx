@@ -6,8 +6,6 @@ export const stylesFavorite = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#f5f5f5',
-      marginLeft: 10,
-      marginRight: 10
     },
 
     textTitle: {
@@ -22,8 +20,8 @@ export const stylesFavorite = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: '#ffffff',
       padding: 15,
-      marginVertical: 4,
-      borderRadius: 8,
+      borderBottomColor: 'rbg(232, 232, 232)',
+      borderBottomWidth: 0.4,
       shadowColor: '#000',
       shadowOpacity: 0.01,
       shadowRadius: 5,
@@ -58,22 +56,30 @@ export const stylesFavorite = StyleSheet.create({
 
     restaurantName: {
       fontSize: 16,
-      fontFamily: 'Poppins-Bold',
+      fontFamily: 'Poppins-Medium',
       marginBottom: 5,
+    },
+
+    containerPriceRange: {
+      flexDirection: 'row',
+      marginTop: 2,
+    },
+
+    priceRange: {
+      fontSize: 13
     },
     
     restaurantRating: {
-        marginTop: 2,
-        fontSize: 14,
+        fontSize: 13,
         fontFamily: 'Poppins-MediumItalic',
     },
     
     ellipsis: {
-      marginLeft: 'auto',  // Spinge il contenitore dei tre puntini a destra
       alignSelf: 'center',  // Centra verticalmente
-      paddingRight: 10, // Puoi aggiungere un po' di spazio a destra se necessario
+      padding: 9,
       justifyContent: 'center',  // Centra verticalmente
       alignItems: 'center', // Centra orizzontalmente il contenuto
+      borderWidth: 0.1
     },
 
     button: {
