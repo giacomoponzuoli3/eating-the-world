@@ -9,13 +9,24 @@ import getDatabase from './connectionDB';
 const getTableReservartionsByUsername = async (username: string) => {
     try{
         const db = await getDatabase();
-
+       
         const sql = `
             SELECT * FROM table_reservations
             WHERE username = ? 
         `;
+        let reservations = await db.getAllAsync(sql, [username]);
+        reservations = Array.isArray(reservations) ? reservations : [reservations];
 
-        const tableReservations = await db.getAllAsync(sql, [username]);
+        const tableReservations = await Promise.all(
+            reservations.map(async (res: { id_restaurant: number; }) => {
+                const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
+                return {
+                    ...res,
+                    restaurant_name: restaurantName[0].name,
+                    // image_url: restaurant.image_url
+                };
+            })
+        );
 
         return tableReservations;
 
@@ -44,13 +55,13 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people)
                 VALUES(?, ?, ?, ?, ?)
             `;
-            await db.execAsync(sql, [id_restaurant, username, data, hour, number_people]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people]);
         }else{
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people, special_request)
                 VALUES(?, ?, ?, ?, ?, ?)
             `;
-            await db.execAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
         }
 
     }catch(error){
@@ -73,7 +84,7 @@ const deleteTableReservation = async (username: string, id_restaurant: number, d
 
         const sql = "DELETE FROM table_reservations WHERE username = ? AND id_restaurant = ? AND data = ? AND hour = ?";
         
-        await db.execAsync(sql, [username, id_restaurant, data, hour]);
+        await db.runAsync(sql, [username, id_restaurant, data, hour]);
 
     }catch(error){
         console.error("Error in deleteTableReservation: ", error);
@@ -99,7 +110,7 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
             VALUES(?, ?, ?, ?, ?, ?)
         `;
 
-        await db.execAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
+        await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
 
     }catch(error){
         console.error("Error in insertCulinaryExperienzeReservation: ", error);
@@ -120,7 +131,7 @@ const deleteCulinaryExperienceReservation = async (username: string, id_restaura
 
         const sql = "DELETE FROM culinary_experience_reservations WHERE username = ? AND id_restaurant = ? AND data = ?";
         
-        await db.execAsync(sql, [username, id_restaurant, data]);
+        await db.runAsync(sql, [username, id_restaurant, data]);
 
     }catch(error){
         console.error("Error in deleteCulinaryExperienceReservation: ", error);
@@ -142,9 +153,23 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
             WHERE username = ? 
         `;
 
-        const tableReservations = await db.getAllAsync(sql, [username]);
+        let reservations = await db.getAllAsync(sql, [username]);
+        reservations = Array.isArray(reservations) ? reservations : [reservations];
 
-        return tableReservations;
+        const specialReservations = await Promise.all(
+            reservations.map(async (res: { id_restaurant: number, id_language_selected: number; }) => {
+                const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
+                const languageName = await db.getAllAsync(`SELECT name FROM languages WHERE id = ?`, [res.id_language_selected]);
+                const result = {
+                    ...res,
+                    restaurant_name: restaurantName[0].name,
+                    language_name: languageName[0].name,
+                    // image_url: restaurant.image_url
+                };
+                return result;
+            })
+        );
+        return specialReservations;
 
     }catch(error){
         console.error("Error in culinary_experience_reservations: ", error);

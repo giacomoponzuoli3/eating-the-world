@@ -6,16 +6,17 @@ const dbPath = `${FileSystem.documentDirectory}db.db`;
 
 
 async function copyDatabaseFile() {
-  const fileInfo = await FileSystem.getInfoAsync(dbPath);
-  
-  if (!fileInfo.exists) {
-    const asset = Asset.fromModule(require('../../assets/db.db'));
-      await asset.downloadAsync(); // Assicurati che l'asset venga scaricato
-      await FileSystem.copyAsync({
-        from: asset.localUri ? asset.localUri : "",
-        to: dbPath
-      });
-  }
+
+  //eliminazione del db
+  await FileSystem.deleteAsync(dbPath, { idempotent: true }); // `idempotent` evita errori se il file non esiste
+
+  const asset = Asset.fromModule(require('../../assets/db.db'));
+    await asset.downloadAsync(); // Assicurati che l'asset venga scaricato
+    await FileSystem.copyAsync({
+      from: asset.localUri ? asset.localUri : "",
+      to: dbPath
+    });
+
 }
 
 async function openDatabase() {

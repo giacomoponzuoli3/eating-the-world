@@ -52,4 +52,4 @@ const getLanguagesByCulinaryExperience = async (id_culinary_experience: number) 
     }
 }
 
-export { getCulinaryExperiencesByRestaurant }
+export { getCulinaryExperiencesByRestaurant, getLanguagesByCulinaryExperience }
