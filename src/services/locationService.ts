@@ -36,7 +36,7 @@ export const requestLocationPermission = async (): Promise<boolean> => {
   };
 
   // Sostituisci con la tua chiave API di Google Maps
-const GOOGLE_API_KEY = "AIzaSyDlQRuSjZKUaZPV3ADMXDW0JTnWv8jkwGM";
+const GOOGLE_API_KEY = "";
 
 // Funzione per ottenere coordinate da un indirizzo
 const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
