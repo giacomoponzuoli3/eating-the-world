@@ -1,16 +1,18 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { Restaurant } from "../utils/interfaces";
 import { View, TouchableOpacity, Text, ImageBackground, ScrollView } from "react-native";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useFocusEffect } from "@react-navigation/native";
+//style
 import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
+//utils
 import imagesRestaurants from "../utils/imagesRestaurants";
+import { Restaurant } from "../utils/interfaces";
+//icons
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
+//dao
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
-import { styles } from "../styles/styles";
-import { useFocusEffect } from "@react-navigation/native";
 
 
 interface PageRestaurantProps{
@@ -22,7 +24,8 @@ interface PageRestaurantProps{
 const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: any) => {
   
   const [isFavorite, setIsFavorite] = useState<Boolean>(false);
-   
+  
+
   const initialValue = async () => {
     try{
       const result: Boolean = await isFavoriteRestaurant(user.username, restaurant.id);
@@ -98,7 +101,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
             {/* Icona del prezzo medio */}
             <View style={stylesPageRestaurant.containerIconInformation}>
               <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <Icon name="money" style={stylesPageRestaurant.iconInformation} />
+                <FontAwesome name="money" style={stylesPageRestaurant.iconInformation} />
               </View>
               <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
             </View>
