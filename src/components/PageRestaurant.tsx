@@ -13,6 +13,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 //dao
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
+import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
 
 
 interface PageRestaurantProps{
@@ -24,8 +25,23 @@ interface PageRestaurantProps{
 const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: any) => {
   
   const [isFavorite, setIsFavorite] = useState<Boolean>(false);
-  
+  const [workingHours, setWorkingHours] = useState<any[] | null>(null);
+  const [closingDays, setClosingDays] = useState<any[] | null>(null);
+  const [isOpen, setIsOpen] = useState<Boolean>(false);
 
+  //data di oggi
+  const today = new Date();
+  //giorni della settimana
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+
+  //funzione che prende i giorni
+  const getDays = async () => {
+    const d = await getDaysWeek(); 
+    return d;
+  }
+
+  //funzione che setta il valore di isFavorite
   const initialValue = async () => {
     try{
       const result: Boolean = await isFavoriteRestaurant(user.username, restaurant.id);
@@ -35,11 +51,55 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     }
   };
 
+  const getFormattedTime = (date: Date): string => {
+    const hours = date.getHours().toString().padStart(2, '0'); // Ore con zero iniziale
+    const minutes = date.getMinutes().toString().padStart(2, '0'); // Minuti con zero iniziale
+    return `${hours}:${minutes}`;
+  };
+
+  //funzione che prende gli orari del ristorante e i giorni di chiusura
+  const restaurantClosureDaysHours = async () => {
+    try{
+
+      //working hours
+      const wh = await getWorkingHoursByRestaurant(restaurant.id);
+      setWorkingHours(wh);
+
+      //closure days
+      const cd = await getClosureDaysByRestaurant(restaurant.id);
+      setClosingDays(cd);
+
+      //calcolo se è aperto ora o no
+      const day_today = days[today.getDay()];
+      
+      console.log(day_today);
+
+      if(cd.some((row: any) => row.day_name === day_today )){ //se oggi è un giorno di chiusura
+        setIsOpen(false);
+      }else{ 
+        //TODO: Devo confrontare gli elementi presenti in wh con l'ora attuale per capire se il ristorante è aperto o meno
+
+        // Crea una nuova data usando le ore e i minuti della stringa
+        //const comparisonTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+
+        // Confronta i timestamp
+        //return today.getTime() > comparisonTime.getTime();
+      }
+
+    }catch(error){
+      console.error("Error in restaurantClosureDaysHours: ", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       initialValue(); // Aggiorna i dati ogni volta che la tab diventa attiva
     }, [])
   );
+
+  useEffect(() => {
+    restaurantClosureDaysHours();
+  }, [])  
 
 
   const modifyFavorite = async (id_restaurant: number) => {
@@ -119,7 +179,12 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
               <View style={stylesPageRestaurant.iconInformationWrapper}>
                 <AntDesign name="clockcircleo" style={stylesPageRestaurant.iconInformation} />
               </View>
-              <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
+              <View>
+                {workingHours?.map((row) => {
+                  return <Text key={`${row.id_deal}-${row.id_restaurant}`} style={stylesPageRestaurant.textInformation}> {row.hour_start_deal}-{row.hour_end_deal} </Text>;
+                })}
+              </View>
+              <Text style={stylesPageRestaurant.textInformation}></Text>
             </View>
             
           </View>

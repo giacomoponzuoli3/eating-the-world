@@ -81,7 +81,80 @@ const getRestaurantById = async (id_restaurant: number) => {
     }
 }
 
+/**
+ * Funzione che permette di estrarre i vari orari di apertura di un determinato ristorante
+ * @param id_restaurant id del ristorante 
+ * @returns array di orari di apertura di un ristorante
+ */
+const getWorkingHoursByRestaurant = async (id_restaurant: number) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT dr.hour_start_deal, dr.hour_end_deal
+            FROM deals_restaurants AS dr
+            WHERE id_restaurant = ?
+            ORDER BY hour_start_deal
+        `;
+
+        const results = await db.getAllAsync(sql, [id_restaurant]);
+
+        return results;
+
+    }catch(error){
+        console.error("Error in the getWorkingHoursByRestaurant: ", error);
+        return error;
+    }
+} 
+
+/**
+ * Funzione che permette di restituire tutti i giorni di chiusura di un determinato ristorante
+ * @param id_restaurant id del ristorante 
+ * @returns array dei giorni di chiusura di un ristorante
+ */
+const getClosureDaysByRestaurant = async (id_restaurant: number) => {
+    try{    
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT *
+            FROM days_of_week AS dw, restaurant_closures AS rc
+            WHERE dw.id_day = rc.id_day AND rc.id_restaurant = ? 
+        `;
+
+        const results = await db.getAllAsync(sql, [id_restaurant]);
+
+        return results;
+    }catch(error){
+        console.error("Error in getClosureDaysByRestaurant: ", error);
+        return error;
+    }
+}
+
+/**
+ * Funzione che ritorna tutti i giorni della settimana
+ * @returns array dei giorni della settimana
+ */
+const getDaysWeek = async () => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT *
+            FROM days_of_week
+        `;
+
+        const days = await db.getAllAsync(sql, []);
+        
+        return days;
+    }catch(error){
+        console.error("Error in getDaysWeek: ", error);
+        return error;
+    }
+}
+
+
 export { 
-    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal,
+    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek
 }
 
