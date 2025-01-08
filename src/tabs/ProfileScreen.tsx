@@ -71,6 +71,44 @@ const Dropdown = ({ users, selectedValue, onValueChange }: any) => {
   );
 };
 
+// Tipi delle props per il componente
+interface CouponCardProps {
+  restaurant: {
+    name: string;
+    logo?: string; // URL del logo
+  };
+  discount: string; // Testo dello sconto
+  expiryDate: string; // Data di scadenza del coupon
+  qrValue: string; // Valore del QR Code (es. URL o stringa univoca)
+  onPressQRCode: (code: string) => void;
+}
+
+const CouponCard: React.FC<CouponCardProps> = ({ restaurant, discount, expiryDate, qrValue, onPressQRCode }) => {
+  return (
+    <View style={styles.qrCardContainer}>
+      {/* Titolo del Coupon */}
+      <Text style={styles.qrCardTitle}>{restaurant.name}</Text>
+
+      {/* Dettagli del Coupon */}
+      <Text style={styles.qrCardDiscount}>{discount}</Text>
+      <Text style={styles.qrCardExpiry}>Valid until: {expiryDate}</Text>
+
+      {/* QR Code */}
+      <TouchableOpacity
+        style={styles.qrDataCard}
+        onPress={() => onPressQRCode(qrCode.qrCodeLink)}
+      >
+      <QRCode value={qrValue} size={150} />
+      </TouchableOpacity>
+
+      {/* Istruzioni */}
+      <Text style={styles.qrDataText}>
+      Scan the QR code to redeem your discount!
+      </Text>
+    </View>
+  );
+};
+
 interface ProfileScreenProps {
   user: User | undefined;
   users: User[];
@@ -134,6 +172,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
     }
   }, [selectedUser, users, setUser]);
 
+  const restaurant = {
+    name: "Ristorante Bella Italia",
+   // logo: "../../icon.png", // Sostituisci con un URL reale
+  };
+
+  const discount = "20% discount on your current meal";
+  const expiryDate = "31/01/2025";
+  const qrValue = "https://ristorantebellaitalia.com/riscatta-sconto";
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -177,12 +224,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         <View>
           {/* All the input fields */}
           <CustomInput
-            label="Name:"
+            label="First name:"
             placeholder="John"
             value={user?.name}
           />
           <CustomInput
-            label="Surname:"
+            label="Last name:"
             placeholder="Doe"
             value={user?.surname}
           />
@@ -198,22 +245,18 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             value={user?.phone_number}
           />
         </View>
-      </View>
-      {/* QR code data card */}
-      <TouchableOpacity
-        style={styles.qrDataCard}
-        onPress={() => openModal(qrCode.qrCodeLink)}
-      >
-        <Text>Your coupon: </Text>
-        <QRCode value={qrCode.qrCodeLink} size={150} />
-        <Text style={styles.qrDataText}>
-          Restaurant: {qrCode.restaurantName}
-        </Text>
-        <Text style={styles.qrDataText}>Discount: {qrCode.discount}</Text>
-        <Text style={styles.qrDataText}>Expiry Date: {qrCode.expiryDate}</Text>
-        <Text>Show it at checkout! </Text>
-      </TouchableOpacity>
 
+      {/* Coupon Card */}
+      
+      <CouponCard
+        restaurant={restaurant}
+        discount={discount}
+        expiryDate={expiryDate}
+        qrValue={qrValue}
+        onPressQRCode={openModal}
+      />
+     
+    </View>
       {/* Modal per mostrare il QR Code ingrandito */}
       <Modal
         visible={modalVisible}
@@ -225,7 +268,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           <View style={styles.modalContent}>
             {/* QR Code ingrandito */}
             {selectedQR && <QRCode value={selectedQR} size={300} />}
-            <Text style={styles.modalText}>Scansiona il QR Code</Text>
+            <Text style={styles.modalText}>Scan the QR Code</Text>
             {/* Bottone per chiudere il Modal */}
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
               <Text style={styles.closeButtonText}>Close</Text>
