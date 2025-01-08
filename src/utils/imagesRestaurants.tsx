@@ -1,4 +1,4 @@
-const imageMap: { [key: string]: any } = {
+const imagesRestaurants: { [key: string]: any } = {
     "Al Mulino Ristorante": require('../../assets/img/restaurants/AlMulinoRistorante.png'),
     "Bistrot del Centro": require('../../assets/img/restaurants/BistrotdelCentro.png'),
     "Bistrot La Vigna": require('../../assets/img/restaurants/BistrotLaVigna.png'),
@@ -47,4 +47,4 @@ const imageMap: { [key: string]: any } = {
     "Trattoria Vecchia Torino": require('../../assets/img/restaurants/TrattoriaVecchiaTorino.png')
   };
   
-  export default imageMap;
+  export default imagesRestaurants;

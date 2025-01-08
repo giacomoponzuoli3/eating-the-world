@@ -12,11 +12,11 @@ const getFavoriteRestaurantsByUsername = async (username: string) => {
         const db = await getDatabase();
 
         const sql = `
-            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, r.photo, AVG(d.price) AS price_range
+            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, AVG(d.price) AS price_range
             FROM restaurants AS r, favorites AS f, dishes AS d
             WHERE r.id = f.id_restaurant AND r.id = d.id_restaurant
                 AND f.username = ?
-            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.photo
+            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
         `;
 
         const favoritesRestaurants = await db.getAllAsync(sql, [username]);

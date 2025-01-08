@@ -9,7 +9,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'; // Impo
 import { Restaurant } from '../utils/interfaces';
 
 //images
-import imageMap from '../utils/imageMap';
+import imagesRestaurants from '../utils/imagesRestaurants';
 
 
 type RootTabParamList = {
@@ -81,7 +81,7 @@ const FavoritesScreen = (props: any) => {
     <View style={stylesFavorite.listItem}>
         <View style={stylesFavorite.gridElements}>
           <Image 
-            source={imageMap[item.name]} 
+            source={imagesRestaurants[item.name]} 
             style={stylesFavorite.restaurantImage} 
           />
           <View style={stylesFavorite.textElements}>
