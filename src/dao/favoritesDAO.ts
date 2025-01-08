@@ -12,11 +12,11 @@ const getFavoriteRestaurantsByUsername = async (username: string) => {
         const db = await getDatabase();
 
         const sql = `
-            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, AVG(d.price) AS price_range
+            SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number, AVG(d.price) AS price_range, r.phone_number
             FROM restaurants AS r, favorites AS f, dishes AS d
             WHERE r.id = f.id_restaurant AND r.id = d.id_restaurant
                 AND f.username = ?
-            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
+            GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number
         `;
 
         const favoritesRestaurants = await db.getAllAsync(sql, [username]);
@@ -66,23 +66,52 @@ const deleteFavoriteRestaurant = async (username: string, id_restaurant: number)
  */
 const insertFavoriteRestaurant = async (username: string, id_restaurant: number) => {
     try{
-        console.log("Inserting data:", { username, id_restaurant });
         const db = await getDatabase();
         
-        const sqlCheck = "SELECT * FROM favorites";
-        const result = await db.getAllAsync(sqlCheck, []);
-        console.log("Current data in favorites:", result);
-
         const sql = `
             INSERT INTO favorites(username, id_restaurant) VALUES(?, ?)
         `;
         await db.runAsync(sql, [username, id_restaurant]);
 
+        /*
+        const sqlCheck = "SELECT * FROM favorites";
+        const result = await db.getAllAsync(sqlCheck, []);
+        console.log("Current data in favorites:", result);
+        */
     }catch(error){
         console.error("Error in insertFavoriteRestaurant: ", error);
         return error;
     }
 }
 
+/**
+ * Funzione che restituisce il valore booleano che rappresenta se il ristorante è presenta nella lista dei favoriti o meno
+ * @param username 
+ * @param id_restaurant 
+ * @returns true se è presente, false meno
+ */
+const isFavoriteRestaurant = async (username: string, id_restaurant: number): Promise<Boolean> => {
+    try{
+        const db = await getDatabase();
 
-export { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant, insertFavoriteRestaurant }
+        const sql = `
+            SELECT *
+            FROM  favorites AS f
+            WHERE f.username = ? AND id_restaurant = ?
+        `;
+
+        const result = await db.getAllAsync(sql, [username, id_restaurant]);
+
+        if(result.length === 0){ //non è presenta nella lista dei favoriti
+            return false;
+        }else{
+            return true;
+        }
+
+    }catch(error){
+        console.error("Error in isFavoriteRestaurant: ", error);
+        return false;
+    }
+}
+
+export { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant }

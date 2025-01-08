@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator } from 'react-native';
 import { stylesFavorite } from '../styles/stylesFavorites';
 
 import { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant } from '../dao/favoritesDAO';
 import Icon from 'react-native-vector-icons/FontAwesome5';  // Importa l'icona
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'; // Importa BottomTabNavigationProp
 import { Restaurant } from '../utils/interfaces';
 
 //images
 import imagesRestaurants from '../utils/imagesRestaurants';
-
 
 type RootTabParamList = {
   Profile: undefined;
@@ -71,9 +70,11 @@ const FavoritesScreen = (props: any) => {
     }
   }
 
-  useEffect(() => {
-    getFavoritesByUsername();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getFavoritesByUsername(); // Aggiorna i dati ogni volta che la tab diventa attiva
+    }, [])
+  );
 
   const renderRestaurant = ({ item }: { item: any }) => (
     <>
@@ -87,17 +88,18 @@ const FavoritesScreen = (props: any) => {
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
               <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
               <Text>{item.imageBlob}</Text>
-              <View style={stylesFavorite.ellipsis}>
-                {/* Icona della stella che, al click, rimuove il ristorante dai preferiti */}
-                <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <Icon name="ellipsis-h" size={12} color='black'/>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)}>
+                <View style={stylesFavorite.ellipsis}>
+                  {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
+                  <Icon name="ellipsis-h" size={15} color='black'/>
+
+                </View>
+              </TouchableOpacity>
             </View>
             
             <Text style={stylesFavorite.restaurantAddress}>{item.address}</Text>
-            <Text>
-              Price Range:  
+            <View style={stylesFavorite.containerPriceRange}>
+              <Text style={stylesFavorite.priceRange}>Price Range: </Text>
                 <Text style={stylesFavorite.restaurantRating}>
                   {item.price_range <= 10 ? ' €' 
                     : item.price_range <= 30 ? ' €€' 
@@ -105,7 +107,7 @@ const FavoritesScreen = (props: any) => {
                     : ' €€€€'
                   }
                   </Text>
-            </Text>
+            </View>
           </View>
         </View>
     </View>
