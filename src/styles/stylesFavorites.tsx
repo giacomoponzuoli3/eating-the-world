@@ -41,8 +41,8 @@ export const stylesFavorite = StyleSheet.create({
     },
 
     restaurantAddress: {
-        fontFamily: 'Poppins-Italic',
-        fontSize: 10,
+        fontFamily: 'Poppins-LightItalic',
+        fontSize: 12,
         flexShrink: 1, // Riduce la dimensione del testo in caso di overflow
         marginBottom: 3
     },
@@ -66,13 +66,10 @@ export const stylesFavorite = StyleSheet.create({
     },
 
     priceRange: {
+      fontFamily: 'Poppins-Light',
       fontSize: 13
     },
-    
-    restaurantRating: {
-        fontSize: 13,
-        fontFamily: 'Poppins-MediumItalic',
-    },
+
     
     ellipsis: {
       alignSelf: 'center',  // Centra verticalmente
