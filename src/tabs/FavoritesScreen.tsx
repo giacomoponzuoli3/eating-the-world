@@ -10,6 +10,7 @@ import { Restaurant } from '../utils/interfaces';
 
 //images
 import imagesRestaurants from '../utils/imagesRestaurants';
+import { PageRestaurant } from '../components/PageRestaurant';
 
 type RootTabParamList = {
   Profile: undefined;
@@ -22,6 +23,9 @@ const FavoritesScreen = (props: any) => {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Favorites'>>();
 
   const [favorites, setFavorites] = useState<Restaurant[] | null>(null);
+
+  //ristorante selezionato
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   
   const goToMap = () => {
     navigation.navigate('Maps'); // Naviga alla tab "Maps"
@@ -78,39 +82,34 @@ const FavoritesScreen = (props: any) => {
 
   const renderRestaurant = ({ item }: { item: any }) => (
     <>
-    <View style={stylesFavorite.listItem}>
-        <View style={stylesFavorite.gridElements}>
-          <Image 
-            source={imagesRestaurants[item.name]} 
-            style={stylesFavorite.restaurantImage} 
-          />
-          <View style={stylesFavorite.textElements}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-              <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
-              <Text>{item.imageBlob}</Text>
-              <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)}>
-                <View style={stylesFavorite.ellipsis}>
-                  {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
-                  <Icon name="ellipsis-h" size={15} color='black'/>
+    <TouchableOpacity onPress={() => setSelectedRestaurant(item)} >
+      <View style={stylesFavorite.listItem}>
+          <View style={stylesFavorite.gridElements}>
+            <Image 
+              source={imagesRestaurants[item.name]} 
+              style={stylesFavorite.restaurantImage} 
+            />
+            <View style={stylesFavorite.textElements}>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
+                <Text>{item.imageBlob}</Text>
+                <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)}>
+                  <View style={stylesFavorite.ellipsis}>
+                    {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
+                    <Icon name="ellipsis-h" size={15} color='black'/>
 
-                </View>
-              </TouchableOpacity>
-            </View>
-            
-            <Text style={stylesFavorite.restaurantAddress}>{item.address}</Text>
-            <View style={stylesFavorite.containerPriceRange}>
-              <Text style={stylesFavorite.priceRange}>Price Range: </Text>
-                <Text style={stylesFavorite.restaurantRating}>
-                  {item.price_range <= 10 ? ' €' 
-                    : item.price_range <= 30 ? ' €€' 
-                    : item.price_range <= 80 ? ' €€€' 
-                    : ' €€€€'
-                  }
-                  </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              
+              <Text style={stylesFavorite.restaurantAddress}>{item.address}</Text>
+              <View style={stylesFavorite.containerPriceRange}>
+                <Text style={stylesFavorite.priceRange}>Average price {item.price_range} €</Text>
+              </View>
             </View>
           </View>
-        </View>
-    </View>
+      </View>
+    </TouchableOpacity>
     </>
   );
     
@@ -129,8 +128,17 @@ const FavoritesScreen = (props: any) => {
   return(
     <>
       <View style={stylesFavorite.container}>
-        
-        {favorites && favorites.length > 0 ? 
+      {selectedRestaurant ? (
+        <PageRestaurant
+          restaurant={selectedRestaurant}
+          user={props.user}
+          onClose={() => {
+            setSelectedRestaurant(null);
+            getFavoritesByUsername();
+          }} // Funzione per chiudere il componente
+        />
+      ) : 
+        (favorites && favorites.length > 0 ? 
           <FlatList
             data={favorites}
             keyExtractor={(item) => item.id.toString()}
@@ -151,8 +159,8 @@ const FavoritesScreen = (props: any) => {
             <TouchableOpacity onPress={() => {goToMap()}} style={stylesFavorite.button}>
               <Text style={stylesFavorite.buttonText}>Go To Map &gt;</Text>
             </TouchableOpacity>
-          </View>
-        }
+          </View>)
+      }
       </View>
     </>
   )

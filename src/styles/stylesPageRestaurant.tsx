@@ -75,6 +75,66 @@ export const stylesPageRestaurant = StyleSheet.create({
         fontFamily: 'Poppins-Light'
     },
 
+    textOpen: {
+        marginLeft: 8,
+        fontFamily: 'Poppins-Bold',
+        color: 'rgba(0, 128, 0, 1)'
+    },
+    textClosed: {
+        marginLeft: 8,
+        fontFamily: 'Poppins-Regular',
+        color: 'rgba(255, 0, 0, 1)'
+    },
+    containerHours: {
+        flexDirection: 'row',
+        justifyContent: 'center', // Centrare l'icona verticalmente
+        alignItems: 'center', // Centrare l'icona orizzontalmente
+    },
+    iconHours: {
+        marginLeft: 5
+    },
 
+    //per gli orari che vengono visualizzati
+    openingHoursContainer: {
+        marginTop: 10,
+        paddingLeft: 10,
+    },
+
+    dayRow: {
+        flexDirection: 'row',
+        marginBottom: 5,
+        width: '40%'
+    },
+
+    textDays: {
+        width: 95,
+        marginLeft: 29,
+        fontFamily: 'Poppins-Light',
+    },
+
+    textToday: {
+        width: 95,
+        marginLeft: 29,
+        fontFamily: 'Poppins-Bold'
+    },
+
+    textHours:{
+        fontFamily: 'Poppins-Medium',
+        marginRight: 4
+    },
+    textHoursClosed: {
+        fontFamily: 'Poppins-Regular',
+        color: 'rgba(255, 0, 0, 1)'
+    },
+    touchHoursDays: {
+        marginBottom: 4,
+
+    },
+
+    containerMenu: {
+        borderTopWidth: 15,
+        borderTopColor: '#f5f5f5',
+        marginBottom: 20
+    }
 
 });

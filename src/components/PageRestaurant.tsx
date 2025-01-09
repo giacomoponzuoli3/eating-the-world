@@ -29,17 +29,12 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   const [closingDays, setClosingDays] = useState<any[] | null>(null);
   const [isOpen, setIsOpen] = useState<Boolean>(false);
 
+  const [showHoursDays, setShowHoursDays] = useState<Boolean>(false);
+
   //data di oggi
   const today = new Date();
   //giorni della settimana
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-
-  //funzione che prende i giorni
-  const getDays = async () => {
-    const d = await getDaysWeek(); 
-    return d;
-  }
 
   //funzione che setta il valore di isFavorite
   const initialValue = async () => {
@@ -49,12 +44,6 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     }catch(error){
       console.error("Error in isFavoriteRestaurant: ", error);
     }
-  };
-
-  const getFormattedTime = (date: Date): string => {
-    const hours = date.getHours().toString().padStart(2, '0'); // Ore con zero iniziale
-    const minutes = date.getMinutes().toString().padStart(2, '0'); // Minuti con zero iniziale
-    return `${hours}:${minutes}`;
   };
 
   //funzione che prende gli orari del ristorante e i giorni di chiusura
@@ -71,19 +60,24 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
       //calcolo se è aperto ora o no
       const day_today = days[today.getDay()];
-      
-      console.log(day_today);
 
       if(cd.some((row: any) => row.day_name === day_today )){ //se oggi è un giorno di chiusura
         setIsOpen(false);
       }else{ 
-        //TODO: Devo confrontare gli elementi presenti in wh con l'ora attuale per capire se il ristorante è aperto o meno
+        
+        setIsOpen(wh.some((row: any) => {
+          const [hours_start, minutes_start] = row.hour_start_deal.split(':').map(Number); // Converte la stringa 'hh:mm' in numeri
+          const [hours_end, minutes_end] = row.hour_end_deal.split(':').map(Number); // Converte la stringa 'hh:mm' in numeri
+  
+          const comparisonTime_start = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours_start, minutes_start);
+          const comparisonTime_end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours_end, minutes_end);
 
-        // Crea una nuova data usando le ore e i minuti della stringa
-        //const comparisonTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+          return (
+            comparisonTime_start.getTime() <= today.getTime() &&
+            today.getTime() <= comparisonTime_end.getTime()
+          );
+        }))
 
-        // Confronta i timestamp
-        //return today.getTime() > comparisonTime.getTime();
       }
 
     }catch(error){
@@ -124,7 +118,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
             style={stylesPageRestaurant.imageBackground}
           > 
             <View style={stylesPageRestaurant.imagesStyle}>
-              <TouchableOpacity onPress={onClose} style={stylesPageRestaurant.iconWrapper}>
+              <TouchableOpacity onPress={() => onClose()} style={stylesPageRestaurant.iconWrapper}>
                 <Ionicons name="chevron-back-sharp" size={30} color="white" />
               </TouchableOpacity>
 
@@ -175,27 +169,58 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
             </View>
 
             {/* Icona dell'orario di apertura */}
-            <View style={stylesPageRestaurant.containerIconInformation}>
-              <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <AntDesign name="clockcircleo" style={stylesPageRestaurant.iconInformation} />
+            <TouchableOpacity style={stylesPageRestaurant.touchHoursDays} onPress={() => {setShowHoursDays((precedence) => !precedence)}}>
+              <View style={stylesPageRestaurant.containerIconInformation}>
+                <View style={stylesPageRestaurant.iconInformationWrapper}>
+                  <AntDesign name="clockcircleo" style={stylesPageRestaurant.iconInformation} />
+                </View>
+                <View style={stylesPageRestaurant.containerHours}>
+                  {closingDays && workingHours && isOpen ? 
+                      <Text style={stylesPageRestaurant.textOpen}>Open now</Text> 
+                    : 
+                      closingDays && closingDays?.some((day) => day == days[today.getDay()]) ?
+                          <Text style={stylesPageRestaurant.textClosed}>Closed Today</Text>   
+                        : 
+                        <Text style={stylesPageRestaurant.textClosed}>Closed Now</Text>  
+                  }
+                  {/* Icona freccia giù o sù */}
+                  {!showHoursDays ?
+                      <AntDesign name="down" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
+                    : 
+                      <AntDesign name="up" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
+                  }
+                </View>
               </View>
-              <View>
-                {workingHours?.map((row) => {
-                  return <Text key={`${row.id_deal}-${row.id_restaurant}`} style={stylesPageRestaurant.textInformation}> {row.hour_start_deal}-{row.hour_end_deal} </Text>;
-                })}
-              </View>
-              <Text style={stylesPageRestaurant.textInformation}></Text>
-            </View>
-            
+              {/* Mostra gli orari del ristorante se showHoursDays è true */}
+              {workingHours && closingDays && showHoursDays && (
+                <View style={stylesPageRestaurant.openingHoursContainer}>
+                  {days.map((day, index) => (
+                    <View key={index} style={stylesPageRestaurant.dayRow}>
+                      
+                      {today.getDay() === index ? <Text style={stylesPageRestaurant.textToday}>{day}:</Text> : <Text style={stylesPageRestaurant.textDays}>{day}:</Text>}
+                      
+                      {closingDays && closingDays.some((closingDay) => closingDay.day_name === day) ? 
+                          <Text style={stylesPageRestaurant.textHoursClosed}>Closed</Text>
+                        : 
+                          workingHours.map((row: any) => {
+                            return <Text key={`${row.id_deal}-${row.id_restaurant}`} style={stylesPageRestaurant.textHours}>{row.hour_start_deal}-{row.hour_end_deal}</Text>
+                          })}
+                    </View>
+                  ))}
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
-
+          
+        </View>
+        <View style={stylesPageRestaurant.containerMenu}>
+          
         </View>
         
-        
       </ScrollView>
-      <View style={{position: 'absolute', left: 0, right: 0, bottom: 0}}>
+      {/*<View style={{position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'black'}}>
           <Text>My fixed footer</Text>
-      </View>
+        </View>*/}
     </View>
   );
 };
