@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, ImageBackground, ScrollView } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { View, TouchableOpacity, Text, ImageBackground, ScrollView, Linking, ActionSheetIOS, InteractionManager, Button } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 //style
 import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
 //utils
@@ -11,10 +11,10 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //dao
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
-
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -23,7 +23,9 @@ interface PageRestaurantProps{
 }
 
 const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: any) => {
+  const navigation = useNavigation();  // Ottieni l'oggetto di navigazione
   
+
   const [isFavorite, setIsFavorite] = useState<Boolean>(false);
   const [workingHours, setWorkingHours] = useState<any[] | null>(null);
   const [closingDays, setClosingDays] = useState<any[] | null>(null);
@@ -85,6 +87,27 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     }
   };
 
+  const handleOpenMaps = (address: string) => {
+    const encodedAddress = encodeURIComponent(address);
+  
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ['Apple Maps', 'Google Maps', 'Cancel'],
+        cancelButtonIndex: 2,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // Apple Maps
+          Linking.openURL(`maps://?q=${encodedAddress}`);
+        } else if (buttonIndex === 1) {
+          // Google Maps
+          Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`);
+        }
+      }
+    );
+  };
+
+
   useFocusEffect(
     useCallback(() => {
       initialValue(); // Aggiorna i dati ogni volta che la tab diventa attiva
@@ -93,6 +116,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
   useEffect(() => {
     restaurantClosureDaysHours();
+    Linking.canOpenURL(`tel:${restaurant.phone_number}`).catch(() => {});
   }, [])  
 
 
@@ -108,6 +132,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
       setIsFavorite(true);
     }
   }
+
 
   return (
     <View style={stylesPageRestaurant.container}>
@@ -131,18 +156,28 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
         </View>
 
         <View style={stylesPageRestaurant.containerText}>
+          {restaurant && restaurant.culinary_experience == 1 &&
+            <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonCulinaryExperience}>
+              <Text style={stylesPageRestaurant.textCulinaryExperience}>Culinary Experience</Text>
+            </TouchableOpacity>
+          }
+
           <Text style={stylesPageRestaurant.titleRestaurant}>{restaurant.name}</Text>
           
           <View style={stylesPageRestaurant.containerDescription}>
             <Text style={stylesPageRestaurant.description}>{restaurant.description}</Text>
 
-            {/* Icona dell'indirizzo medio */}
-            <View style={stylesPageRestaurant.containerIconInformation}>
-              <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <Ionicons name="location-outline" style={stylesPageRestaurant.iconInformation} />
+            {/* Icona dell'indirizzo */}
+            <TouchableOpacity onPress={() => {handleOpenMaps(restaurant.address)}}>         
+              <View style={stylesPageRestaurant.containerIconInformation}>
+   
+                <View style={stylesPageRestaurant.iconInformationWrapper}>
+                  <Ionicons name="location-outline" style={stylesPageRestaurant.iconInformation} />
+                </View>
+                <Text style={stylesPageRestaurant.textInformation}>{restaurant.address}</Text>
               </View>
-              <Text style={stylesPageRestaurant.textInformation}>{restaurant.address}</Text>
-            </View>
+            </TouchableOpacity>
+
 
             {/* Icona del tipo di cucina */}
             <View style={stylesPageRestaurant.containerIconInformation}>
@@ -168,14 +203,25 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
               </View>
               <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
             </View>
+
+            <TouchableOpacity onPress={() => {}}>   
+              <View style={stylesPageRestaurant.containerIconInformation}>  
+                <View style={stylesPageRestaurant.iconInformationWrapper}>
+                  <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
+                </View>
+                <Text style={stylesPageRestaurant.textInformation}>Menu</Text>
+              </View>  
+            </TouchableOpacity>
             
             {/* Icona del numero di telefono */}
-            <View style={stylesPageRestaurant.containerIconInformation}>
-              <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
+            <TouchableOpacity onPress={() => Linking.openURL(`tel:${restaurant.phone_number}`)}>        
+              <View style={stylesPageRestaurant.containerIconInformation}>
+                <View style={stylesPageRestaurant.iconInformationWrapper}>
+                  <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
+                </View>
+                <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
               </View>
-              <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
-            </View>
+            </TouchableOpacity> 
 
             {/* Icona dell'orario di apertura */}
             <TouchableOpacity style={stylesPageRestaurant.touchHoursDays} onPress={() => {setShowHoursDays((precedence) => !precedence)}}>
@@ -223,7 +269,9 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
           
         </View>
         <View style={stylesPageRestaurant.containerMenu}>
-          
+          <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonBookTable}>
+            <Text style={stylesPageRestaurant.textBookTable}>Book a Table</Text>
+          </TouchableOpacity>
         </View>
         
       </ScrollView>

@@ -5,10 +5,11 @@ export const stylesPageRestaurant = StyleSheet.create({
         flex: 1,
         width: '100%',
         height: '100%',
+        backgroundColor: 'white'
     },
     imageBackground: {
       width: '100%', // Larghezza dello sfondo
-      height: 280, // Altezza dello sfondo
+      height: 250, // Altezza dello sfondo
 
     },
     imagesStyle: {
@@ -19,6 +20,7 @@ export const stylesPageRestaurant = StyleSheet.create({
         marginTop: 5, // Spazio dal bordo inferiore
     },
     iconWrapper: {
+        
         width: 35, // Larghezza del cerchio
         height: 35, // Altezza del cerchio
         borderRadius: 25, // Bordo circolare
@@ -44,10 +46,42 @@ export const stylesPageRestaurant = StyleSheet.create({
         marginBottom: 12
     },
 
+    containerTitle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 5,
+
+    },
+
     titleRestaurant: {
         marginTop: 5,
         fontFamily: 'Poppins-Bold',
         fontSize: 30,
+    },
+
+    iconMenuWrapper: {
+        flexDirection: 'column',
+        width: 36, // Larghezza del cerchio
+        height: 36, // Altezza del cerchio
+        borderRadius: 4,
+        backgroundColor: 'rgba(98, 0, 238, 0.1)', // Sfondo nero opaco
+        borderWidth: 1, // Spessore del bordo
+        borderColor: 'rgba(98, 0, 238, 0.0)', // Colore del bordo
+        justifyContent: 'center', // Centrare l'icona verticalmente
+        alignItems: 'center', // Centrare l'icona orizzontalmente
+        marginLeft: 20
+    },
+
+    textMenu: {
+        fontSize: 9,
+        fontFamily: 'Poppins-Medium',
+        color: 'rgba(98, 0, 238, 1)',
+    },
+
+    iconMenu: {
+        padding:0,
+        color: 'rgba(98, 0, 238, 1)',
+        fontSize: 19,
     },
 
     containerIconInformation: {
@@ -131,11 +165,7 @@ export const stylesPageRestaurant = StyleSheet.create({
 
     },
 
-    containerMenu: {
-        borderTopWidth: 15,
-        borderTopColor: '#f5f5f5',
-        marginBottom: 20
-    },
+    
 
     containerCategory: {
         flexDirection: 'row', 
@@ -146,6 +176,48 @@ export const stylesPageRestaurant = StyleSheet.create({
     textCategory: {
         fontFamily: 'Poppins-Light',
         flexShrink: 1, // Consente al testo di restringersi e andare a capo
+    },
+    containerMenu: {
+        flexDirection: 'row',
+        borderTopWidth: 5,
+        borderTopColor: 'white',
+        marginBottom: 20,
+        justifyContent: 'space-between',
+        paddingHorizontal: 10
+    },
+    buttonBookTable: { 
+        marginTop: 5,
+        backgroundColor: 'rgba(98, 0, 238, 1)', 
+        flex: 1, 
+        marginRight: 5,
+        alignItems: 'center'
+    },
+
+    buttonCulinaryExperience: { 
+        backgroundColor: 'rgba(98, 0, 238, 0.1)', 
+        marginTop: 10,
+        alignSelf: 'flex-start', // Si estende per tutta la larghezza del contenitore
+        borderWidth: 2,
+        borderRadius: 2,
+        borderColor: 'rgba(90, 0, 230, 1)'
+
+    },
+
+    textBookTable: {
+        padding: 15,
+        color: 'white', 
+        fontFamily: 'Poppins-Light', 
+        fontSize: 15
+    },
+
+    textCulinaryExperience: {
+        paddingRight: 20,
+        paddingLeft: 20,
+        paddingBottom: 4,
+        paddingTop: 4,
+        color: 'rgba(90, 0, 230, 1)', 
+        fontFamily: 'Poppins-Medium', 
+        fontSize: 14
     }
 
 });
