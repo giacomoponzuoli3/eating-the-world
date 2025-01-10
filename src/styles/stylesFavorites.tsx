@@ -111,8 +111,9 @@ export const stylesFavorite = StyleSheet.create({
     },
 
     categoryText: {
-      fontFamily: 'Poppins-Light',
-      fontSize: 13
+      fontFamily: 'Poppins-Medium',
+      fontSize: 12,
+      color: 'rgba(107, 142, 35, 1)'
     }
       
   });

@@ -149,7 +149,16 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
               <View style={stylesPageRestaurant.iconInformationWrapper}>
                 <Ionicons name="restaurant-outline" style={stylesPageRestaurant.iconInformation} />
               </View>
-              <Text style={stylesPageRestaurant.textInformation}>Tipologia ristorante</Text>
+              <View style={stylesPageRestaurant.containerCategory}>
+                {restaurant.tags.map((tag: any, index: number) => {
+                    const isLast = index === restaurant.tags.length - 1; // Controlla se è l'ultimo elemento
+                    return (
+                      <Text key={`${restaurant.id}-${tag.name}`} style={stylesPageRestaurant.textCategory}>
+                        {tag.name}{!isLast && ','} {/* Aggiungi la virgola se non è l'ultimo */}
+                      </Text>
+                    );
+                  })}
+              </View>
             </View>
 
             {/* Icona del prezzo medio */}
