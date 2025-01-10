@@ -135,6 +135,17 @@ export const stylesPageRestaurant = StyleSheet.create({
         borderTopWidth: 15,
         borderTopColor: '#f5f5f5',
         marginBottom: 20
+    },
+
+    containerCategory: {
+        flexDirection: 'row', 
+        flexWrap: 'wrap',
+        marginLeft: 8,
+        flex: 1, // Assicura che la View occupi tutta la larghezza disponibile
+    },
+    textCategory: {
+        fontFamily: 'Poppins-Light',
+        flexShrink: 1, // Consente al testo di restringersi e andare a capo
     }
 
 });
