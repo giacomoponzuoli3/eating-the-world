@@ -1,6 +1,6 @@
 import { Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
-
+import { getTagsByRestaurant } from './restaurantsDAO';
 
 /**
  * get all favorite restaurants of a specific client
@@ -26,7 +26,16 @@ const getFavoriteRestaurantsByUsername = async (username: string) => {
             throw new Error("Invalid database response");
         }
 
-        return favoritesRestaurants ?? []; // Restituisci un array vuoto se nulla è trovato
+        const favoritesRestaurantsWithTags = await Promise.all(favoritesRestaurants.map(async (row: any) => {
+            const tags = await getTagsByRestaurant(row.id); // Assicurati che questa funzione ritorni un array o un valore corretto
+            return {
+                ...row,
+                tags, // Aggiungi i tags all'oggetto della riga
+            };
+        }));
+    
+
+        return favoritesRestaurantsWithTags ?? null;
 
     } catch (error) {
         console.error("Error in getFavoriteRestaurantsByUsername: ", error);

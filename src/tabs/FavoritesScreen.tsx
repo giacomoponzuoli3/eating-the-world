@@ -90,6 +90,16 @@ const FavoritesScreen = (props: any) => {
               style={stylesFavorite.restaurantImage} 
             />
             <View style={stylesFavorite.textElements}>
+              <View style={stylesFavorite.containerCategory}>
+                {item.tags.map((tag: any, index: number) => {
+                  const isLast = index === item.tags.length - 1; // Controlla se è l'ultimo elemento
+                  return (
+                    <Text key={`${item.id}-${tag.name}`} style={stylesFavorite.categoryText}>
+                      {tag.name}{!isLast && ','} {/* Aggiungi la virgola se non è l'ultimo */}
+                    </Text>
+                  );
+                })}
+              </View>
               <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
                 <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
                 <Text>{item.imageBlob}</Text>

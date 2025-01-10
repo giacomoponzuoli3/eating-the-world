@@ -103,7 +103,16 @@ export const stylesFavorite = StyleSheet.create({
       marginTop: 10,
       fontSize: 22,
       fontFamily: 'Poppins-ExtraLight'
-  
+    },
+
+    containerCategory: {
+      flexDirection: 'row', 
+      flexWrap: 'wrap'
+    },
+
+    categoryText: {
+      fontFamily: 'Poppins-Light',
+      fontSize: 13
     }
       
   });
