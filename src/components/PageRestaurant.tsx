@@ -11,7 +11,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //dao
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
@@ -136,6 +135,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     }
   }
 
+  //chiamo la pagina di prenotazione di un tavolo
   if (showBookTable) {
     return <BookTable restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)}/>;
   }
@@ -164,7 +164,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
         <View style={stylesPageRestaurant.containerText}>
           {restaurant && restaurant.culinary_experience == 1 &&
             <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonCulinaryExperience}>
-              <Text style={stylesPageRestaurant.textCulinaryExperience}>Culinary Experience</Text>
+              <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
             </TouchableOpacity>
           }
 
