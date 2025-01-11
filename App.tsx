@@ -9,6 +9,7 @@ import MapsScreen from './src/tabs/MapsScreen';
 import { BookingsScreen } from './src/tabs/BookingScreen';
 import { FavoritesScreen } from './src/tabs/FavoritesScreen';
 import loadFonts from './src/styles/font';
+import { styles } from "./src/styles/styles";
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
@@ -25,7 +26,7 @@ export type User = {
 import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
-import { Text } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
@@ -92,51 +93,66 @@ const App = () => {
     fetchBookings();
   }, [user]);
 
-  
+  // Verifica che user e restaurants siano disponibili
+  if (!user || !restaurants) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+        {/* Mostra una rotella di caricamento */}
+        <ActivityIndicator size="large" color="#6200ee" />
+        {/* Oppure puoi usare un testo come alternativa */}
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName="Maps" // Imposta il tab iniziale su "Maps"
-          screenOptions={({ route }) => ({
-            // Aggiunta delle icone
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName: keyof typeof Ionicons.glyphMap = "person";
+    <>
+      {user && restaurants &&
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <Tab.Navigator
+              initialRouteName="Maps" // Imposta il tab iniziale su "Maps"
+              screenOptions={({ route }) => ({
+                // Aggiunta delle icone
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName: keyof typeof Ionicons.glyphMap = "person";
 
-              if (route.name === "Profile") {
-                iconName = focused ? "person" : "person-outline";
-              } else if (route.name === "Maps") {
-                iconName = focused ? "map" : "map-outline";
-              } else if (route.name === "Bookings") {
-                iconName = focused ? "calendar" : "calendar-outline";
-              } else if (route.name === "Favorites") {
-                iconName = focused ? "star" : "star-outline";
-              }
+                  if (route.name === "Profile") {
+                    iconName = focused ? "person" : "person-outline";
+                  } else if (route.name === "Maps") {
+                    iconName = focused ? "map" : "map-outline";
+                  } else if (route.name === "Bookings") {
+                    iconName = focused ? "calendar" : "calendar-outline";
+                  } else if (route.name === "Favorites") {
+                    iconName = focused ? "star" : "star-outline";
+                  }
 
-            // Restituiamo l'icona
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#6200ee', // Colore quando è selezionato
-          tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
-          headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
-          
-        })}
-      >
-        <Tab.Screen name="Profile">
-            {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
-          </Tab.Screen>
-        <Tab.Screen name="Maps">
-            {() => <MapsScreen restaurants={restaurants}/>}
-        </Tab.Screen>
-        <Tab.Screen name="Bookings">
-            {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
-        </Tab.Screen> 
-        <Tab.Screen name="Favorites">
-          {() => <FavoritesScreen user={user}/>}
-        </Tab.Screen>
-      </Tab.Navigator>
-    </NavigationContainer>
-    </GestureHandlerRootView>
+                // Restituiamo l'icona
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: '#6200ee', // Colore quando è selezionato
+              tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
+              headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
+              
+            })}
+          >
+            <Tab.Screen name="Profile">
+                {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
+              </Tab.Screen>
+            <Tab.Screen name="Maps">
+                {() => <MapsScreen restaurants={restaurants} user={user}/>}
+            </Tab.Screen>
+            <Tab.Screen name="Bookings">
+                {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
+            </Tab.Screen> 
+            <Tab.Screen name="Favorites">
+              {() => <FavoritesScreen user={user}/>}
+            </Tab.Screen>
+          </Tab.Navigator>
+        </NavigationContainer>
+        </GestureHandlerRootView>
+      }
+    </>
   );
 };
 

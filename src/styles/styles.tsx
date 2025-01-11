@@ -235,4 +235,12 @@ export const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 5,
   },
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: 22,
+    fontFamily: 'Poppins-ExtraLight'
+
+  }
+
 });
