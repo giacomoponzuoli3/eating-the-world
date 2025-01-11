@@ -19,6 +19,7 @@ export interface Restaurant {
     culinary_experience: string;
     phone_number: string;
     price_range: number;
+    tags: any[]
   }  
 
 export interface RestaurantMarker{
