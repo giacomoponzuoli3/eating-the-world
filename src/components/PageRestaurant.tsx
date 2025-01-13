@@ -11,10 +11,10 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 //dao
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
+import { BookTable } from "./BookTable";
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -32,6 +32,8 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   const [isOpen, setIsOpen] = useState<Boolean>(false);
 
   const [showHoursDays, setShowHoursDays] = useState<Boolean>(false);
+
+  const [showBookTable, setShowBookTable] = useState(false); // Stato per gestire il passaggio
 
   //data di oggi
   const today = new Date();
@@ -133,6 +135,10 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     }
   }
 
+  //chiamo la pagina di prenotazione di un tavolo
+  if (showBookTable) {
+    return <BookTable restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
+  }
 
   return (
     <View style={stylesPageRestaurant.container}>
@@ -158,7 +164,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
         <View style={stylesPageRestaurant.containerText}>
           {restaurant && restaurant.culinary_experience == 1 &&
             <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonCulinaryExperience}>
-              <Text style={stylesPageRestaurant.textCulinaryExperience}>Culinary Experience</Text>
+              <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
             </TouchableOpacity>
           }
 
@@ -269,7 +275,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
           
         </View>
         <View style={stylesPageRestaurant.containerMenu}>
-          <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonBookTable}>
+          <TouchableOpacity onPress={() => setShowBookTable(true)} style={stylesPageRestaurant.buttonBookTable}>
             <Text style={stylesPageRestaurant.textBookTable}>Book a Table</Text>
           </TouchableOpacity>
         </View>

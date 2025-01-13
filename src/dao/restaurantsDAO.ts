@@ -1,5 +1,10 @@
 import getDatabase from './connectionDB';
 
+/**
+ * Funzione che restituisce tutti i tag di uno specifico ristorante
+ * @param id_restaurant id del ristorante di cui voglio sapere i vari tag
+ * @returns un array di tag di uno specifico ristorante
+ */
 const getTagsByRestaurant = async (id_restaurant: number) => {
     try{
         const db = await getDatabase();
@@ -197,8 +202,32 @@ const getDaysWeek = async () => {
     }
 }
 
+/**
+ * Funzione che ritorna i vari orari di apertura di un ristorante specificando anche il nome del pasto
+ * @param id_restaurant 
+ * @returns un array che contiene i vari orari di apertura di un determinato ristorante
+ */
+const getHoursByRestaurant = async (id_restaurant: number) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT dr.id_deal, dr.id_restaurant, td.name, hour_start_deal, hour_end_deal
+            FROM deals_restaurants dr, type_deals td
+            WHERE dr.id_deal = td.id AND id_restaurant = ? 
+        `;
+
+        const hours = await db.getAllAsync(sql, [id_restaurant]);
+
+        return hours ?? [];
+
+    }catch(error){
+        console.error("Error in getHoursByRestaurant: ", error);
+        return error;
+    }
+}
 
 export { 
-    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant
+    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant, getHoursByRestaurant
 }
 

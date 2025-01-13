@@ -70,6 +70,16 @@ const App = () => {
 
     fetchRestaurants();
     fetchUsers();
+
+    /*const fetchQuestions = async () => {
+      const res = await getQuestionsByRestaurantId(3);
+      console.log(res);
+    }
+  
+    useEffect(() => {
+      fetchQuestions();
+    }, []);*/
+  
   }, []);
 
   async function fetchBookings(): Promise<void> {
