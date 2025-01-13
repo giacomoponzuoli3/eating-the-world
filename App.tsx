@@ -27,6 +27,7 @@ import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
 import { ActivityIndicator, Text, View } from "react-native";
+import { getQuestionsByRestaurantId } from "./src/dao/quizDAO";
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
@@ -69,16 +70,7 @@ const App = () => {
     };
 
     fetchRestaurants();
-    fetchUsers();
-
-    /*const fetchQuestions = async () => {
-      const res = await getQuestionsByRestaurantId(3);
-      console.log(res);
-    }
-  
-    useEffect(() => {
-      fetchQuestions();
-    }, []);*/
+    fetchUsers(); 
   
   }, []);
 

@@ -6,7 +6,7 @@ const getQuestionsByRestaurantId = async (id_restaurant: number) => {
 
         const sqlFindQuestions = `
             SELECT id_question 
-            FROM restaurant_questions 
+            FROM restaurants_questions 
             WHERE id_restaurant = ?;
         `;
         const questionIds = await db.getAllAsync(sqlFindQuestions, [id_restaurant]);
@@ -47,7 +47,6 @@ const getQuestionsByRestaurantId = async (id_restaurant: number) => {
                 };
             })
         );
-
         return questions;
 
     } catch (error) {
