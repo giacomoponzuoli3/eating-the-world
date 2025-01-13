@@ -9,22 +9,38 @@ interface CalendarComponent{
     selectedDate: string | null,
     setSelectedDate: (data: string) => void,
     setStep: (step: number) => void,
+    closingDays: any[] | null
 }
 
-export const CalendarComponent: FC<CalendarComponent>  = ({setSelectedDate, selectedDate, setStep}) => {
+export const CalendarComponent: FC<CalendarComponent>  = ({setSelectedDate, selectedDate, setStep, closingDays}) => {
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
 
+    // Mappatura dei numeri dei giorni con i nomi
+    const dayNamesMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    // Funzione che controlla se la data è un giorno di chiusura
+    const isDayClosed = (date: any) => {
+        // Ottieni il numero del giorno della settimana dalla data (0 è domenica, 6 è sabato)
+        const dayIndex = new Date(date.dateString).getDay();
+
+        // Ottieni il nome del giorno dalla mappatura
+        const dayName = dayNamesMap[dayIndex];
+
+        // Verifica se il nome del giorno è presente nell'array di giorni di chiusura
+        return closingDays && closingDays.some(day => day.day_name === dayName);
+    };
+
     //componente del giorno
     const renderDay = ({ date, onPress }: any) => {
-        const isSunday = new Date(date.dateString).getDay() === 0;
+        const isClose = isDayClosed(date);
         const isBeforeToday = date.dateString < todayFormatted;
 
         return (
-            <View style={[stylesBookTable.dayContainer, isSunday || isBeforeToday ? stylesBookTable.disabledDay : null]}>
+            <View style={[stylesBookTable.dayContainer, isClose || isBeforeToday ? stylesBookTable.disabledDay : null]}>
                 <TouchableOpacity
-                    onPress={!(isSunday || isBeforeToday) ? () => onPress(date) : undefined}
-                    style={[selectedDate == date.dateString ? stylesBookTable.daySelectedButton : stylesBookTable.dayButton, isSunday || isBeforeToday ? stylesBookTable.disabledDayButton : null]}
+                    onPress={!(isClose || isBeforeToday) ? () => onPress(date) : undefined}
+                    style={[selectedDate == date.dateString ? stylesBookTable.daySelectedButton : stylesBookTable.dayButton, isClose || isBeforeToday ? stylesBookTable.disabledDayButton : null]}
                 >
                     <Text style={selectedDate == date.dateString ? stylesBookTable.daySelectedText : stylesBookTable.dayText}>{date.day}</Text>
                 </TouchableOpacity>

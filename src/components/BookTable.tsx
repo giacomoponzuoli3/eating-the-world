@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 
@@ -11,17 +11,42 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { CalendarComponent } from "./CalendarComponent";
 
+//dao
+import { getHoursByRestaurant } from "../dao/restaurantsDAO";
+
 const BookTable = (props: any) => {
   const today = new Date();
   const todayFormatted = today.toISOString().split('T')[0];
 
-  //datti form
+  //orari di apertura del ristorante associato al pasto
+  const [openingHours, setOpeningHours] = useState<any[] | null>(null);
+    
+  //dati form
   const [selectedDate, setSelectedDate] = useState<string | null>(null); // Stato per il giorno selezionato
   const [selectedHour, setSelectedHour] = useState<string | null>(null); // Stato per l'ora selezionata
   const [selectedPeople, setSelectedPeople] = useState<string | null>(null); // Stato per il numero di persone selezionate
-  
+
   //step della prenotazione
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(2);
+
+
+  const getOpeningHours = async () => {
+    try{
+      const oh = await getHoursByRestaurant(props.restaurant.id);
+      setOpeningHours(oh);
+
+      console.log(oh);
+    }catch(error){
+      console.log("Error in getOpeningHours: ", error);
+      setOpeningHours([]);
+    }
+  }
+
+  //recupero orari e pasti
+  useEffect(() => {
+    getOpeningHours();
+  }, [])
+
 
   const nextStep = async () => {
     if(step < 4) { //molto probabilmente c'è anche il quinto step che è la visualizzazione del riepilogo
@@ -86,14 +111,14 @@ const BookTable = (props: any) => {
         {/* Calendario (solo quando step == 1) */}
         {step == 1 &&
             (
-              <CalendarComponent setSelectedDate={setSelectedDate} selectedDate={selectedDate} setStep={setStep}/>
+              <CalendarComponent setSelectedDate={setSelectedDate} selectedDate={selectedDate} setStep={setStep} closingDays={props.closingDays}/>
             )
         }
         
         {/* Seleziona l'orario (solo quando step == 2) */}
         {step == 2 &&
             (
-              <View style={stylesBookTable.containerCalendar}>
+              <View style={stylesBookTable.containerHours}>
               
               </View>
             )

@@ -137,7 +137,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
   //chiamo la pagina di prenotazione di un tavolo
   if (showBookTable) {
-    return <BookTable restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)}/>;
+    return <BookTable restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
   }
 
   return (

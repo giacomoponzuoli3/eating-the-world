@@ -259,7 +259,10 @@ export const stylesBookTable = StyleSheet.create({
         borderColor: '#6200ee'
       },
 
-      
+      containerHours: {
+        flex: 1,
+        alignItems: 'center',
+      },
 
 
 });
