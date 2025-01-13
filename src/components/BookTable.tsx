@@ -86,7 +86,7 @@ const BookTable = (props: any) => {
         {/* Calendario (solo quando step == 1) */}
         {step == 1 &&
             (
-              <CalendarComponent setSelectedDate={setSelectedDate} setStep={setStep}/>
+              <CalendarComponent setSelectedDate={setSelectedDate} selectedDate={selectedDate} setStep={setStep}/>
             )
         }
         

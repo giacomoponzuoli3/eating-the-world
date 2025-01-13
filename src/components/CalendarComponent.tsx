@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Calendar } from 'react-native-calendars';
 
 //style 
 import { stylesBookTable } from "../styles/stylesBookTable";
 
-export const CalendarComponent = (props: any) => {
-    /**
-     * selectedData
-     * setStep
-     */
+interface CalendarComponent{
+    selectedDate: string | null,
+    setSelectedDate: (data: string) => void,
+    setStep: (step: number) => void,
+}
+
+export const CalendarComponent: FC<CalendarComponent>  = ({setSelectedDate, selectedDate, setStep}) => {
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
 
@@ -22,9 +24,9 @@ export const CalendarComponent = (props: any) => {
             <View style={[stylesBookTable.dayContainer, isSunday || isBeforeToday ? stylesBookTable.disabledDay : null]}>
                 <TouchableOpacity
                     onPress={!(isSunday || isBeforeToday) ? () => onPress(date) : undefined}
-                    style={[props.selectedDate == date.dateString ? stylesBookTable.daySelectedButton : stylesBookTable.dayButton, isSunday || isBeforeToday ? stylesBookTable.disabledDayButton : null]}
+                    style={[selectedDate == date.dateString ? stylesBookTable.daySelectedButton : stylesBookTable.dayButton, isSunday || isBeforeToday ? stylesBookTable.disabledDayButton : null]}
                 >
-                    <Text style={props.selectedDate == date.dateString ? stylesBookTable.daySelectedText : stylesBookTable.dayText}>{date.day}</Text>
+                    <Text style={selectedDate == date.dateString ? stylesBookTable.daySelectedText : stylesBookTable.dayText}>{date.day}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -48,11 +50,11 @@ export const CalendarComponent = (props: any) => {
                 }}
                 // Selezione giorno
                 onDayPress={(day) => {
-                props.setSelectedDate(day.dateString); // Imposta la data selezionata
-                props.setStep(2);
+                    setSelectedDate(day.dateString); // Imposta la data selezionata
+                    setStep(2);
                 }}
                 markedDates={{
-                [props.selectedDate || '']: {
+                [selectedDate || '']: {
                     selected: true,
                     marked: true,
                     selectedColor: 'blue', // Colore di sfondo per il giorno selezionato
