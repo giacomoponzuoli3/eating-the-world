@@ -160,12 +160,10 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
             reservations.map(async (res: { id_restaurant: number, id_language_selected: number; }) => {
                 const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
                 const languageName = await db.getAllAsync(`SELECT name FROM languages WHERE id = ?`, [res.id_language_selected]);
-                const time = await db.getAllAsync(`SELECT start_hour FROM culinary_experience WHERE id_restaurant = ?`, [res.id_restaurant]);
                 const result = {
                     ...res,
                     restaurant_name: restaurantName[0].name,
                     language_name: languageName[0].name,
-                    time: time[0].start_hour,
                     // image_url: restaurant.image_url
                 };
                 return result;
