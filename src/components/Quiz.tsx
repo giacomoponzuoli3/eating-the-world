@@ -23,14 +23,14 @@ const QuizScreen = ({ onFinish }: { onFinish: () => void }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(new Array(questions.length).fill(null));
 
-  const fetchQuestions = async () => {
+  /*const fetchQuestions = async () => {
     const res = await getQuestionsByRestaurantId(3);
     console.log(res);
   }
 
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, []);*/
 
   const handleAnswer = (selectedIndex: number) => {
     if (answers[currentQuestionIndex] === null) {

@@ -10,15 +10,17 @@ export interface Coordinates{
     lng: number;
 }
 
-export interface Restaurant{
+export interface Restaurant {
     id: number;
     name: string;
     description: string;
     address: string;
     capacity: number;
-    culinary_experience: number;
+    culinary_experience: string;
     phone_number: string;
-}
+    price_range: number;
+    tags: any[]
+  }  
 
 export interface RestaurantMarker{
     restaurant: Restaurant;

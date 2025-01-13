@@ -170,7 +170,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 
     const openModalQuiz = async (id: number) => {
       setIsModalQuizVisible(true);
-      const restaurant = await getRestaurantById(id);
+      const restaurant: any = await getRestaurantById(id);
       setRestaurantDescription(restaurant[0].description);
     }
 

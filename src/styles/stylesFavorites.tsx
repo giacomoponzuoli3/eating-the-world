@@ -1,9 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { fontSize, spacing } from '../constants/dimensions';
-import { colors } from '../constants/color';
-import { fontFamily } from '../constants/fontFamily';
-import loadFonts from './font';
-
 
 export const stylesFavorite = StyleSheet.create({
     container: {
@@ -11,8 +6,6 @@ export const stylesFavorite = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#f5f5f5',
-      marginLeft: 10,
-      marginRight: 10
     },
 
     textTitle: {
@@ -27,8 +20,8 @@ export const stylesFavorite = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: '#ffffff',
       padding: 15,
-      marginVertical: 4,
-      borderRadius: 8,
+      borderBottomColor: 'rbg(232, 232, 232)',
+      borderBottomWidth: 0.4,
       shadowColor: '#000',
       shadowOpacity: 0.01,
       shadowRadius: 5,
@@ -48,38 +41,42 @@ export const stylesFavorite = StyleSheet.create({
     },
 
     restaurantAddress: {
-        fontFamily: 'Poppins-Italic',
-        fontSize: 10,
+        fontFamily: 'Poppins-LightItalic',
+        fontSize: 12,
         flexShrink: 1, // Riduce la dimensione del testo in caso di overflow
         marginBottom: 3
     },
 
     restaurantImage: {
-      width: 60,
-      height: 60,
-      borderRadius: 20,
+      width: 65,
+      height: 65,
+      borderRadius: 8,
       marginRight: 15,
     },
 
     restaurantName: {
       fontSize: 16,
-      fontFamily: 'Poppins-Bold',
+      fontFamily: 'Poppins-Medium',
       marginBottom: 5,
     },
-    
-    restaurantRating: {
-        marginTop: 2,
-        fontSize: 14,
-        fontFamily: 'Poppins-MediumItalic',
 
+    containerPriceRange: {
+      flexDirection: 'row',
+      marginTop: 2,
     },
+
+    priceRange: {
+      fontFamily: 'Poppins-Light',
+      fontSize: 13
+    },
+
     
     ellipsis: {
-      marginLeft: 'auto',  // Spinge il contenitore dei tre puntini a destra
       alignSelf: 'center',  // Centra verticalmente
-      paddingRight: 10, // Puoi aggiungere un po' di spazio a destra se necessario
+      padding: 9,
       justifyContent: 'center',  // Centra verticalmente
       alignItems: 'center', // Centra orizzontalmente il contenuto
+      borderWidth: 0.1
     },
 
     button: {
@@ -102,6 +99,21 @@ export const stylesFavorite = StyleSheet.create({
       fontFamily: 'Poppins-Light'
     },
 
-    
+    loadingText: {
+      marginTop: 10,
+      fontSize: 22,
+      fontFamily: 'Poppins-ExtraLight'
+    },
+
+    containerCategory: {
+      flexDirection: 'row', 
+      flexWrap: 'wrap'
+    },
+
+    categoryText: {
+      fontFamily: 'Poppins-Medium',
+      fontSize: 12,
+      color: 'rgba(107, 142, 35, 1)'
+    }
       
   });
