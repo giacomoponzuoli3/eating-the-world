@@ -22,14 +22,14 @@ const BookTable = (props: any) => {
 
   //orari di apertura del ristorante associato al pasto
   const [openingHours, setOpeningHours] = useState<any[] | null>(null);
-    
+  
   //dati form
   const [selectedDate, setSelectedDate] = useState<string | null>(null); // Stato per il giorno selezionato
   const [selectedHour, setSelectedHour] = useState<string | null>(null); // Stato per l'ora selezionata
-  const [selectedPeople, setSelectedPeople] = useState<string | null>(null); // Stato per il numero di persone selezionate
+  const [selectedPeople, setSelectedPeople] = useState<number | null>(null); // Stato per il numero di persone selezionate
 
   //step della prenotazione
-  const [step, setStep] = useState<number>(2);
+  const [step, setStep] = useState<number>(1);
 
 
   const getOpeningHours = async () => {
@@ -81,6 +81,7 @@ const BookTable = (props: any) => {
     return timeSlots;
   };
 
+  const numbers: number[] = Array.from({ length: 20 }, (_, i) => i + 1);
   return (
     <>
       <View style={stylesBookTable.container}>
@@ -137,11 +138,43 @@ const BookTable = (props: any) => {
         }
         
         {/* Seleziona l'orario (solo quando step == 2) */}
-        {step == 2 &&
+        {step == 2 && selectedDate && openingHours &&
             (
-              <HoursComponent openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} />
+              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate}/>
 
             )
+        }
+        {/* Seleziona il numero di persone (solo quando step == 3) */}
+        {
+          step == 3 && 
+          (
+            <>
+              <ScrollView>
+                <View style={stylesBookTable.containerNumbers}>
+                  { numbers.map((num) => {
+                    return (
+                      <>
+                        <TouchableOpacity 
+                          key={`${num}-touch`}
+                          
+                          style={selectedPeople == num ? stylesBookTable.containerNumberSelected 
+                            : (true ? stylesBookTable.containerNumber : "")
+                          }
+//TODO: implementare il componente e la condizione che se il numero di persone supera la capacità bisogna disabilitare il pulsante
+                          onPress={ false ? undefined 
+                              : () => {
+                                setSelectedPeople(num);
+                              }
+                          }
+                        >
+                          <Text key={`${num}-text`}  style={selectedPeople == num ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{num}</Text>
+                        </TouchableOpacity>
+                    </>)
+                  })}
+                </View>
+              </ScrollView>
+            </>
+          )
         }
         
       </View>
