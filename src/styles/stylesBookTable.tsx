@@ -151,16 +151,6 @@ export const stylesBookTable = StyleSheet.create({
         borderTopColor: 'rgba(211, 211, 211, 1)'
       },
 
-      centralBorder: {
-        position: 'absolute',
-        left: 0, // Per il bordo sinistro
-        top: '50%', // Posiziona al centro verticalmente
-        transform: [{ translateY: -10 }], // Centra esattamente (10 è metà altezza del bordo)
-        height: 20, // Altezza del bordo centrale
-        width: 2, // Larghezza del bordo
-        backgroundColor: 'rgba(211, 211, 211, 1)', // Colore del bordo
-      },
-
       iconClockEnabled: {
         fontSize: 21,
         color: '#6200ee',
@@ -261,7 +251,69 @@ export const stylesBookTable = StyleSheet.create({
 
       containerHours: {
         flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
+      },
+
+      textDeal: {
+        fontFamily: 'Poppins-Medium',
+        fontSize: 18,
+        marginBottom: 10
+      },
+
+      containerDealHours: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',     // Permette di andare a capo
+        marginLeft: 10,
+        marginRight: 10,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+      },
+
+      containerHourText: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(211, 211, 211, 1)',
+      },
+
+      containerHourTextSelected: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: '#6200ee',
+      },
+
+      hourText: {
+        textAlign: 'center',
+        fontFamily: 'Poppins-Medium',
+        fontSize: 16,
+        color: 'black'
+        
+      },
+      hourTextSelected: {
+        textAlign: 'center',
+        fontFamily: 'Poppins-Medium',
+        fontSize: 16,
+        color: 'white',
       },
 
 
