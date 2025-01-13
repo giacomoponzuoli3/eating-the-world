@@ -13,6 +13,8 @@ import { CalendarComponent } from "./CalendarComponent";
 
 //dao
 import { getHoursByRestaurant } from "../dao/restaurantsDAO";
+import { ScrollView } from "react-native-gesture-handler";
+import { HoursComponent } from "./HoursComponent";
 
 const BookTable = (props: any) => {
   const today = new Date();
@@ -35,7 +37,6 @@ const BookTable = (props: any) => {
       const oh = await getHoursByRestaurant(props.restaurant.id);
       setOpeningHours(oh);
 
-      console.log(oh);
     }catch(error){
       console.log("Error in getOpeningHours: ", error);
       setOpeningHours([]);
@@ -59,6 +60,26 @@ const BookTable = (props: any) => {
       setStep((precedence) => precedence - 1 )
     }
   }
+
+  const generateTimeSlots = (start: any, end: any) => {
+    const timeSlots = [];
+    
+    // Converte le stringhe di orario in oggetti Date
+    let currentTime = new Date(`1970-01-01T${start}:00`);
+    const endTime = new Date(`1970-01-01T${end}:00`);
+    
+    // Itera aggiungendo 30 minuti ogni volta fino a raggiungere l'ora di fine
+    while (currentTime <= endTime) {
+      // Formatta l'orario in HH:mm e lo aggiunge all'array
+      const formattedTime = currentTime.toTimeString().slice(0, 5);
+      timeSlots.push(formattedTime);
+      
+      // Aggiunge 30 minuti
+      currentTime.setMinutes(currentTime.getMinutes() + 15);
+    }
+    
+    return timeSlots;
+  };
 
   return (
     <>
@@ -118,9 +139,8 @@ const BookTable = (props: any) => {
         {/* Seleziona l'orario (solo quando step == 2) */}
         {step == 2 &&
             (
-              <View style={stylesBookTable.containerHours}>
-              
-              </View>
+              <HoursComponent openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} />
+
             )
         }
         

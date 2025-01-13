@@ -212,7 +212,7 @@ const getHoursByRestaurant = async (id_restaurant: number) => {
         const db = await getDatabase();
 
         const sql = `
-            SELECT td.name, hour_start_deal, hour_end_deal
+            SELECT dr.id_deal, dr.id_restaurant, td.name, hour_start_deal, hour_end_deal
             FROM deals_restaurants dr, type_deals td
             WHERE dr.id_deal = td.id AND id_restaurant = ? 
         `;
