@@ -1,12 +1,10 @@
 import React, { FC, useState, useEffect, useMemo } from 'react';
 import { View, Button, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import {deleteTableReservation, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteCulinaryExperienceReservation, insertTableReservation} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
-import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO'; 
-import QuizScreen from '../components/Quiz';  
 
 
 // Abilita LayoutAnimation su Android
@@ -34,19 +32,30 @@ const ConfirmationModal = ({ isVisible, onConfirm, onCancel }: { isVisible: bool
   );
 };
 
-const formatDate = (date: string): string => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const [year, month, day] = date.split('/');
-  return `${year} ${months[parseInt(month) - 1]} ${day}`;
-};  
+const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={onClose}
+      style={styles.modalOverlay}
+    >
+      <View style={styles.modalContent}>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <Icon name="close" size={30} color="black" />
+        </TouchableOpacity>
 
-const renderEmptyList = () => (
-  <View style={styles.emptyContainer}>
-    <Text style={styles.emptyText}>
-      You have no reservations yet.
-    </Text>
-  </View>
-);
+        <Text style={styles.modalTitle}>{restaurantName}</Text>
+        <Text style={styles.modalDescription}>{description}</Text>
+        <Text style={styles.explanationText}>
+        Scan the QR code on the table to access a quick quiz about the history of the dishes and ingredients at our restaurant. If you score enough points, you'll receive a special discount at the checkout!
+        </Text>
+        <TouchableOpacity style={styles.scanButton} onPress={() => { /* Logica per aprire il QR scanner */ }}>
+          <Text style={styles.scanButtonText}>Scan QR Code</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
 
 const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specialBookings, fetchBookings}) => {
   const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
@@ -54,20 +63,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalQuizVisible, setIsModalQuizVisible] = useState(false);
   const [restaurantDescription, setRestaurantDescription] = useState('');
-  const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string; } }>({});
-  const [isQuizVisible, setIsQuizVisible] = useState(false); 
-
-  const fetchSpecialExperienceDetails = async (id: number) => {
-    const details = await getCulinaryExperiencesByRestaurant(id);
-    setSpecialExperienceDetails((prev) => ({
-      ...prev,
-      [id]: {
-        description: details[0].description,
-        price: details[0].price,
-      },
-    }));
-    
-  }
 
   const reservations = useMemo(() => {
     const tableReservations: Reservation[] = (tableBookings as any[]).map((res, index) => ({
@@ -89,17 +84,10 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       numberOfGuests: res.number_people,
       isSpecialExperience: true,
       language: res.language,
-      time: res.time,
       imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
     }));
 
     const combinedReservations = [...tableReservations, ...specialReservations];
-
-    specialReservations.forEach(reservation => {
-      if (!specialExperienceDetails[reservation.restaurantId]) {
-      fetchSpecialExperienceDetails(reservation.restaurantId);
-      }
-    });
 
     return combinedReservations.sort((a, b) => {
       const dateA = new Date(`${a.date} ${a.time}`).getTime();
@@ -122,38 +110,13 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     setAllReservations(reservations);
   }, [reservations]);  
 
-  const handleQuiz = () => {
-    setIsQuizVisible(true);
-    //setIsModalQuizVisible(false);
-  }
-
-  const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
-    return (
-        <Modal
-          isVisible={isVisible}
-          onBackdropPress={onClose}
-          style={styles.modalOverlay}
-        >
-        <View style={styles.modalContent}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Icon name="close" size={30} color="black" />
-          </TouchableOpacity>
-  
-          <Text style={styles.modalTitle}>{restaurantName}</Text>
-          <Text style={styles.modalDescription}>{description}</Text>
-          <Text style={styles.explanationText}>
-          Scan the QR code on the table to access a quick quiz about the history of the dishes and ingredients at our restaurant. If you score enough points, you'll receive a special discount at the checkout!
-          </Text>
-          
-          <TouchableOpacity style={styles.scanButton} onPress={() => handleQuiz()}>
-            <Text style={styles.scanButtonText}>Scan QR Code</Text>
-          </TouchableOpacity>
-          </View>
-        </Modal>
-      );
+  const formatDate = (date: string): string => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const [year, month, day] = date.split('-');
+    return `${year} ${months[parseInt(month) - 1]} ${day}`;
   };  
 
-  const toggleCard = (id: number, restaurantId: number, isSpecialExperience: boolean) => {
+  const toggleCard = (id: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedCards((prevState) => ({
       ...prevState,
@@ -161,10 +124,17 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     }));
   };
 
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>
+        You have no reservations yet.
+      </Text>
+    </View>
+  );
+
   const renderReservation = ({ item }: { item: Reservation }) => {
     const currentTime = new Date();
-    const formattedDate = item.date.replace(/\//g, '-');
-    const reservationTime = new Date(formattedDate + ' ' + item.time);
+    const reservationTime = new Date(item.date + ' ' + item.time);
     const isLearnAndEarnEnabled = currentTime >= reservationTime;
     const isExpanded = expandedCards[item.id];
 
@@ -175,10 +145,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     }
 
     return (
-  <View>
-  {!isQuizVisible && (
     <View style={styles.card}>
-      <TouchableOpacity onPress={() => toggleCard(item.id, item.restaurantId, item.isSpecialExperience)}>
+      <TouchableOpacity onPress={() => toggleCard(item.id)}>
       <View style={styles.rowContainer}>
       <Image source={require("../../assets/profile-screenshot.png")} style={styles.restaurantImage}/>
       <View style={styles.infoContainer}>
@@ -188,29 +156,24 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
           </View>
         )}
         <Text style={styles.restaurantName}>{item.restaurantName}</Text>
-        <Text>{formatDate(item.date)}{` - ${item.time}`}</Text>
+        <Text>{formatDate(item.date)}{item.time ? ` - ${item.time}` : ''}</Text>
         <Text>{item.numberOfGuests} Guests</Text>
       </View>
       </View>
       </TouchableOpacity>
 
       {isExpanded && (
-      <View>
+      /*<View>
         {item.isSpecialExperience && (
-          <View>
-            <Text style={styles.specialExperienceTitle}>Details</Text>
+          <View style={styles.specialExperienceContainer}>
+            <Text style={styles.specialExperienceTitle}>Special Experience</Text>
             <Text style={styles.specialExperienceDescription}>
-              {specialExperienceDetails[item.restaurantId].description}
-            </Text>
-            <Text style={styles.specialExperiencePrice}>
-              Price: {specialExperienceDetails[item.restaurantId].price}€
+              {item.specialExperienceDetails}
             </Text>
           </View>
-        )}
+        )}*/
 
-      <View style={styles.buttonsContainer}>  
-        {!item.isSpecialExperience && ( 
-        <View>       
+      <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={[
             styles.actionButton,
@@ -233,8 +196,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
           restaurantName={item.restaurantName}
           description={restaurantDescription}
         />
-        </View>
-        )}
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => console.log('Modify Reservation')}
@@ -265,18 +226,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
           onCancel={() => setIsModalVisible(false)}
         />
       </View>
-      </View>
+      //</View>
       )}
     </View>
-  )}
-  {isQuizVisible && (
-      <QuizScreen
-        onFinish={() => {
-          setIsQuizVisible(false);  // Nascondiamo il quiz
-        }}
-      />
-  )}
-  </View>
     );
 };
 
@@ -449,27 +401,6 @@ const styles = StyleSheet.create({
   scanButtonText: {
     color: 'white',
     fontSize: 16,
-  },
-  specialExperienceTitle: {
-    fontSize: 15, 
-    fontWeight: 'bold', 
-    color: '#333', 
-    textTransform: 'uppercase', 
-    letterSpacing: 1.2, 
-    marginBottom: 2, 
-    marginTop: 10, 
-  },
-  specialExperienceDescription: {
-    fontSize: 14, 
-    color: '#555',
-    lineHeight: 22, 
-    marginBottom: 10, 
-    fontStyle: 'italic', 
-  },
-  specialExperiencePrice: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
   },
 });
 
