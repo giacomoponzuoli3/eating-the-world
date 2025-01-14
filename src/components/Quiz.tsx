@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; // Per le icone (freccia e chiusura)
 import { getQuestionsByRestaurantId } from '../dao/quizDAO';
 import { Question } from '../utils/interfaces';
 
+const {height} = Dimensions.get("window");
 interface QuizScreenProps {
   id_restaurant: number;
   onFinish: () => void; // Aggiungiamo la funzione onFinish come prop
@@ -80,10 +81,11 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
 
   return (
     <>
-      <View style={styles.containerQuiz}>
-
       {currentQuestion && (
         <>
+          <View style={styles.containerQuiz}>
+            
+          
           <TouchableOpacity style={styles.closeButton} onPress={onFinish}>
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
@@ -135,18 +137,19 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
             <AntDesign name="arrowright" size={40} color="black" />
           </TouchableOpacity>
           </View>
+          </View>
           </>
       )}
-      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   containerQuiz: {
-    flex: 1,
-    justifyContent: 'center',
     backgroundColor: 'white',
+    height: height - 170,
+    overflow: 'hidden', // Impedisce il comportamento di scrolling
+    
   },
   closeButton: {
 
