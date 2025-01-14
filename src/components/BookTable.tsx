@@ -15,6 +15,7 @@ import { CalendarComponent } from "./CalendarComponent";
 import { getHoursByRestaurant } from "../dao/restaurantsDAO";
 import { ScrollView } from "react-native-gesture-handler";
 import { HoursComponent } from "./HoursComponent";
+import { NumberComponent } from "./NumberComponent";
 
 const BookTable = (props: any) => {
   const today = new Date();
@@ -26,11 +27,13 @@ const BookTable = (props: any) => {
   //dati form
   const [selectedDate, setSelectedDate] = useState<string | null>(null); // Stato per il giorno selezionato
   const [selectedHour, setSelectedHour] = useState<string | null>(null); // Stato per l'ora selezionata
+  const [dealSelected, setDealSelected] = useState<any | null>(null);
   const [selectedPeople, setSelectedPeople] = useState<number | null>(null); // Stato per il numero di persone selezionate
+
+
 
   //step della prenotazione
   const [step, setStep] = useState<number>(1);
-
 
   const getOpeningHours = async () => {
     try{
@@ -81,7 +84,6 @@ const BookTable = (props: any) => {
     return timeSlots;
   };
 
-  const numbers: number[] = Array.from({ length: 20 }, (_, i) => i + 1);
   return (
     <>
       <View style={stylesBookTable.container}>
@@ -140,43 +142,21 @@ const BookTable = (props: any) => {
         {/* Seleziona l'orario (solo quando step == 2) */}
         {step == 2 && selectedDate && openingHours &&
             (
-              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate}/>
+              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate} setDealSelected={setDealSelected}/>
 
             )
         }
         {/* Seleziona il numero di persone (solo quando step == 3) */}
         {
-          step == 3 && 
+          step == 3 && openingHours && selectedDate && dealSelected &&
           (
-            <>
-              <ScrollView>
-                <View style={stylesBookTable.containerNumbers}>
-                  { numbers.map((num) => {
-                    return (
-                      <>
-                        <TouchableOpacity 
-                          key={`${num}-touch`}
-                          
-                          style={selectedPeople == num ? stylesBookTable.containerNumberSelected 
-                            : (true ? stylesBookTable.containerNumber : "")
-                          }
-//TODO: implementare il componente e la condizione che se il numero di persone supera la capacità bisogna disabilitare il pulsante
-                          onPress={ false ? undefined 
-                              : () => {
-                                setSelectedPeople(num);
-                              }
-                          }
-                        >
-                          <Text key={`${num}-text`}  style={selectedPeople == num ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{num}</Text>
-                        </TouchableOpacity>
-                    </>)
-                  })}
-                </View>
-              </ScrollView>
-            </>
+            <NumberComponent dealSelected={dealSelected} restaurant={props.restaurant} setSelectedPeople={setSelectedPeople} setStep={setStep} selectedPeople={selectedPeople}/>
           )
         }
-        
+        {/* Riepilogo prenotazione */}
+        {
+          step == 4 && selectedDate && selectedHour && selectedPeople && <Text>Riepilogo</Text>
+        }
       </View>
     </>
   );
