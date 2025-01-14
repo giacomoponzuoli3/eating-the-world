@@ -80,8 +80,10 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
 
   return (
     <>
+      <View style={styles.containerQuiz}>
+
       {currentQuestion && (
-        <View style={styles.containerQuiz}>
+        <>
           <TouchableOpacity style={styles.closeButton} onPress={onFinish}>
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
@@ -114,7 +116,9 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
           {answersSelected[currentQuestionIndex] !== null && (
             <Text style={styles.explanationText}>{currentQuestion.explanation}</Text>
           )}
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
 
+          
           <TouchableOpacity
             style={[styles.leftArrow]}
             onPress={handleBack}
@@ -131,13 +135,9 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
             <AntDesign name="arrowright" size={40} color="black" />
           </TouchableOpacity>
           </View>
+          </>
       )}
-      {isQuizCompleted && (
-          <TouchableOpacity onPress={handleReset}>
-            <Text>Reset Quiz</Text>
-          </TouchableOpacity>
-      )}
-    
+      </View>
     </>
   );
 };
@@ -145,15 +145,13 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
 const styles = StyleSheet.create({
   containerQuiz: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    justifyContent: 'center',
     backgroundColor: 'white',
   },
   closeButton: {
-    position: 'absolute',
+
     top: 10,
-    right: 20,
-    
+    right: 0,
   },
   questionCounter: {
     fontSize: 18,
@@ -197,13 +195,13 @@ const styles = StyleSheet.create({
   },
   leftArrow: {
     left: 10,
-    position: 'absolute',
+    position: 'relative',
     bottom: 0,
   },
   rightArrow: {
     right: 10,
     bottom: 0,
-    position: 'absolute',
+    position: 'relative',
   },
 });
 

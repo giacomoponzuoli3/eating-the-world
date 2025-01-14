@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useMemo } from 'react';
-import { View, Button, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Button, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
@@ -282,22 +282,27 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 };
 
   return (
+    <View style={{flex: 1}}>
       <FlatList
+        style={{flex: 1}}
+        contentContainerStyle={{ flexGrow: 1 }}
         data={allReservations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderReservation}
-        contentContainerStyle={allReservations.length === 0 ? styles.emptyContainer : styles.container}
+        
         ListEmptyComponent={renderEmptyList}
       />
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   containerExtern:{
     flex: 1,
+    backgroundColor: 'white',
   },
   container: {
-    padding: 16,
+  
   },
   card: {
     backgroundColor: '#FFF',
