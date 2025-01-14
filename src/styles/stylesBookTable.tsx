@@ -96,7 +96,7 @@ export const stylesBookTable = StyleSheet.create({
       },
 
       disabledDay: {
-        opacity: 0.3, // Rendi la domenica visivamente disabilitata
+        opacity: 0.3,
       },
       disabledDayButton: {
         backgroundColor: '#d3d3d3', // Colore di background per i giorni disabilitati
@@ -286,6 +286,23 @@ export const stylesBookTable = StyleSheet.create({
         borderColor: 'rgba(211, 211, 211, 1)',
       },
 
+      containerHourTextDisabled: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: '#d3d3d3',
+        opacity: 0.3,
+      },
+
       containerHourTextSelected: {
         marginTop: 5,
         width: 90,
@@ -316,5 +333,61 @@ export const stylesBookTable = StyleSheet.create({
         color: 'white',
       },
 
+      containerNumbers: {
+        flex: 1,
+        marginHorizontal: 10,
+        flexDirection: 'row',
+        flexWrap: 'wrap', 
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+
+      containerNumberSelected: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: '#6200ee',
+      },
+
+      containerNumberDisabled: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(0, 0, 0, 0)',
+        backgroundColor: '#d3d3d3',
+        opacity: 0.3,
+      },
+
+      containerNumber: {
+        marginTop: 5,
+        width: 90,
+        height: 55,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 6,
+        borderColor: 'rgba(211, 211, 211, 1)',
+      }
 
 });
