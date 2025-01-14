@@ -1,18 +1,18 @@
 import React, { FC, useState, useEffect, useMemo } from 'react';
-import { View, Button, Text, TouchableOpacity, FlatList, StyleSheet, Image, LayoutAnimation, Platform, UIManager, SafeAreaView } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5'; 
 import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
 import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO'; 
-import QuizScreen from '../components/Quiz';  
+import QuizScreen from '../components/Quiz'; 
+import { stylesBookings } from '../styles/stylesBookings'; 
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import imagesRestaurants from '../utils/imagesRestaurants';
 
-
-// Abilita LayoutAnimation su Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 interface BookingScreenProps{
   username: string;
   tableBookings: any[];
@@ -20,12 +20,19 @@ interface BookingScreenProps{
   fetchBookings: () => void;
 }
 
+type RootTabParamList = {
+  Profile: undefined;
+  Maps: undefined;
+  Bookings: undefined;
+  Favorites: undefined;
+};
+
 const ConfirmationModal = ({ isVisible, onConfirm, onCancel }: { isVisible: boolean, onConfirm: () => void, onCancel: () => void }) => {
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onCancel} style={styles.modalOverlay}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalText}>Are you sure to delete the reservation?</Text>
-        <View style={styles.buttonContainer}>
+    <Modal isVisible={isVisible} onBackdropPress={onCancel} style={stylesBookings.modalOverlay}>
+      <View style={stylesBookings.modalContent}>
+        <Text style={stylesBookings.modalText}>Are you sure to delete the reservation?</Text>
+        <View style={stylesBookings.buttonContainer}>
           <Button title="No" onPress={onCancel} />
           <Button title="Yes" onPress={onConfirm} />
         </View>
@@ -40,14 +47,6 @@ const formatDate = (date: string): string => {
   return `${year} ${months[parseInt(month) - 1]} ${day}`;
 };  
 
-const renderEmptyList = () => (
-  <View style={styles.emptyContainer}>
-    <Text style={styles.emptyText}>
-      You have no reservations yet.
-    </Text>
-  </View>
-);
-
 const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specialBookings, fetchBookings}) => {
   const [expandedCards, setExpandedCards] = useState<{ [key: number]: boolean }>({});
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
@@ -56,6 +55,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string; } }>({});
   const [isQuizVisible, setIsQuizVisible] = useState(false); 
+  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();
 
   const fetchSpecialExperienceDetails = async (id: number) => {
     const details = await getCulinaryExperiencesByRestaurant(id);
@@ -118,6 +118,10 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     fetchBookings();
   }
 
+  const goToMap = () => {
+    navigation.navigate('Maps'); // Naviga alla tab "Maps"
+  };
+
   useEffect(() => {
     setAllReservations(reservations);
   }, [reservations]);  
@@ -132,39 +136,40 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         <Modal
           isVisible={isVisible}
           onBackdropPress={onClose}
-          style={styles.modalOverlay}
+          style={stylesBookings.modalOverlay}
         >
-        <View style={styles.modalContent}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <View style={stylesBookings.modalContent}>
+          <TouchableOpacity onPress={onClose} style={stylesBookings.closeButton}>
             <Icon name="close" size={30} color="black" />
           </TouchableOpacity>
   
-          <Text style={styles.modalTitle}>{restaurantName}</Text>
-          <Text style={styles.modalDescription}>{description}</Text>
-          <Text style={styles.explanationText}>
+          <Text style={stylesBookings.modalTitle}>{restaurantName}</Text>
+          <Text style={stylesBookings.modalDescription}>{description}</Text>
+          <Text style={stylesBookings.explanationText}>
           Scan the QR code on the table to access a quick quiz about the history of the dishes and ingredients at our restaurant. If you score enough points, you'll receive a special discount at the checkout!
           </Text>
           
-          <TouchableOpacity style={styles.scanButton} onPress={() => handleQuiz()}>
-            <Text style={styles.scanButtonText}>Scan QR Code</Text>
+          <TouchableOpacity style={stylesBookings.scanButton} onPress={() => handleQuiz()}>
+            <Text style={stylesBookings.scanButtonText}>Scan QR Code</Text>
           </TouchableOpacity>
           </View>
         </Modal>
       );
-  };  
-
-  const toggleCard = (id: number, restaurantId: number, isSpecialExperience: boolean) => {
+  }; 
+  
+  const toggleCard = (id: number, isSpecialExperience: boolean) => {
+    if (isSpecialExperience){
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedCards((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
+  }
   };
 
   const renderReservation = ({ item }: { item: Reservation }) => {
     const currentTime = new Date();
-    const formattedDate = item.date.replace(/\//g, '-');
-    const reservationTime = new Date(formattedDate + ' ' + item.time);
+    const reservationTime = new Date(item.date + ' ' + item.time);
     const isLearnAndEarnEnabled = currentTime >= reservationTime;
     const isExpanded = expandedCards[item.id];
 
@@ -174,106 +179,103 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       setRestaurantDescription(restaurant[0].description);
     }
 
+    const showActionSheet = () => {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Edit Reservation', 'Delete Reservation', 'Cancel'],
+          cancelButtonIndex: 2, 
+          destructiveButtonIndex: 1, 
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            console.log('Edit reservation');
+          } else if (buttonIndex === 1) {
+            setIsModalVisible(true);
+          }
+        }
+      );
+    };  
+
     return (
-  <View style={styles.containerExtern}>
-  {!isQuizVisible && (
-    <View style={styles.card}>
-      <TouchableOpacity onPress={() => toggleCard(item.id, item.restaurantId, item.isSpecialExperience)}>
-      <View style={styles.rowContainer}>
-      <Image source={require("../../assets/profile-screenshot.png")} style={styles.restaurantImage}/>
-      <View style={styles.infoContainer}>
-        {item.isSpecialExperience && (
-          <View style={styles.specialExperienceLabel}>
-            <Text style={styles.specialExperienceLabelText}>Special Experience</Text>
-          </View>
-        )}
-        <Text style={styles.restaurantName}>{item.restaurantName}</Text>
-        <Text>{formatDate(item.date)}{` - ${item.time}`}</Text>
-        <Text>{item.numberOfGuests} {item.numberOfGuests === 1 ? 'Guest' : 'Guests'}</Text>
-      </View>
-      </View>
-      </TouchableOpacity>
-
-      {isExpanded && (
-      <View>
-        {item.isSpecialExperience && (
-          <View>
-            <Text style={styles.specialExperienceTitle}>Details</Text>
-            <Text style={styles.specialExperienceDescription}>
-              {specialExperienceDetails[item.restaurantId].description}
-            </Text>
-            <Text style={styles.specialExperiencePrice}>
-              Price: {specialExperienceDetails[item.restaurantId].price}€
-            </Text>
-          </View>
-        )}
-
-      <View style={styles.buttonsContainer}>  
-        {!item.isSpecialExperience && ( 
-        <View>       
-        <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: isLearnAndEarnEnabled ? '#666666' : '#CCC' },
-          ]}
-          disabled={!isLearnAndEarnEnabled}
-          onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)}
-        >
-          <View style={styles.actionButtonContent}>
-            <View style={styles.iconAndText}>
-            <Icon name="emoji-events" size={20} color="#FFF" style={styles.icon} />
-              <Text style={styles.actionButtonText}>Learn & Earn</Text>
-            </View>
-            <Icon name="chevron-right" size={20} color="#FFF" />
-          </View>
-        </TouchableOpacity>
-        <RestaurantLearnModal
-          isVisible={isModalQuizVisible}
-          onClose={() => setIsModalQuizVisible(false)}
-          restaurantName={item.restaurantName}
-          description={restaurantDescription}
-        />
-        </View>
-        )}
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => console.log('Modify Reservation')}
-        >
-          <View style={styles.actionButtonContent}>
-            <View style={styles.iconAndText}>
-              <Icon name="edit" size={20} color="#FFF" style={styles.icon} />
-              <Text style={styles.actionButtonText}>Edit Reservation</Text>
-            </View>
-            <Icon name="chevron-right" size={20} color="#FFF" />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => setIsModalVisible(true)}
-        >
-          <View style={styles.actionButtonContent}>
-            <View style={styles.iconAndText}>
-              <Icon name="delete" size={20} color="#FFF" style={styles.icon} />
-              <Text style={styles.actionButtonText}>Delete Reservation</Text>
-            </View>
-            <Icon name="chevron-right" size={20} color="#FFF" />
-          </View>
-        </TouchableOpacity>
-        <ConfirmationModal
+      <View style={stylesBookings.containerExtern}>
+        {!isQuizVisible && (
+          <>
+            <View style={stylesBookings.card}>
+              <TouchableOpacity onPress={() => toggleCard(item.id, item.isSpecialExperience)}>
+                <View style={stylesBookings.rowContainer}>
+                <Image 
+                  source={imagesRestaurants[item.restaurantName]} 
+                  style={stylesBookings.restaurantImage} 
+                />
+                <View style={stylesBookings.infoContainer}>
+                {item.isSpecialExperience && (
+                  <View style={stylesBookings.specialExperienceLabel}>
+                  <Text style={stylesBookings.specialExperienceLabelText}>Special Experience</Text>
+                  </View>
+                )}
+                <Text style={stylesBookings.restaurantName}>{item.restaurantName}</Text>
+                <Text style={{fontFamily: 'Poppins-Light'}}>{formatDate(item.date)}{` - ${item.time}`}</Text>
+                <View style={stylesBookings.downArrow}>
+                  <Text style={{fontFamily: 'Poppins-LightItalic'}}>{item.numberOfGuests} {item.numberOfGuests === 1 ? 'Guest' : 'Guests'}</Text>
+                  {item.isSpecialExperience && (<AntDesign name="down" size={24} color="black"/>)}
+                </View>
+                </View>
+                <TouchableOpacity onPress={() => showActionSheet()}>
+                  <View style={stylesBookings.ellipsis}>
+                  {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
+                  <Icon name="ellipsis-h" size={15} color='black'/>
+                  </View>
+                </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+              <View style={stylesBookings.buttonsContainer}>  
+                {!item.isSpecialExperience && ( 
+                  <>
+                    <View>
+                      <TouchableOpacity 
+                        disabled={!isLearnAndEarnEnabled}
+                        onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)} 
+                        style={stylesBookings.actionButton}>
+                        <View style={stylesBookings.actionButtonContent}>
+                          <Text style={stylesBookings.actionButtonText}>Learn & Earn</Text>
+                          <Icon name="chevron-right" size={20} color="#FFF" />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <RestaurantLearnModal
+                      isVisible={isModalQuizVisible}
+                      onClose={() => setIsModalQuizVisible(false)}
+                      restaurantName={item.restaurantName}
+                      description={restaurantDescription}
+                    />
+                  </>
+                )}
+              </View>
+      <ConfirmationModal
           isVisible={isModalVisible}
           onConfirm={() => deleteReservation(item)}
           onCancel={() => setIsModalVisible(false)}
-        />
-      </View>
-      </View>
+      />
+      {isExpanded && (
+        <View>
+          <Text style={stylesBookings.specialExperienceTitle}>Details</Text>
+          <Text style={stylesBookings.specialExperienceDescription}>
+            {specialExperienceDetails[item.restaurantId].description}
+          </Text>
+          <Text style={stylesBookings.specialExperiencePrice}>
+            Price: {specialExperienceDetails[item.restaurantId].price}€
+          </Text>
+        </View>
       )}
     </View>
+    </>
   )}
   {isQuizVisible && (
       <QuizScreen
         id_restaurant={item.restaurantId}
         onFinish={() => {
-          setIsQuizVisible(false);  // Nascondiamo il quiz
+          setIsQuizVisible(false);
+          setIsModalVisible(false);
         }} 
       />
   )}
@@ -283,203 +285,32 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 
   return (
     <View style={{flex: 1}}>
+      {allReservations.length > 0 ? (
       <FlatList
         style={{flex: 1}}
         contentContainerStyle={{ flexGrow: 1 }}
         data={allReservations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderReservation}
-        
-        ListEmptyComponent={renderEmptyList}
       />
+       ) : (
+      <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+        {/* Emoji sopra il testo */}
+        <Text style={{fontSize: 30, marginBottom: 3}}>😞</Text>
+        
+        {/* Testo sotto l'emoji */}
+        <Text style={{ fontFamily: 'Poppins-ExtraLight', fontSize: 17, textAlign: 'center' }}>
+          You don't have any reservations yet.
+        </Text>
+
+        {/* Pulsante per navigare alla tab "Maps" */}
+        <TouchableOpacity onPress={() => {goToMap()}} style={stylesBookings.button}>
+          <Text style={stylesBookings.buttonText}>Go To Map &gt;</Text>
+        </TouchableOpacity>
+      </View>
+    )}
       </View>
   );
 };
-
-const styles = StyleSheet.create({
-  containerExtern:{
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  container: {
-  
-  },
-  card: {
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  rowContainer: {
-    flexDirection: 'row', 
-    marginBottom: 5,
-  },
-  restaurantImage: {
-    width: 100, 
-    height: 100,
-    borderRadius: 8,
-    marginRight: 16,
-  },
-  infoContainer: {
-    flex: 1, 
-    justifyContent: 'center',
-  },
-  dateText: {
-    color: '#AAA',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  restaurantName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  reservationDetails: {
-    fontSize: 14,
-    marginTop: 4,
-  },
-  buttonsContainer: {
-    marginTop: 16,
-  },
-  specialExperienceLabel: {
-    backgroundColor: '#FF0000', 
-    paddingVertical: 2, 
-    paddingHorizontal: 4, 
-    borderRadius: 4, 
-    marginBottom: 4, 
-    alignSelf: 'flex-start', 
-    textAlign: 'center', 
-  },
-  specialExperienceLabelText: {
-    color: '#FFF', 
-    fontWeight: 'bold', 
-    fontSize: 12, 
-  },  
-  actionButton: {
-    backgroundColor: '#666666',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 1,
-  },
-  actionButtonText: {
-    fontSize: 16,
-    color: '#FFF',
-  },
-  actionButtonContent: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-  },
-  iconAndText: {
-    flexDirection: 'row', 
-    alignItems: 'center',
-  },
-  icon: {
-    marginRight: 8, 
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  emptyText: {
-    fontSize: 18,
-    color: "#888",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '90%',
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: '100%',
-  },
-  modalOverlay: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    position: 'relative',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,  
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalDescription: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  explanationText: {
-    fontSize: 14,
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-    fontStyle: 'italic', 
-    backgroundColor: '#f8f8f8',
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3, 
-  },
-  scanButton: {
-    backgroundColor: '#FF0000',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  scanButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  specialExperienceTitle: {
-    fontSize: 15, 
-    fontWeight: 'bold', 
-    color: '#333', 
-    textTransform: 'uppercase', 
-    letterSpacing: 1.2, 
-    marginBottom: 2, 
-    marginTop: 10, 
-  },
-  specialExperienceDescription: {
-    fontSize: 14, 
-    color: '#555',
-    lineHeight: 22, 
-    marginBottom: 10, 
-    fontStyle: 'italic', 
-  },
-  specialExperiencePrice: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
-  },
-});
 
 export { BookingsScreen };
