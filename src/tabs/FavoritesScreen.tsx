@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator } from 'react-native';
 import { stylesFavorite } from '../styles/stylesFavorites';
 
 import { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant } from '../dao/favoritesDAO';
 import Icon from 'react-native-vector-icons/FontAwesome5';  // Importa l'icona
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'; // Importa BottomTabNavigationProp
 import { Restaurant } from '../utils/interfaces';
 
 //images
 import imagesRestaurants from '../utils/imagesRestaurants';
-
+import { PageRestaurant } from '../components/PageRestaurant';
 
 type RootTabParamList = {
   Profile: undefined;
@@ -23,8 +23,10 @@ const FavoritesScreen = (props: any) => {
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Favorites'>>();
 
   const [favorites, setFavorites] = useState<Restaurant[] | null>(null);
-  const [images, setImages] = useState<any | null>(null);
 
+  //ristorante selezionato
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  
   const goToMap = () => {
     navigation.navigate('Maps'); // Naviga alla tab "Maps"
   };
@@ -72,44 +74,52 @@ const FavoritesScreen = (props: any) => {
     }
   }
 
-  useEffect(() => {
-    getFavoritesByUsername();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getFavoritesByUsername(); // Aggiorna i dati ogni volta che la tab diventa attiva
+    }, [])
+  );
 
   const renderRestaurant = ({ item }: { item: any }) => (
     <>
-    <View style={stylesFavorite.listItem}>
-        <View style={stylesFavorite.gridElements}>
-          <Image 
-            source={imagesRestaurants[item.name]} 
-            style={stylesFavorite.restaurantImage} 
-          />
-          <View style={stylesFavorite.textElements}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-              <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
-              <Text>{item.imageBlob}</Text>
-              <View style={stylesFavorite.ellipsis}>
-                {/* Icona della stella che, al click, rimuove il ristorante dai preferiti */}
-                <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <Icon name="ellipsis-h" size={12} color='black'/>
+    <TouchableOpacity onPress={() => setSelectedRestaurant(item)} >
+      <View style={stylesFavorite.listItem}>
+          <View style={stylesFavorite.gridElements}>
+            <Image 
+              source={imagesRestaurants[item.name]} 
+              style={stylesFavorite.restaurantImage} 
+            />
+            <View style={stylesFavorite.textElements}>
+              <View style={stylesFavorite.containerCategory}>
+                {item.tags.map((tag: any, index: number) => {
+                  const isLast = index === item.tags.length - 1; // Controlla se è l'ultimo elemento
+                  return (
+                    <Text key={`${item.id}-${tag.name}`} style={stylesFavorite.categoryText}>
+                      {tag.name}{!isLast && ','} {/* Aggiungi la virgola se non è l'ultimo */}
+                    </Text>
+                  );
+                })}
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                <Text style={stylesFavorite.restaurantName}>{item.name}</Text>
+                <Text>{item.imageBlob}</Text>
+                <TouchableOpacity onPress={() => showActionSheet(item.id, item.name)}>
+                  <View style={stylesFavorite.ellipsis}>
+                    {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
+                    <Icon name="ellipsis-h" size={15} color='black'/>
+
+                  </View>
                 </TouchableOpacity>
               </View>
+              
+              <Text style={stylesFavorite.restaurantAddress}>{item.address}</Text>
+              <View style={stylesFavorite.containerPriceRange}>
+                <Text style={stylesFavorite.priceRange}>Average price {item.price_range} €</Text>
+              </View>
             </View>
-            
-            <Text style={stylesFavorite.restaurantAddress}>{item.address}</Text>
-            <Text>
-              Price Range:  
-                <Text style={stylesFavorite.restaurantRating}>
-                  {item.price_range <= 10 ? ' €' 
-                    : item.price_range <= 30 ? ' €€' 
-                    : item.price_range <= 80 ? ' €€€' 
-                    : ' €€€€'
-                  }
-                  </Text>
-            </Text>
           </View>
-        </View>
-    </View>
+      </View>
+    </TouchableOpacity>
     </>
   );
     
@@ -128,8 +138,17 @@ const FavoritesScreen = (props: any) => {
   return(
     <>
       <View style={stylesFavorite.container}>
-        
-        {favorites && favorites.length > 0 ? 
+      {selectedRestaurant ? (
+        <PageRestaurant
+          restaurant={selectedRestaurant}
+          user={props.user}
+          onClose={() => {
+            setSelectedRestaurant(null);
+            getFavoritesByUsername();
+          }} // Funzione per chiudere il componente
+        />
+      ) : 
+        (favorites && favorites.length > 0 ? 
           <FlatList
             data={favorites}
             keyExtractor={(item) => item.id.toString()}
@@ -150,8 +169,8 @@ const FavoritesScreen = (props: any) => {
             <TouchableOpacity onPress={() => {goToMap()}} style={stylesFavorite.button}>
               <Text style={stylesFavorite.buttonText}>Go To Map &gt;</Text>
             </TouchableOpacity>
-          </View>
-        }
+          </View>)
+      }
       </View>
     </>
   )
