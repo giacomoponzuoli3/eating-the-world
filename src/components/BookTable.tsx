@@ -24,10 +24,11 @@ const BookTable = (props: any) => {
   const [openingHours, setOpeningHours] = useState<any[] | null>(null);
   
   //dati form
-  const [selectedDate, setSelectedDate] = useState<string | null>(null); // Stato per il giorno selezionato
-  const [selectedHour, setSelectedHour] = useState<string | null>(null); // Stato per l'ora selezionata
+  //ho preparato i dati del form nel caso dell'edit
+  const [selectedDate, setSelectedDate] = useState<string | null>(props.date == undefined ? null : props.date); // Stato per il giorno selezionato
+  const [selectedHour, setSelectedHour] = useState<string | null>(props.hour == undefined ? null : props.hour); // Stato per l'ora selezionata
   const [dealSelected, setDealSelected] = useState<any | null>(null);
-  const [selectedPeople, setSelectedPeople] = useState<number | null>(null); // Stato per il numero di persone selezionate
+  const [selectedPeople, setSelectedPeople] = useState<number | null>(props.people == undefined ? null : props.people); // Stato per il numero di persone selezionate
 
 
 
