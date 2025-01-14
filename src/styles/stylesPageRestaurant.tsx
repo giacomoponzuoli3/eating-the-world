@@ -95,10 +95,10 @@ export const stylesPageRestaurant = StyleSheet.create({
         fontSize: 15
     },
     iconInformationWrapper: {
-        width: 30, // Larghezza del cerchio
-        height: 30, // Altezza del cerchio
+        width: 30,
+        height: 30, 
         borderRadius: 4,
-        backgroundColor: 'rgba(98, 0, 238, 0.1)', // Sfondo nero opaco
+        backgroundColor: 'rgba(98, 0, 238, 0.1)', 
         borderWidth: 1, // Spessore del bordo
         borderColor: 'rgba(0, 0, 0, 0.0)', // Colore del bordo
         justifyContent: 'center', // Centrare l'icona verticalmente
@@ -218,6 +218,6 @@ export const stylesPageRestaurant = StyleSheet.create({
         color: 'rgba(90, 0, 230, 1)', 
         fontFamily: 'Poppins-Medium', 
         fontSize: 14
-    }
+    },
 
 });
