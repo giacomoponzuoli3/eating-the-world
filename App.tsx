@@ -37,7 +37,7 @@ const App = () => {
   const [user, setUser] = useState<User | undefined>(); //prende il primo utente presente nel db
   const [tableReservations, setTableReservations] = useState<any[]>([]);
   const [specialReservations, setSpecialReservations] = useState<any[]>([]);
-
+  const [qrCodeLink, setQrCodeLink] = useState<string>("https://example.com/profile/1");
 
 
   useEffect(() => {
@@ -137,7 +137,7 @@ const App = () => {
             })}
           >
             <Tab.Screen name="Profile">
-                {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
+                {() => <ProfileScreen user={user} users={users} setUser={setUser} qrCodeLink={qrCodeLink}/>}
               </Tab.Screen>
             <Tab.Screen name="Maps">
                 {() => <MapsScreen restaurants={restaurants} user={user}/>}

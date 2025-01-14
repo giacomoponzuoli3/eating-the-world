@@ -79,11 +79,11 @@ interface CouponCardProps {
   };
   discount: string; // Testo dello sconto
   expiryDate: string; // Data di scadenza del coupon
-  qrValue: string; // Valore del QR Code (es. URL o stringa univoca)
+  qrCodeLink: string; // Valore del QR Code (es. URL o stringa univoca)
   onPressQRCode: (code: string) => void;
 }
 
-const CouponCard: React.FC<CouponCardProps> = ({ restaurant, discount, expiryDate, qrValue, onPressQRCode }) => {
+const CouponCard: React.FC<CouponCardProps> = ({ restaurant, discount, expiryDate, qrCodeLink, onPressQRCode }) => {
   return (
     <View style={styles.qrCardContainer}>
       {/* Titolo del Coupon */}
@@ -96,9 +96,9 @@ const CouponCard: React.FC<CouponCardProps> = ({ restaurant, discount, expiryDat
       {/* QR Code */}
       <TouchableOpacity
         style={styles.qrDataCard}
-        onPress={() => onPressQRCode(qrCode.qrCodeLink)}
+        onPress={() => onPressQRCode(qrCodeLink)}
       >
-      <QRCode value={qrValue} size={150} />
+      <QRCode value={qrCodeLink} size={150} />
       </TouchableOpacity>
 
       {/* Istruzioni */}
@@ -113,20 +113,20 @@ interface ProfileScreenProps {
   user: User | undefined;
   users: User[];
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+  qrCodeLink: string; 
 }
 
 interface QRCodeData {
   restaurantName: string;
   discount: string;
   expiryDate: string;
-  qrCodeLink: string;
+ 
 }
 
 const qrCode: QRCodeData = {
   restaurantName: "Ristorante La Pergola",
   discount: "20%",
   expiryDate: "2025-01-31",
-  qrCodeLink: "https://example.com/profile/1",
 };
 
 // Mapping delle immagini
@@ -137,7 +137,7 @@ const userImages: { [key: string]: any } = {
   francesca_gugu: require("../../assets/francesca_gugu.png"),
 };
 
-const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
+const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLink }) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
@@ -252,7 +252,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
         restaurant={restaurant}
         discount={discount}
         expiryDate={expiryDate}
-        qrValue={qrValue}
+        qrCodeLink={qrCodeLink}
         onPressQRCode={openModal}
       />
      
