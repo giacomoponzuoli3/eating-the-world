@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-
+import { CalendarComponent } from "./CalendarComponent";
 
 // Stili
 import { stylesBookTable } from '../styles/stylesBookTable';
@@ -9,28 +9,31 @@ import { stylesBookTable } from '../styles/stylesBookTable';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import { CalendarComponent } from "./CalendarComponent";
+
 
 //dao
 import { getHoursByRestaurant } from "../dao/restaurantsDAO";
-import { ScrollView } from "react-native-gesture-handler";
 import { HoursComponent } from "./HoursComponent";
+import { NumberComponent } from "./NumberComponent";
+import { SummaryComponent } from "./SummaryComponent";
+
 
 const BookTable = (props: any) => {
-  const today = new Date();
-  const todayFormatted = today.toISOString().split('T')[0];
 
   //orari di apertura del ristorante associato al pasto
   const [openingHours, setOpeningHours] = useState<any[] | null>(null);
   
   //dati form
-  const [selectedDate, setSelectedDate] = useState<string | null>(null); // Stato per il giorno selezionato
-  const [selectedHour, setSelectedHour] = useState<string | null>(null); // Stato per l'ora selezionata
-  const [selectedPeople, setSelectedPeople] = useState<number | null>(null); // Stato per il numero di persone selezionate
+  //ho preparato i dati del form nel caso dell'edit
+  const [selectedDate, setSelectedDate] = useState<string | null>(props.date == undefined ? null : props.date); // Stato per il giorno selezionato
+  const [selectedHour, setSelectedHour] = useState<string | null>(props.hour == undefined ? null : props.hour); // Stato per l'ora selezionata
+  const [dealSelected, setDealSelected] = useState<any | null>(null);
+  const [selectedPeople, setSelectedPeople] = useState<number | null>(props.people == undefined ? null : props.people); // Stato per il numero di persone selezionate
+
+
 
   //step della prenotazione
   const [step, setStep] = useState<number>(1);
-
 
   const getOpeningHours = async () => {
     try{
@@ -48,40 +51,12 @@ const BookTable = (props: any) => {
     getOpeningHours();
   }, [])
 
-
-  const nextStep = async () => {
-    if(step < 4) { //molto probabilmente c'è anche il quinto step che è la visualizzazione del riepilogo
-      setStep((precedence) => precedence + 1 )
-    }
-  }
-
   const previousStep = async () => {
     if(step > 1) {
       setStep((precedence) => precedence - 1 )
     }
   }
 
-  const generateTimeSlots = (start: any, end: any) => {
-    const timeSlots = [];
-    
-    // Converte le stringhe di orario in oggetti Date
-    let currentTime = new Date(`1970-01-01T${start}:00`);
-    const endTime = new Date(`1970-01-01T${end}:00`);
-    
-    // Itera aggiungendo 30 minuti ogni volta fino a raggiungere l'ora di fine
-    while (currentTime <= endTime) {
-      // Formatta l'orario in HH:mm e lo aggiunge all'array
-      const formattedTime = currentTime.toTimeString().slice(0, 5);
-      timeSlots.push(formattedTime);
-      
-      // Aggiunge 30 minuti
-      currentTime.setMinutes(currentTime.getMinutes() + 15);
-    }
-    
-    return timeSlots;
-  };
-
-  const numbers: number[] = Array.from({ length: 20 }, (_, i) => i + 1);
   return (
     <>
       <View style={stylesBookTable.container}>
@@ -140,44 +115,36 @@ const BookTable = (props: any) => {
         {/* Seleziona l'orario (solo quando step == 2) */}
         {step == 2 && selectedDate && openingHours &&
             (
-              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate}/>
+              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate} setDealSelected={setDealSelected}/>
 
             )
         }
         {/* Seleziona il numero di persone (solo quando step == 3) */}
         {
-          step == 3 && 
+          step == 3 && openingHours && selectedDate && dealSelected &&
           (
-            <>
-              <ScrollView>
-                <View style={stylesBookTable.containerNumbers}>
-                  { numbers.map((num) => {
-                    return (
-                      <>
-                        <TouchableOpacity 
-                          key={`${num}-touch`}
-                          
-                          style={selectedPeople == num ? stylesBookTable.containerNumberSelected 
-                            : (true ? stylesBookTable.containerNumber : "")
-                          }
-//TODO: implementare il componente e la condizione che se il numero di persone supera la capacità bisogna disabilitare il pulsante
-                          onPress={ false ? undefined 
-                              : () => {
-                                setSelectedPeople(num);
-                              }
-                          }
-                        >
-                          <Text key={`${num}-text`}  style={selectedPeople == num ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{num}</Text>
-                        </TouchableOpacity>
-                    </>)
-                  })}
-                </View>
-              </ScrollView>
-            </>
+            <NumberComponent dealSelected={dealSelected} restaurant={props.restaurant} setSelectedPeople={setSelectedPeople} setStep={setStep} selectedPeople={selectedPeople}/>
           )
         }
-        
+        {/* Riepilogo prenotazione */}
+        {
+          step == 4 && selectedDate && selectedHour && selectedPeople && 
+          <SummaryComponent 
+            user={props.user} 
+            selectedDate={selectedDate} 
+            selectedHour={selectedHour} 
+            selectedPeople={selectedPeople} 
+            restaurant={props.restaurant}
+            
+            setSelectedDate={setSelectedDate}
+            setSelectedHour={setSelectedHour}
+            setSelectedPeople={setSelectedPeople}
+
+            onClose={props.onCloseRestaurant}
+          />
+        }
       </View>
+      
     </>
   );
 };

@@ -1,8 +1,8 @@
-// styles.ts
 import { StyleSheet } from "react-native";
 import { fontSize, spacing } from "../constants/dimensions";
 import { colors } from "../constants/color";
 import { fontFamily } from "../constants/fontFamily";
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -32,9 +32,9 @@ export const styles = StyleSheet.create({
     borderRadius: 15,
   },
   profileHeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     marginBottom: 20,
   },
@@ -78,7 +78,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: spacing.sm,
-    marginVertical: spacing.xs, // Riduci il margine verticale
+    marginVertical: spacing.xs,
   },
   textInput: {
     flex: 1,
@@ -86,12 +86,11 @@ export const styles = StyleSheet.create({
     fontSize: fontSize.medium,
   },
   container2: {
-    marginVertical: spacing.xs, // Riduci il margine verticale
+    marginVertical: spacing.xs,
     marginBottom: 5,
   },
   icon: {
-    marginHorizontal: spacing.md
-  
+    marginHorizontal: spacing.md,
   },
   label: {
     marginRight: 10,
@@ -104,58 +103,70 @@ export const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.textPrimary, // Assicurati che il colore esista nella tua definizione
+    color: colors.textPrimary,
     textAlign: "center",
     marginVertical: 20,
   },
-  container3: { padding: 20, zIndex: 1 , marginBottom: 110, justifyContent: "center", alignItems: "center" },
-  label2: { fontSize: 16, marginRight: 10 },
-  picker: { height: 50, width: 200 },
+  container3: {
+    padding: 20,
+    zIndex: 1,
+    marginBottom: 110,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label2: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  picker: {
+    height: 50,
+    width: 200,
+  },
   qrList: {
-    flexDirection: 'row', // Dispone gli elementi in fila orizzontale
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 10,
   },
   qrContainer: {
     marginRight: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   qrText: {
     marginTop: 10,
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Sfondo semi-trasparente
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     fontSize: 18,
     marginVertical: 20,
-    color: '#333',
-    textAlign: 'center',
+    color: "#FFF", // Colore corretto per il testo in contrasto con il background scuro
+    textAlign: "center",
   },
   closeButton: {
-    backgroundColor: '#ff5555',
+    backgroundColor: "#ff5555",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   pickerItem: {
-    color: '#000', // Colore del testo degli elementi del Picker
+    color: "#000",
   },
   closeButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   modalTitle: {
     fontSize: 18,
@@ -169,7 +180,6 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   confirmButton: {
-    
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
@@ -178,12 +188,11 @@ export const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   confirmButtonText: {
-    
     fontSize: 16,
     fontWeight: "bold",
   },
   qrCardContainer: {
-    backgroundColor: '#000',
+    backgroundColor: "#FFF",
     borderRadius: 10,
     padding: 20,
     alignItems: "center",
@@ -219,28 +228,25 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   qrDataCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     padding: 15,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
     marginVertical: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   qrDataText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginBottom: 5,
   },
-
   loadingText: {
     marginTop: 10,
     fontSize: 22,
-    fontFamily: 'Poppins-ExtraLight'
-
-  }
-
+    fontFamily: "Poppins-ExtraLight",
+  },
 });

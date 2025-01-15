@@ -14,9 +14,10 @@ interface HoursComponentProps {
     selectedDate: string,
     setSelectedHour: (hour: string) => void,
     setStep: (step: number) => void,
+    setDealSelected: (deal: any) => void,
 }
 
-export const HoursComponent: FC<HoursComponentProps> = ({restaurant, openingHours, selectedHour, setSelectedHour, setStep, selectedDate}) => {
+export const HoursComponent: FC<HoursComponentProps> = ({restaurant, openingHours, selectedHour, setSelectedHour, setStep, selectedDate, setDealSelected}) => {
     //prenotazione per ogni pasto
     const [reservationsRestaurant, setReservationsRestaurant] = useState<any[] | null>(null);
 
@@ -38,8 +39,6 @@ export const HoursComponent: FC<HoursComponentProps> = ({restaurant, openingHour
               };
             })
           );
-      
-          console.log(reservations);
 
           setReservationsRestaurant(reservations); // Suppongo tu voglia salvare il risultato qui
         } catch (error) {
@@ -81,50 +80,46 @@ export const HoursComponent: FC<HoursComponentProps> = ({restaurant, openingHour
     };
 
     return (
-        <>
-            <ScrollView>
-                {reservationsRestaurant && reservationsRestaurant.map((row: any, index: number) => {
-
-                  const timeSlots = generateTimeSlots(row.hour_start_deal, row.hour_end_deal);
-                  const isFull = row.num_people == restaurant.capacity;
-
-                  return (
-                    <>
-                      <View style={stylesBookTable.containerHours}>
-                        <Text key={`${row.id_deal}-${row.id_restaurant}-text-${index}`} style={stylesBookTable.textDeal}>{row.name}</Text>
-                        <View key={`${row.id_deal}-${row.id_restaurant}-view-${index}`} style={stylesBookTable.containerDealHours}>
-                          {
-                            timeSlots.map((hour: any, index: number) => {
-                              return (
-                                <>
-                                  <TouchableOpacity 
-                                    key={`${row.id_deal}-${row.id_restaurant}-${hour}`}
-                                    style={ selectedHour == hour ? stylesBookTable.containerHourTextSelected 
-                                        : (isFull 
-                                            ? stylesBookTable.containerHourTextDisabled 
-                                            : stylesBookTable.containerHourText
-                                            )
-                                        } 
-                                    onPress={ isFull ? undefined 
-                                        : () => { 
-                                                setSelectedHour(hour);
-                                                setStep(3);
-                                            }
-                                    }
-                                  >
-                                    <Text key={`${row.id_deal}-${row.id_restaurant}-${hour}`} style={selectedHour == hour ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{hour}</Text>
-                                  </TouchableOpacity>
-                                </>
-                              );
-                            })
-                          }
-                          
-                        </View>
-                      </View>
-                    </>
-                    )
-                })}
-              </ScrollView>
-        </>
+      <ScrollView>
+      {reservationsRestaurant && reservationsRestaurant.map((row: any, index: number) => {
+        const timeSlots = generateTimeSlots(row.hour_start_deal, row.hour_end_deal);
+        const isFull = row.num_people == restaurant.capacity;
+    
+        return (
+          <React.Fragment key={`${row.id_deal}-${row.id_restaurant}-fragment-${index}`}>
+            <View style={stylesBookTable.containerHours}>
+              <Text style={stylesBookTable.textDeal}>
+                {row.name}
+              </Text>
+              <View style={stylesBookTable.containerDealHours}>
+                {timeSlots.map((hour: any, hourIndex: number) => (
+                  <TouchableOpacity
+                    key={`${row.id_deal}-${row.id_restaurant}-${hour}-${hourIndex}`}
+                    style={selectedHour === hour 
+                      ? stylesBookTable.containerHourTextSelected 
+                      : isFull 
+                        ? stylesBookTable.containerHourTextDisabled 
+                        : stylesBookTable.containerHourText}
+                    onPress={isFull ? undefined : () => { 
+                      setSelectedHour(hour);
+                      setDealSelected(row)
+                      setStep(3);
+                    }}
+                  >
+                    <Text style={selectedHour === hour 
+                      ? stylesBookTable.hourTextSelected 
+                      : stylesBookTable.hourText}
+                    >
+                      {hour}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </React.Fragment>
+        );
+      })}
+    </ScrollView>
+    
     )
 }

@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
 import { BookTable } from "./BookTable";
+import { CulinaryExperienceComponent } from "./CulinaryExperienceComponent";
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -33,7 +34,9 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
   const [showHoursDays, setShowHoursDays] = useState<Boolean>(false);
 
-  const [showBookTable, setShowBookTable] = useState(false); // Stato per gestire il passaggio
+  //show components
+  const [showBookTable, setShowBookTable] = useState<boolean>(false); // Stato per gestire il passaggio
+  const [shouwCulinaryExperience, setShowCulinaryExperience] = useState<boolean>(false);
 
   //data di oggi
   const today = new Date();
@@ -137,154 +140,163 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
   //chiamo la pagina di prenotazione di un tavolo
   if (showBookTable) {
-    return <BookTable restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
+    return <BookTable onCloseRestaurant={onClose} restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
+  }
+
+  if (shouwCulinaryExperience) {
+    return <CulinaryExperienceComponent restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
   }
 
   return (
-    <View style={stylesPageRestaurant.container}>
-      <ScrollView>
-        <View>
-          <ImageBackground 
-            source={imagesRestaurants[restaurant.name]} 
-            style={stylesPageRestaurant.imageBackground}
-          > 
-            <View style={stylesPageRestaurant.imagesStyle}>
-              <TouchableOpacity onPress={() => onClose()} style={stylesPageRestaurant.iconWrapper}>
-                <Ionicons name="chevron-back-sharp" size={30} color="white" />
-              </TouchableOpacity>
+    <>
+      {restaurant && 
+        <View style={stylesPageRestaurant.container}>
+          <ScrollView>
+            <View>
+              <ImageBackground 
+                source={imagesRestaurants[restaurant.name]} 
+                style={stylesPageRestaurant.imageBackground}
+              > 
+                <View style={stylesPageRestaurant.imagesStyle}>
+                  <TouchableOpacity onPress={() => onClose()} style={stylesPageRestaurant.iconWrapper}>
+                    <Ionicons name="chevron-back-sharp" size={30} color="white" />
+                  </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => {modifyFavorite(restaurant.id)}} style={stylesPageRestaurant.iconWrapper}>
-                <Ionicons name={isFavorite ? "star" : "star-outline"} size={25} color="white" />
-              </TouchableOpacity>
+                  <TouchableOpacity onPress={() => {modifyFavorite(restaurant.id)}} style={stylesPageRestaurant.iconWrapper}>
+                    <Ionicons name={isFavorite ? "star" : "star-outline"} size={25} color="white" />
+                  </TouchableOpacity>
+                </View>
+                  
+              </ImageBackground>
             </View>
+
+            <View style={stylesPageRestaurant.containerText}>
+              {restaurant && restaurant.culinary_experience == 1 &&
+                <TouchableOpacity onPress={() => setShowCulinaryExperience(true)} style={stylesPageRestaurant.buttonCulinaryExperience}>
+                  <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
+                </TouchableOpacity>
+              }
+
+              <Text style={stylesPageRestaurant.titleRestaurant}>{restaurant.name}</Text>
               
-          </ImageBackground>
-        </View>
+              <View style={stylesPageRestaurant.containerDescription}>
+                <Text style={stylesPageRestaurant.description}>{restaurant.description}</Text>
 
-        <View style={stylesPageRestaurant.containerText}>
-          {restaurant && restaurant.culinary_experience == 1 &&
-            <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonCulinaryExperience}>
-              <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
-            </TouchableOpacity>
-          }
-
-          <Text style={stylesPageRestaurant.titleRestaurant}>{restaurant.name}</Text>
-          
-          <View style={stylesPageRestaurant.containerDescription}>
-            <Text style={stylesPageRestaurant.description}>{restaurant.description}</Text>
-
-            {/* Icona dell'indirizzo */}
-            <TouchableOpacity onPress={() => {handleOpenMaps(restaurant.address)}}>         
-              <View style={stylesPageRestaurant.containerIconInformation}>
-   
-                <View style={stylesPageRestaurant.iconInformationWrapper}>
-                  <Ionicons name="location-outline" style={stylesPageRestaurant.iconInformation} />
-                </View>
-                <Text style={stylesPageRestaurant.textInformation}>{restaurant.address}</Text>
-              </View>
-            </TouchableOpacity>
-
-
-            {/* Icona del tipo di cucina */}
-            <View style={stylesPageRestaurant.containerIconInformation}>
-              <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <Ionicons name="restaurant-outline" style={stylesPageRestaurant.iconInformation} />
-              </View>
-              <View style={stylesPageRestaurant.containerCategory}>
-                {restaurant.tags.map((tag: any, index: number) => {
-                    const isLast = index === restaurant.tags.length - 1; // Controlla se è l'ultimo elemento
-                    return (
-                      <Text key={`${restaurant.id}-${tag.name}`} style={stylesPageRestaurant.textCategory}>
-                        {tag.name}{!isLast && ','} {/* Aggiungi la virgola se non è l'ultimo */}
-                      </Text>
-                    );
-                  })}
-              </View>
-            </View>
-
-            {/* Icona del prezzo medio */}
-            <View style={stylesPageRestaurant.containerIconInformation}>
-              <View style={stylesPageRestaurant.iconInformationWrapper}>
-                <FontAwesome name="money" style={stylesPageRestaurant.iconInformation} />
-              </View>
-              <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
-            </View>
-
-            <TouchableOpacity onPress={() => {}}>   
-              <View style={stylesPageRestaurant.containerIconInformation}>  
-                <View style={stylesPageRestaurant.iconInformationWrapper}>
-                  <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
-                </View>
-                <Text style={stylesPageRestaurant.textInformation}>Menu</Text>
-              </View>  
-            </TouchableOpacity>
-            
-            {/* Icona del numero di telefono */}
-            <TouchableOpacity onPress={() => Linking.openURL(`tel:${restaurant.phone_number}`)}>        
-              <View style={stylesPageRestaurant.containerIconInformation}>
-                <View style={stylesPageRestaurant.iconInformationWrapper}>
-                  <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
-                </View>
-                <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
-              </View>
-            </TouchableOpacity> 
-
-            {/* Icona dell'orario di apertura */}
-            <TouchableOpacity style={stylesPageRestaurant.touchHoursDays} onPress={() => {setShowHoursDays((precedence) => !precedence)}}>
-              <View style={stylesPageRestaurant.containerIconInformation}>
-                <View style={stylesPageRestaurant.iconInformationWrapper}>
-                  <AntDesign name="clockcircleo" style={stylesPageRestaurant.iconInformation} />
-                </View>
-                <View style={stylesPageRestaurant.containerHours}>
-                  {closingDays && workingHours && isOpen ? 
-                      <Text style={stylesPageRestaurant.textOpen}>Open now</Text> 
-                    : 
-                      closingDays && closingDays?.some((day) => day == days[today.getDay()]) ?
-                          <Text style={stylesPageRestaurant.textClosed}>Closed Today</Text>   
-                        : 
-                        <Text style={stylesPageRestaurant.textClosed}>Closed Now</Text>  
-                  }
-                  {/* Icona freccia giù o sù */}
-                  {!showHoursDays ?
-                      <AntDesign name="down" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
-                    : 
-                      <AntDesign name="up" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
-                  }
-                </View>
-              </View>
-              {/* Mostra gli orari del ristorante se showHoursDays è true */}
-              {workingHours && closingDays && showHoursDays && (
-                <View style={stylesPageRestaurant.openingHoursContainer}>
-                  {days.map((day, index) => (
-                    <View key={index} style={stylesPageRestaurant.dayRow}>
-                      
-                      {today.getDay() === index ? <Text style={stylesPageRestaurant.textToday}>{day}:</Text> : <Text style={stylesPageRestaurant.textDays}>{day}:</Text>}
-                      
-                      {closingDays && closingDays.some((closingDay) => closingDay.day_name === day) ? 
-                          <Text style={stylesPageRestaurant.textHoursClosed}>Closed</Text>
-                        : 
-                          workingHours.map((row: any) => {
-                            return <Text key={`${row.id_deal}-${row.id_restaurant}`} style={stylesPageRestaurant.textHours}>{row.hour_start_deal}-{row.hour_end_deal}</Text>
-                          })}
+                {/* Icona dell'indirizzo */}
+                <TouchableOpacity onPress={() => {handleOpenMaps(restaurant.address)}}>         
+                  <View style={stylesPageRestaurant.containerIconInformation}>
+      
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <Ionicons name="location-outline" style={stylesPageRestaurant.iconInformation} />
                     </View>
-                  ))}
+                    <Text style={stylesPageRestaurant.textInformation}>{restaurant.address}</Text>
+                  </View>
+                </TouchableOpacity>
+
+
+                {/* Icona del tipo di cucina */}
+                <View style={stylesPageRestaurant.containerIconInformation}>
+                  <View style={stylesPageRestaurant.iconInformationWrapper}>
+                    <Ionicons name="restaurant-outline" style={stylesPageRestaurant.iconInformation} />
+                  </View>
+                  <View style={stylesPageRestaurant.containerCategory}>
+                    {restaurant.tags.map((tag: any, index: number) => {
+                        const isLast = index === restaurant.tags.length - 1; // Controlla se è l'ultimo elemento
+                        return (
+                          <Text key={`${restaurant.id}-${tag.name}`} style={stylesPageRestaurant.textCategory}>
+                            {tag.name}{!isLast && ','} {/* Aggiungi la virgola se non è l'ultimo */}
+                          </Text>
+                        );
+                      })}
+                  </View>
                 </View>
-              )}
-            </TouchableOpacity>
-          </View>
-          
+
+                {/* Icona del prezzo medio */}
+                <View style={stylesPageRestaurant.containerIconInformation}>
+                  <View style={stylesPageRestaurant.iconInformationWrapper}>
+                    <FontAwesome name="money" style={stylesPageRestaurant.iconInformation} />
+                  </View>
+                  <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
+                </View>
+
+                <TouchableOpacity onPress={() => {}}>   
+                  <View style={stylesPageRestaurant.containerIconInformation}>  
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
+                    </View>
+                    <Text style={stylesPageRestaurant.textInformation}>Menu</Text>
+                  </View>  
+                </TouchableOpacity>
+                
+                {/* Icona del numero di telefono */}
+                <TouchableOpacity onPress={() => Linking.openURL(`tel:${restaurant.phone_number}`)}>        
+                  <View style={stylesPageRestaurant.containerIconInformation}>
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
+                    </View>
+                    <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
+                  </View>
+                </TouchableOpacity> 
+
+                {/* Icona dell'orario di apertura */}
+                <TouchableOpacity style={stylesPageRestaurant.touchHoursDays} onPress={() => {setShowHoursDays((precedence) => !precedence)}}>
+                  <View style={stylesPageRestaurant.containerIconInformation}>
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <AntDesign name="clockcircleo" style={stylesPageRestaurant.iconInformation} />
+                    </View>
+                    <View style={stylesPageRestaurant.containerHours}>
+                      {closingDays && workingHours && isOpen ? 
+                          <Text style={stylesPageRestaurant.textOpen}>Open now</Text> 
+                        : 
+                          closingDays && closingDays?.some((day) => day == days[today.getDay()]) ?
+                              <Text style={stylesPageRestaurant.textClosed}>Closed Today</Text>   
+                            : 
+                            <Text style={stylesPageRestaurant.textClosed}>Closed Now</Text>  
+                      }
+                      {/* Icona freccia giù o sù */}
+                      {!showHoursDays ?
+                          <AntDesign name="down" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
+                        : 
+                          <AntDesign name="up" size={15} color="black" style={stylesPageRestaurant.iconHours}/>
+                      }
+                    </View>
+                  </View>
+                  {/* Mostra gli orari del ristorante se showHoursDays è true */}
+                  {workingHours && closingDays && showHoursDays && (
+                    <View style={stylesPageRestaurant.openingHoursContainer}>
+                      {days.map((day, index) => (
+                        <View key={index} style={stylesPageRestaurant.dayRow}>
+                          
+                          {today.getDay() === index ? <Text style={stylesPageRestaurant.textToday}>{day}:</Text> : <Text style={stylesPageRestaurant.textDays}>{day}:</Text>}
+                          
+                          {closingDays && closingDays.some((closingDay) => closingDay.day_name === day) ? 
+                              <Text style={stylesPageRestaurant.textHoursClosed}>Closed</Text>
+                            : 
+                              workingHours.map((row: any) => {
+                                return <Text key={`${row.id_deal}-${row.id_restaurant}`} style={stylesPageRestaurant.textHours}>{row.hour_start_deal}-{row.hour_end_deal}</Text>
+                              })}
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+              
+            </View>
+            <View style={stylesPageRestaurant.containerMenu}>
+              <TouchableOpacity onPress={() => setShowBookTable(true)} style={stylesPageRestaurant.buttonBookTable}>
+                <Text style={stylesPageRestaurant.textBookTable}>Book a Table</Text>
+              </TouchableOpacity>
+            </View>
+            
+          </ScrollView>
+          {/*<View style={{position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'black'}}>
+              <Text>My fixed footer</Text>
+            </View>*/}
         </View>
-        <View style={stylesPageRestaurant.containerMenu}>
-          <TouchableOpacity onPress={() => setShowBookTable(true)} style={stylesPageRestaurant.buttonBookTable}>
-            <Text style={stylesPageRestaurant.textBookTable}>Book a Table</Text>
-          </TouchableOpacity>
-        </View>
-        
-      </ScrollView>
-      {/*<View style={{position: 'absolute', left: 0, right: 0, bottom: 0, backgroundColor: 'black'}}>
-          <Text>My fixed footer</Text>
-        </View>*/}
-    </View>
+      }
+    </>
+
   );
 };
 
