@@ -5,8 +5,7 @@ import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../da
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
-import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO'; 
-import QuizScreen from '../components/Quiz'; 
+import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO';  
 import { stylesBookings } from '../styles/stylesBookings'; 
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -291,13 +290,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     </>
   )}
   {isQuizVisible && (
-      <QuizScreen
-        id_restaurant={item.restaurantId}
-        onFinish={() => {
-          setIsQuizVisible(false);
-          setIsModalVisible(false);
-        }} 
-      />
+    <View>
+      </View>
   )}
   </View>
     );
