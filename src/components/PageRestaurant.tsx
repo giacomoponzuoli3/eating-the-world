@@ -144,7 +144,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   }
 
   if (shouwCulinaryExperience) {
-    return <CulinaryExperienceComponent restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
+    return <CulinaryExperienceComponent user={user} restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
   }
 
   return (
