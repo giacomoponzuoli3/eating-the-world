@@ -56,30 +56,30 @@ export const stylesBookCulinaryExperience = StyleSheet.create({
     },
 
     iconCalendar: {
-    fontSize: 20,
-    color: '#6200ee',
+        fontSize: 20,
+        color: '#6200ee',
 
-    // margin
-    marginLeft: 10,
+        // margin
+        marginLeft: 10,
 
-    //padding
-    paddingLeft: 35,
-    paddingRight: 35,
-    paddingTop: 10,
-    paddingBottom: 10,
+        //padding
+        paddingLeft: 35,
+        paddingRight: 35,
+        paddingTop: 10,
+        paddingBottom: 10,
 
-    //border
-    borderStartWidth: 2,
-    borderTopLeftRadius: 25,
-    borderBottomLeftRadius: 25,
-    borderBottomWidth: 2,
-    borderTopWidth: 2,
-    borderColor: '#6200ee'
+        //border
+        borderStartWidth: 2,
+        borderTopLeftRadius: 25,
+        borderBottomLeftRadius: 25,
+        borderBottomWidth: 2,
+        borderTopWidth: 2,
+        borderColor: '#6200ee'
 
     },
 
     iconPeopleDisabled: {
-        fontSize: 21,
+        fontSize: 20,
         color: 'rgba(211, 211, 211, 1)',
 
         //padding
@@ -97,7 +97,7 @@ export const stylesBookCulinaryExperience = StyleSheet.create({
     },
 
     iconPeopleEnabled: {
-    fontSize: 21,
+    fontSize: 20,
     color: '#6200ee',
 
     //padding
@@ -137,7 +137,7 @@ export const stylesBookCulinaryExperience = StyleSheet.create({
     },
 
     iconCheckmarkEnabled: {
-    fontSize: 21,
+    fontSize: 20,
     color: '#6200ee',
 
     // margin

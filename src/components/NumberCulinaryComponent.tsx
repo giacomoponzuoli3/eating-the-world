@@ -26,34 +26,33 @@ interface NumberCulinaryComponentProps {
 
 
 export const NumberCulinaryComponent: FC<NumberCulinaryComponentProps> = ({setSelectedPeople,  selectedPeople, restaurant, setStep}) => {
-    const [reservations, setReservationsRestaurant] = useState<any[] | null>();
     const numbers: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
 
     return(
         <ScrollView>
-                <View key={"num-view"} style={stylesBookTable.containerNumbers}>
-                  { numbers.map((num, index) => {
+          <View key={"num-view"} style={stylesBookTable.containerNumbers}>
+            { numbers.map((num, index) => {
+              
+              return (
+                  <TouchableOpacity 
+                    key={`num-${num}-${index}-touch`}
                     
-                    return (
-                        <TouchableOpacity 
-                          key={`num-${num}-${index}-touch`}
-                          
-                          style={selectedPeople == num ? stylesBookTable.containerNumberSelected 
-                            : stylesBookTable.containerNumber
-                          }
-                          onPress={
-                            () => {
-                                setSelectedPeople(num);
-                                setStep(3);
-                            }
-                          }
-                        >
-                          <Text key={`num-${num}-${index}-text`}  style={selectedPeople == num ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{num}</Text>
-                        </TouchableOpacity>
-                    )
-                  })}
-                </View>
-              </ScrollView>
+                    style={selectedPeople == num ? stylesBookTable.containerNumberSelected 
+                      : stylesBookTable.containerNumber
+                    }
+                    onPress={
+                      () => {
+                          setSelectedPeople(num);
+                          setStep(3);
+                      }
+                    }
+                  >
+                    <Text key={`num-${num}-${index}-text`}  style={selectedPeople == num ? stylesBookTable.hourTextSelected : stylesBookTable.hourText}>{num}</Text>
+                  </TouchableOpacity>
+              )
+            })}
+          </View>
+        </ScrollView>
     )
 
 };

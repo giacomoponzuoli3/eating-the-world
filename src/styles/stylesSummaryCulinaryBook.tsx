@@ -1,11 +1,19 @@
 import { StyleSheet } from 'react-native';
 
 export const stylesSummaryCulinaryBook = StyleSheet.create({
-    textSummarySpecialRequest: {
+    textSummaryGeneralInformations: {
         fontFamily: 'Poppins-Medium',
         fontSize: 18,
         marginLeft: 10,
         marginBottom: 10
+    },
+
+    textSummarySpecialRequest: {
+        fontFamily: 'Poppins-Medium',
+        fontSize: 18,
+        marginLeft: 10,
+        marginBottom: 10,
+        marginTop: 20,
     },
 
     containerInformations: {
@@ -42,13 +50,18 @@ export const stylesSummaryCulinaryBook = StyleSheet.create({
     },
 
     buttonBookSpecialExperience: { 
+        position: 'absolute', // Posiziona il pulsante rispetto al genitore
+        bottom: 0, // Fissalo al fondo della pagina
+        left: 0, // Allinealo al bordo sinistro
+        right: 0, // Allinealo al bordo destro
         marginTop: 5,
         borderRadius: 6,
         backgroundColor: 'rgba(0, 160, 0, 1)', 
         flex: 1, 
         marginRight: 10,
         marginLeft: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: 30,
     },
 
     textBookSpecialExperience: {

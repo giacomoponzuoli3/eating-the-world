@@ -103,6 +103,7 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
                     culinaryExperience={culinaryExperience}
                     date={undefined}
                     people={undefined}
+                    language={undefined}
                     closingDays={closingDays}
                     restaurant={restaurant}
                     user={user}
