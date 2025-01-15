@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useMemo } from 'react';
-import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS} from 'react-native';
+import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
 import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
@@ -56,6 +56,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string; } }>({});
   const [isQuizVisible, setIsQuizVisible] = useState(false); 
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();
+  const scale = new Animated.Value(1);  // Per l'animazione del pulsante  
+  const [labelOpacity] = useState(new Animated.Value(0)); // Opacità animata della label
+  const [visibleLabels, setVisibleLabels] = useState<{ [key: number]: boolean }>({});
 
   const fetchSpecialExperienceDetails = async (id: number) => {
     const details = await getCulinaryExperiencesByRestaurant(id);
@@ -140,7 +143,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         >
         <View style={stylesBookings.modalContent}>
           <TouchableOpacity onPress={onClose} style={stylesBookings.closeButton}>
-            <Icon name="close" size={30} color="black" />
+            <Icon name="times" size={30} color="black" />
           </TouchableOpacity>
   
           <Text style={stylesBookings.modalTitle}>{restaurantName}</Text>
@@ -169,7 +172,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 
   const renderReservation = ({ item }: { item: Reservation }) => {
     const currentTime = new Date();
-    const reservationTime = new Date(item.date + ' ' + item.time);
+    const formattedDate = item.date.replace(/\//g, '-'); //Per confronto fra date yyyy/mm/dd e l'oggetto Date()
+    const reservationTime = new Date(formattedDate + ' ' + item.time);
     const isLearnAndEarnEnabled = currentTime >= reservationTime;
     const isExpanded = expandedCards[item.id];
 
@@ -196,12 +200,25 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       );
     };  
 
+    const handlePressIn = (id: number) => {
+      if (!isLearnAndEarnEnabled) {
+        setVisibleLabels((prev) => ({ ...prev, [id]: true })); 
+        Animated.timing(labelOpacity, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+        setTimeout(() => {
+          setVisibleLabels((prev) => ({ ...prev, [id]: false }));
+        }, 2000); 
+      } 
+    };
+  
     return (
       <View style={stylesBookings.containerExtern}>
         {!isQuizVisible && (
           <>
             <View style={stylesBookings.card}>
-              <TouchableOpacity onPress={() => toggleCard(item.id, item.isSpecialExperience)}>
                 <View style={stylesBookings.rowContainer}>
                 <Image 
                   source={imagesRestaurants[item.restaurantName]} 
@@ -215,42 +232,45 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
                 )}
                 <Text style={stylesBookings.restaurantName}>{item.restaurantName}</Text>
                 <Text style={{fontFamily: 'Poppins-Light'}}>{formatDate(item.date)}{` - ${item.time}`}</Text>
-                <View style={stylesBookings.downArrow}>
-                  <Text style={{fontFamily: 'Poppins-LightItalic'}}>{item.numberOfGuests} {item.numberOfGuests === 1 ? 'Guest' : 'Guests'}</Text>
-                  {item.isSpecialExperience && (<AntDesign name="down" size={24} color="black"/>)}
-                </View>
-                </View>
-                <TouchableOpacity onPress={() => showActionSheet()}>
-                  <View style={stylesBookings.ellipsis}>
-                  {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
-                  <Icon name="ellipsis-h" size={15} color='black'/>
-                  </View>
-                </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-              <View style={stylesBookings.buttonsContainer}>  
+                <Text style={{fontFamily: 'Poppins-LightItalic'}}>{item.numberOfGuests} {item.numberOfGuests === 1 ? 'Guest' : 'Guests'}</Text>
                 {!item.isSpecialExperience && ( 
-                  <>
                     <View>
                       <TouchableOpacity 
-                        disabled={!isLearnAndEarnEnabled}
-                        onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)} 
-                        style={stylesBookings.actionButton}>
+                        onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)}
+                        onPressIn={() => handlePressIn(item.id)}
+                        style={[stylesBookings.actionButton, !isLearnAndEarnEnabled && stylesBookings.disabledButton]}>
                         <View style={stylesBookings.actionButtonContent}>
+                        <Icon name="coins" size={20} color="#FFF" style={{marginRight: 10}}/>
                           <Text style={stylesBookings.actionButtonText}>Learn & Earn</Text>
-                          <Icon name="chevron-right" size={20} color="#FFF" />
                         </View>
                       </TouchableOpacity>
+                      {!isLearnAndEarnEnabled && visibleLabels[item.id] && (
+                        <Animated.View style={[stylesBookings.labelContainer, { opacity: labelOpacity }]}>
+                          <Text style={stylesBookings.disabledLabel}>Available only at the reservation time</Text>
+                        </Animated.View>
+                      )}
                     </View>
-                    <RestaurantLearnModal
-                      isVisible={isModalQuizVisible}
-                      onClose={() => setIsModalQuizVisible(false)}
-                      restaurantName={item.restaurantName}
-                      description={restaurantDescription}
-                    />
-                  </>
                 )}
-              </View>
+                </View>
+                <View style={stylesBookings.upButtons}></View>
+                  <TouchableOpacity onPress={() => showActionSheet()}>
+                    <View style={stylesBookings.ellipsis}>
+                    {/* Icona dei 3 puntini che, al click, mostra le varie opzioni */}
+                    <Icon name="ellipsis-h" size={15} color='black'/>
+                    </View>
+                  </TouchableOpacity>
+                  {item.isSpecialExperience && (
+                    <TouchableOpacity onPress={() => toggleCard(item.id, item.isSpecialExperience)} style={stylesBookings.downArrow}>
+                      <AntDesign name={isExpanded ? "up" : "down"} size={21} color="black"/>
+                    </TouchableOpacity>
+                  )}
+                </View>
+      <RestaurantLearnModal
+        isVisible={isModalQuizVisible}
+        onClose={() => setIsModalQuizVisible(false)}
+        restaurantName={item.restaurantName}
+        description={restaurantDescription}
+       />
       <ConfirmationModal
           isVisible={isModalVisible}
           onConfirm={() => deleteReservation(item)}

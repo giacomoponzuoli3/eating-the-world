@@ -7,7 +7,6 @@ export const stylesBookings = StyleSheet.create({
   },
   card: {
     backgroundColor: '#FFF',
-    borderRadius: 8,
     padding: 16,
     borderBottomColor: 'rbg(232, 232, 232)',
     borderBottomWidth: 0.4,
@@ -34,13 +33,6 @@ export const stylesBookings = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
-  ellipsis: {
-    alignSelf: 'center',  
-    padding: 9,
-    justifyContent: 'center',  
-    alignItems: 'center', 
-    borderWidth: 0.1
-  },
   restaurantName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -51,21 +43,19 @@ export const stylesBookings = StyleSheet.create({
     marginTop: 4,
     fontFamily: 'Poppins-Light'
   },
-  buttonsContainer: {
-    marginTop: 16,
-  },
   specialExperienceLabel: {
     backgroundColor: 'rgba(98, 0, 238, 0.1)', 
     alignSelf: 'flex-start',
     borderWidth: 2,
     borderRadius: 2,
-    borderColor: 'rgba(90, 0, 230, 1)'
+    borderColor: 'rgba(90, 0, 230, 1)',
+    marginBottom: 2,
   },
   specialExperienceLabelText: {
-    paddingRight: 20,
-    paddingLeft: 20,
-    paddingBottom: 4,
-    paddingTop: 4,
+    paddingRight: 18,
+    paddingLeft: 18,
+    paddingBottom: 3,
+    paddingTop: 3,
     color: 'rgba(90, 0, 230, 1)', 
     fontFamily: 'Poppins-Medium', 
     fontSize: 10
@@ -75,20 +65,47 @@ export const stylesBookings = StyleSheet.create({
     borderTopWidth: 5,
     borderTopColor: 'white',
     justifyContent: 'space-between',
-    paddingHorizontal: 10
-
+    paddingRight: 4
   },
   actionButtonText: {
     fontSize: 16,
     color: '#FFF',
   },
   actionButtonContent: {
-    marginTop: 5,
+    marginTop: 3,
     backgroundColor: 'rgba(98, 0, 238, 1)', 
     flex: 1, 
-    marginRight: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    paddingVertical: 3
+  },
+  disabledButton: {
+    opacity: 0.3,  
+  },
+  labelContainer: {
+    position: 'absolute',
+    top: -20, // Posiziona sopra il pulsante o in una posizione desiderata
+    left: 0,
+    right: 0,
     alignItems: 'center',
   },
+  disabledLabel: {
+    fontSize: 14,
+    color: 'rgba(98, 0, 238, 1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    textAlign: 'center',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    width: '100%', 
+    alignSelf: 'center',
+  },  
   icon: {
     marginRight: 8, 
   },
@@ -109,7 +126,7 @@ export const stylesBookings = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    width: '90%',
+    width: '100%',
   },
   modalText: {
     fontSize: 18,
@@ -128,8 +145,8 @@ export const stylesBookings = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 7,
+    right: 13,
     zIndex: 1,  
   },
   modalTitle: {
@@ -161,7 +178,7 @@ export const stylesBookings = StyleSheet.create({
     elevation: 3, 
   },
   scanButton: {
-    backgroundColor: '#FF0000',
+    backgroundColor: 'rgba(98, 0, 238, 1)',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -206,12 +223,22 @@ export const stylesBookings = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#000',
-    fontFamily: 'Poppins-Medium'
+    fontFamily: 'Poppins-Medium',
+  },
+  ellipsis: {
+    alignSelf: 'center',  
+    padding: 8,
+    justifyContent: 'center',  
+    alignItems: 'center', 
+    borderWidth: 0.1,
+  },
+  upButtons: {
+    flexDirection: 'row',  
+    alignItems: 'center', 
+    justifyContent: 'flex-end',
   },
   downArrow: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
     alignItems: 'center',
-    width: '100%',
-  }
+    padding: 5
+  },
 });
