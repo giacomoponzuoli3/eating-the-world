@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestaurant } from "../dao/favoritesDAO";
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
 import { BookTable } from "./BookTable";
+import { CulinaryExperienceComponent } from "./CulinaryExperienceComponent";
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -33,7 +34,9 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
   const [showHoursDays, setShowHoursDays] = useState<Boolean>(false);
 
-  const [showBookTable, setShowBookTable] = useState(false); // Stato per gestire il passaggio
+  //show components
+  const [showBookTable, setShowBookTable] = useState<boolean>(false); // Stato per gestire il passaggio
+  const [shouwCulinaryExperience, setShowCulinaryExperience] = useState<boolean>(false);
 
   //data di oggi
   const today = new Date();
@@ -140,6 +143,10 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     return <BookTable onCloseRestaurant={onClose} restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
   }
 
+  if (shouwCulinaryExperience) {
+    return <CulinaryExperienceComponent restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
+  }
+
   return (
     <>
       {restaurant && 
@@ -165,7 +172,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
             <View style={stylesPageRestaurant.containerText}>
               {restaurant && restaurant.culinary_experience == 1 &&
-                <TouchableOpacity onPress={() => console.log(1)} style={stylesPageRestaurant.buttonCulinaryExperience}>
+                <TouchableOpacity onPress={() => setShowCulinaryExperience(true)} style={stylesPageRestaurant.buttonCulinaryExperience}>
                   <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
                 </TouchableOpacity>
               }
