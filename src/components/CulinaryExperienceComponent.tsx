@@ -13,18 +13,21 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import { BookCulinaryExperience } from "./BookCulinaryExperience";
 
 
 interface CulinaryExperienceComponentProps {
     restaurant: any,
     user: any,
-    onClose: () => void
+    onClose: () => void,
+    onCloseRestaurant: () => void,
+    closingDays: any[]
 }
 
-export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> = ({user, restaurant, onClose}) => {
+export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> = ({user, restaurant, onClose, onCloseRestaurant, closingDays}) => {
     const [culinaryExperience, setCulinaryExperience] = useState<any | null>(null);
 
-    const [showBookCulinary, setShowCulinary] = useState<boolean>(false);
+    const [showBookCulinary, setShowBookCulinary] = useState<boolean>(false);
     
     const handleOpenMaps = (address: string) => {
         const encodedAddress = encodeURIComponent(address);
@@ -93,6 +96,18 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
 
     if(showBookCulinary){
         //restituire il componente che permette di prenotare l'esperienza culinaria
+        return (
+                <BookCulinaryExperience 
+                    onCloseRestaurant={onCloseRestaurant} 
+                    onClose={() => setShowBookCulinary(false)} 
+                    culinaryExperience={culinaryExperience}
+                    date={undefined}
+                    people={undefined}
+                    closingDays={closingDays}
+                    restaurant={restaurant}
+                    user={user}
+                />
+        );
     }
 
     return (
@@ -217,7 +232,7 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
                     </View>
 
                     <View style={stylesCulinaryExperience.containerButton}>
-                        <TouchableOpacity onPress={() => {}} style={stylesCulinaryExperience.buttonBookSpecialExperience}>
+                        <TouchableOpacity onPress={() => {setShowBookCulinary(true)}} style={stylesCulinaryExperience.buttonBookSpecialExperience}>
                             <Text style={stylesCulinaryExperience.textBookSpecialExperience}>Book Special Experience</Text>
                         </TouchableOpacity>
                     </View>

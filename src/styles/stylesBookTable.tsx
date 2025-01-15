@@ -10,7 +10,7 @@ export const stylesBookTable = StyleSheet.create({
         backgroundColor: 'white',
     },
 
-    conainerTitle: {
+    containerTitle: {
         marginTop: 8,
         marginBottom: 8,
         flexDirection: 'row',

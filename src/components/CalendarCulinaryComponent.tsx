@@ -3,18 +3,28 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Calendar } from 'react-native-calendars';
 
 //style 
-import { stylesBookTable } from "../styles/stylesBookTable";
+import { stylesCalendarCulinary } from "../styles/stylesCalendarCulinary";
 
-interface CalendarComponentProps{
+interface CalendarCulinaryComponentProps{
     selectedDate: string | null,
     setSelectedDate: (data: string) => void,
     setStep: (step: number) => void,
     closingDays: any[] | null
 }
 
-export const CalendarComponent: FC<CalendarComponentProps>  = ({setSelectedDate, selectedDate, setStep, closingDays}) => {
+export const CalendarCulinaryComponent: FC<CalendarCulinaryComponentProps>  = ({setSelectedDate, selectedDate, setStep, closingDays}) => {
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
+
+    const [reservations, setReservations] = useState<any[] | null>(null);
+
+    const getBookSpecialExperiences = async () => {
+        try{
+
+        }catch(error){
+            console.error("Error in getBookSpecialExperiences: ", error);
+        }
+    }
 
     // Mappatura dei numeri dei giorni con i nomi
     const dayNamesMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -37,21 +47,21 @@ export const CalendarComponent: FC<CalendarComponentProps>  = ({setSelectedDate,
         const isBeforeToday = date.dateString <= todayFormatted;
         
         return (
-            <View style={[stylesBookTable.dayContainer, isClose || isBeforeToday ? stylesBookTable.disabledDay : null]}>
+            <View style={[stylesCalendarCulinary.dayContainer, isClose || isBeforeToday ? stylesCalendarCulinary.disabledDay : null]}>
                 <TouchableOpacity
                     onPress={!(isClose || isBeforeToday) ? () => onPress(date) : undefined}
-                    style={[selectedDate == date.dateString ? stylesBookTable.daySelectedButton : stylesBookTable.dayButton, isClose || isBeforeToday ? stylesBookTable.disabledDayButton : null]}
+                    style={[selectedDate == date.dateString ? stylesCalendarCulinary.daySelectedButton : stylesCalendarCulinary.dayButton, isClose || isBeforeToday ? stylesCalendarCulinary.disabledDayButton : null]}
                 >
-                    <Text style={selectedDate == date.dateString ? stylesBookTable.daySelectedText : stylesBookTable.dayText}>{date.day}</Text>
+                    <Text style={selectedDate == date.dateString ? stylesCalendarCulinary.daySelectedText : stylesCalendarCulinary.dayText}>{date.day}</Text>
                 </TouchableOpacity>
             </View>
         );
     };
 
     return (
-        <View style={stylesBookTable.containerCalendar}>
+        <View style={stylesCalendarCulinary.containerCalendar}>
             <Calendar
-                style={stylesBookTable.calendar}
+                style={stylesCalendarCulinary.calendar}
                 current={todayFormatted} // Imposta il mese corrente
                 minDate={todayFormatted} // Disabilita le date precedenti
                 dayComponent={renderDay} // Personalizza il rendering dei giorni
