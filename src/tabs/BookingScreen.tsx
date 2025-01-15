@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import imagesRestaurants from '../utils/imagesRestaurants';
+import QuizScreen from '../components/Quiz';
 
 interface BookingScreenProps{
   username: string;
@@ -54,8 +55,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string; } }>({});
   const [isQuizVisible, setIsQuizVisible] = useState(false); 
-  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();
-  const scale = new Animated.Value(1);  // Per l'animazione del pulsante  
+  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();  
   const [labelOpacity] = useState(new Animated.Value(0)); // Opacità animata della label
   const [visibleLabels, setVisibleLabels] = useState<{ [key: number]: boolean }>({});
 
@@ -290,8 +290,13 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     </>
   )}
   {isQuizVisible && (
-    <View>
-      </View>
+      <QuizScreen
+      id_restaurant={item.restaurantId}
+      onFinish={() => {
+        setIsQuizVisible(false);
+        setIsModalQuizVisible(false);
+      }}
+    />  
   )}
   </View>
     );
