@@ -139,12 +139,23 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   }
 
   //chiamo la pagina di prenotazione di un tavolo
-  if (showBookTable) {
-    return <BookTable onCloseRestaurant={onClose} restaurant={restaurant} user={user} onClose={() => setShowBookTable(false)} closingDays={closingDays}/>;
+  if (showBookTable && closingDays) {
+    return (
+      <BookTable 
+        onCloseRestaurant={onClose} 
+        restaurant={restaurant} 
+        user={user} 
+        onClose={() => setShowBookTable(false)} 
+        closingDays={closingDays}
+        date={undefined}
+        hour={undefined}
+        people={undefined}
+      />
+    );
   }
 
-  if (shouwCulinaryExperience) {
-    return <CulinaryExperienceComponent restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
+  if (shouwCulinaryExperience && closingDays) {
+    return <CulinaryExperienceComponent user={user} closingDays={closingDays} onCloseRestaurant={onClose} restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
   }
 
   return (

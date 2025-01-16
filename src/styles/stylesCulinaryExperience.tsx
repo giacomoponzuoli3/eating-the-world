@@ -110,7 +110,36 @@ export const stylesCulinaryExperience = StyleSheet.create({
         marginLeft: 8,
         fontFamily: 'Poppins-Light'
     },
-    
 
+    textNumber: {
+        fontFamily: 'Poppins-Light',
+        color: 'rgba(98, 0, 238, 1)',
+        fontSize: 15
+    },
+
+    containerButton: {
+        flexDirection: 'row',
+        borderTopWidth: 5,
+        borderTopColor: 'white',
+        marginBottom: 20,
+        justifyContent: 'space-between',
+        paddingHorizontal: 10
+    },
+
+    buttonBookSpecialExperience: { 
+        marginTop: 5,
+        backgroundColor: 'rgba(98, 0, 238, 1)', 
+        flex: 1, 
+        marginRight: 5,
+        alignItems: 'center',
+        borderRadius: 4,
+    },
+
+    textBookSpecialExperience: {
+        padding: 15,
+        color: 'white', 
+        fontFamily: 'Poppins-Light', 
+        fontSize: 15
+    },
 
 });

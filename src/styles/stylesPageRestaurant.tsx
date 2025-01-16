@@ -187,6 +187,7 @@ export const stylesPageRestaurant = StyleSheet.create({
     },
     buttonBookTable: { 
         marginTop: 5,
+        borderRadius: 4,
         backgroundColor: 'rgba(98, 0, 238, 1)', 
         flex: 1, 
         marginRight: 5,
@@ -199,7 +200,7 @@ export const stylesPageRestaurant = StyleSheet.create({
         alignSelf: 'flex-start', // Si estende per tutta la larghezza del contenitore
         borderWidth: 2,
         borderRadius: 2,
-        borderColor: 'rgba(90, 0, 230, 1)'
+        borderColor: 'rgba(90, 0, 230, 1)',
 
     },
 

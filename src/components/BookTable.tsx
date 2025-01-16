@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { CalendarComponent } from "./CalendarComponent";
 
@@ -17,18 +17,28 @@ import { HoursComponent } from "./HoursComponent";
 import { NumberComponent } from "./NumberComponent";
 import { SummaryComponent } from "./SummaryComponent";
 
+interface BookTableProps{
+  date: undefined | string,
+  hour: undefined | string,
+  people: undefined | number,
+  restaurant: any,
+  onClose: () => void,
+  closingDays: any[],
+  user: any,
+  onCloseRestaurant: () => void
+}
 
-const BookTable = (props: any) => {
+const BookTable: FC<BookTableProps> = ({date, hour, people, restaurant, onClose, closingDays, user, onCloseRestaurant}) => {
 
   //orari di apertura del ristorante associato al pasto
   const [openingHours, setOpeningHours] = useState<any[] | null>(null);
   
   //dati form
   //ho preparato i dati del form nel caso dell'edit
-  const [selectedDate, setSelectedDate] = useState<string | null>(props.date == undefined ? null : props.date); // Stato per il giorno selezionato
-  const [selectedHour, setSelectedHour] = useState<string | null>(props.hour == undefined ? null : props.hour); // Stato per l'ora selezionata
+  const [selectedDate, setSelectedDate] = useState<string | null>(date == undefined ? null : date); // Stato per il giorno selezionato
+  const [selectedHour, setSelectedHour] = useState<string | null>(hour == undefined ? null : hour); // Stato per l'ora selezionata
   const [dealSelected, setDealSelected] = useState<any | null>(null);
-  const [selectedPeople, setSelectedPeople] = useState<number | null>(props.people == undefined ? null : props.people); // Stato per il numero di persone selezionate
+  const [selectedPeople, setSelectedPeople] = useState<number | null>(people == undefined ? null : people); // Stato per il numero di persone selezionate
 
 
 
@@ -37,7 +47,7 @@ const BookTable = (props: any) => {
 
   const getOpeningHours = async () => {
     try{
-      const oh = await getHoursByRestaurant(props.restaurant.id);
+      const oh = await getHoursByRestaurant(restaurant.id);
       setOpeningHours(oh);
 
     }catch(error){
@@ -60,14 +70,14 @@ const BookTable = (props: any) => {
   return (
     <>
       <View style={stylesBookTable.container}>
-        <View style={stylesBookTable.conainerTitle}>
+        <View style={stylesBookTable.containerTitle}>
           <TouchableOpacity onPress={step > 1 ? previousStep : undefined}>
             <View style={{width: 30, height: 30}}>
               {step > 1 && <Ionicons name="chevron-back-sharp" size={30} color="black" />}
             </View>
           </TouchableOpacity>
-          <Text style={stylesBookTable.textTitle}>{props.restaurant.name}</Text>
-          <TouchableOpacity onPress={props.onClose} style={stylesBookTable.containerTextTitle}>
+          <Text style={stylesBookTable.textTitle}>{restaurant.name}</Text>
+          <TouchableOpacity onPress={onClose} style={stylesBookTable.containerTextTitle}>
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
         </View>
@@ -79,7 +89,7 @@ const BookTable = (props: any) => {
               <Text style={stylesBookTable.textLabel}>Choose an available time</Text>
             : step == 3 ?
               <Text style={stylesBookTable.textLabel}>Enter the number of guests</Text>
-            : <Text style={stylesBookTable.textLabel}>Booking Summary</Text>
+            : <Text style={stylesBookTable.textLabel}>Booking Table Summary</Text>
           }
 
 
@@ -108,14 +118,14 @@ const BookTable = (props: any) => {
         {/* Calendario (solo quando step == 1) */}
         {step == 1 &&
             (
-              <CalendarComponent setSelectedDate={setSelectedDate} selectedDate={selectedDate} setStep={setStep} closingDays={props.closingDays}/>
+              <CalendarComponent setSelectedDate={setSelectedDate} selectedDate={selectedDate} setStep={setStep} closingDays={closingDays}/>
             )
         }
         
         {/* Seleziona l'orario (solo quando step == 2) */}
         {step == 2 && selectedDate && openingHours &&
             (
-              <HoursComponent restaurant={props.restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate} setDealSelected={setDealSelected}/>
+              <HoursComponent restaurant={restaurant} openingHours={openingHours} setSelectedHour={setSelectedHour} selectedHour={selectedHour} setStep={setStep} selectedDate={selectedDate} setDealSelected={setDealSelected}/>
 
             )
         }
@@ -123,24 +133,24 @@ const BookTable = (props: any) => {
         {
           step == 3 && openingHours && selectedDate && dealSelected &&
           (
-            <NumberComponent dealSelected={dealSelected} restaurant={props.restaurant} setSelectedPeople={setSelectedPeople} setStep={setStep} selectedPeople={selectedPeople}/>
+            <NumberComponent dealSelected={dealSelected} restaurant={restaurant} setSelectedPeople={setSelectedPeople} setStep={setStep} selectedPeople={selectedPeople}/>
           )
         }
         {/* Riepilogo prenotazione */}
         {
           step == 4 && selectedDate && selectedHour && selectedPeople && 
           <SummaryComponent 
-            user={props.user} 
+            user={user} 
             selectedDate={selectedDate} 
             selectedHour={selectedHour} 
             selectedPeople={selectedPeople} 
-            restaurant={props.restaurant}
+            restaurant={restaurant}
             
             setSelectedDate={setSelectedDate}
             setSelectedHour={setSelectedHour}
             setSelectedPeople={setSelectedPeople}
 
-            onClose={props.onCloseRestaurant}
+            onClose={onCloseRestaurant}
           />
         }
       </View>

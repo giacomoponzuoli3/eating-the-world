@@ -106,14 +106,14 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
         const db = await getDatabase();
 
         const sql = `
-            INSERT INTO table_reservations(id_restaurant, username, data, number_people, price, id_language_selected)
+            INSERT INTO culinary_experience_reservations(id_restaurant, username, data, number_people, price, id_language_selected)
             VALUES(?, ?, ?, ?, ?, ?)
         `;
 
         await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
 
     }catch(error){
-        console.error("Error in insertCulinaryExperienzeReservation: ", error);
+        console.error("Error in insertCulinaryExperienceReservation: ", error);
         return error;
     }
 }

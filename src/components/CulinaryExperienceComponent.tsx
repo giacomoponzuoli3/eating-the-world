@@ -4,7 +4,7 @@ import { ScrollView } from "react-native-gesture-handler";
 //styles
 import { stylesCulinaryExperience } from "../styles/stylesCulinaryExperience";
 //dao
-import { getCulinaryExperiencesByRestaurant } from "../dao/culinaryExperienceDAO";
+import { getCulinaryExperiencesByRestaurant, getLanguagesByCulinaryExperience } from "../dao/culinaryExperienceDAO";
 //images
 import imagesCulinaryExperiences from "../utils/imagesCulinaryExperiences";
 // Icone
@@ -12,15 +12,22 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import { BookCulinaryExperience } from "./BookCulinaryExperience";
 
 
 interface CulinaryExperienceComponentProps {
     restaurant: any,
-    onClose: () => void
+    user: any,
+    onClose: () => void,
+    onCloseRestaurant: () => void,
+    closingDays: any[]
 }
 
-export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> = ({restaurant, onClose}) => {
+export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> = ({user, restaurant, onClose, onCloseRestaurant, closingDays}) => {
     const [culinaryExperience, setCulinaryExperience] = useState<any | null>(null);
+
+    const [showBookCulinary, setShowBookCulinary] = useState<boolean>(false);
     
     const handleOpenMaps = (address: string) => {
         const encodedAddress = encodeURIComponent(address);
@@ -58,13 +65,16 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
       
         return hours > 1 ? `${hours} hours` : `${hours} hour`;
     }
-      
 
     const getCulinaryExperience = async () => {
         try{
             if(restaurant.culinary_experience == 1){
                 const ce = await getCulinaryExperiencesByRestaurant(restaurant.id);
-                console.log(ce);
+
+                const languages = await getLanguagesByCulinaryExperience(ce[0].id);
+
+                ce[0] = {...ce[0], languages: languages} 
+
                 setCulinaryExperience(ce[0]);
             }else{
                 throw new Error("Culinary experience is not available for this restaurant.");
@@ -83,6 +93,23 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
     useEffect(() => {
         getCulinaryExperience();
     }, [])
+
+    if(showBookCulinary){
+        //restituire il componente che permette di prenotare l'esperienza culinaria
+        return (
+                <BookCulinaryExperience 
+                    onCloseRestaurant={onCloseRestaurant} 
+                    onClose={() => setShowBookCulinary(false)} 
+                    culinaryExperience={culinaryExperience}
+                    date={undefined}
+                    people={undefined}
+                    language={undefined}
+                    closingDays={closingDays}
+                    restaurant={restaurant}
+                    user={user}
+                />
+        );
+    }
 
     return (
         <>
@@ -131,35 +158,84 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
                                 </View>
                             </TouchableOpacity>
 
-                            {/* Icona della durata */}
-                            <TouchableOpacity onPress={() => {}}>         
-                                <View style={stylesCulinaryExperience.containerIconInformation}>
-                    
-                                    <View style={stylesCulinaryExperience.iconInformationWrapper}>
-                                        <Ionicons name="timer-outline" style={stylesCulinaryExperience.iconInformation} />
-                                    </View>
-
-                                    <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.start_hour}-{culinaryExperience.end_hour} ({calculateDuration(culinaryExperience.start_hour, culinaryExperience.end_hour)})</Text>
+                            {/* Icona della durata */}       
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <Ionicons name="timer-outline" style={stylesCulinaryExperience.iconInformation} />
                                 </View>
-                                
-                            </TouchableOpacity>
+
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.start_hour}-{culinaryExperience.end_hour} ({calculateDuration(culinaryExperience.start_hour, culinaryExperience.end_hour)})</Text>
+                            </View>
 
                             {/* Icona del prezzo */}
-                            <TouchableOpacity onPress={() => {}}>         
-                                <View style={stylesCulinaryExperience.containerIconInformation}>
-                    
-                                    <View style={stylesCulinaryExperience.iconInformationWrapper}>
-                                        <FontAwesome name="money" style={stylesCulinaryExperience.iconInformation} />
-                                    </View>
-
-                                    <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.price}€ per person</Text>
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <FontAwesome name="money" style={stylesCulinaryExperience.iconInformation} />
                                 </View>
-                                
-                            </TouchableOpacity>
 
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.price}€ per person</Text>
+                            </View>
+
+                            {/* Icona delle lingue */}
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <Fontisto name="world-o" style={stylesCulinaryExperience.iconInformation} />
+                                </View>
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.languages.map((lang: { id: number; name: string }) => lang.name).join(', ')}</Text>
+                            </View>
+
+                            {/* Icona del fatto che si paga in struttura */}
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                                            
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <AntDesign name="shoppingcart" style={stylesCulinaryExperience.iconInformation} />
+                                </View>
+                                <Text style={stylesCulinaryExperience.textInformation}>No advance payment, pay on-site.</Text>
+                            </View>
+
+                            
+                            {/* Key Delights */}
                             <Text style={stylesCulinaryExperience.titleInformations}>Key Delights</Text>
+     
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <Text style={stylesCulinaryExperience.textNumber}>1</Text>
+                                </View>
+
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.include_1}</Text>
+                            </View>
+
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <Text style={stylesCulinaryExperience.textNumber}>2</Text>
+                                </View>
+
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.include_2}</Text>
+                            </View>
+
+                            <View style={stylesCulinaryExperience.containerIconInformation}>
+                
+                                <View style={stylesCulinaryExperience.iconInformationWrapper}>
+                                    <Text style={stylesCulinaryExperience.textNumber}>3</Text>
+                                </View>
+
+                                <Text style={stylesCulinaryExperience.textInformation}>{culinaryExperience.include_3}</Text>
+                            </View>
+                            
+
                         </View>
 
+                    </View>
+
+                    <View style={stylesCulinaryExperience.containerButton}>
+                        <TouchableOpacity onPress={() => {setShowBookCulinary(true)}} style={stylesCulinaryExperience.buttonBookSpecialExperience}>
+                            <Text style={stylesCulinaryExperience.textBookSpecialExperience}>Book Special Experience</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </View>
