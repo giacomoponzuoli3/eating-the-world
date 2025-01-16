@@ -91,22 +91,22 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
 
   const handleEnd = async() => {
     setIsQuizCompleted(true);
+    let discount = null;
     if(numberRight == questions.length){
-      setFinalDiscount('20%'); 
+      discount = '20%'; 
     } else if (numberRight == questions.length-1){
-      setFinalDiscount('10%'); 
-    } else {
-      setFinalDiscount(null); 
-    }
+      discount = '10%'; 
+    } 
 
-    handleQuizCompletion(id_restaurant, finalDiscount);
+    setFinalDiscount(discount);
 
-    if(finalDiscount!=null){
+    if(discount!=null){
       const qrData = `Show this code at checkout: ${finalDiscount}`;
       await AsyncStorage.setItem('qrCode', qrData); // Salva il QR code
     } else {
       await AsyncStorage.removeItem('qrCode'); // Rimuovi il QR code
     }
+    handleQuizCompletion(id_restaurant, discount);
   }
 
   const goToBookings = () => {

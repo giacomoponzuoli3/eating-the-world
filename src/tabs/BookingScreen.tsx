@@ -1,17 +1,20 @@
-import React, { FC, useState, useEffect, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
-import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import {deleteTableReservation, deleteCulinaryExperienceReservation, deleteExpiredReservations} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
 import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO';  
 import { stylesBookings } from '../styles/stylesBookings'; 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import QuizScreen from '../components/Quiz';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import QRCode from 'react-native-qrcode-svg';
+import { useIsFocused } from '@react-navigation/native';
 
 interface BookingScreenProps{
   username: string;
@@ -60,6 +63,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [visibleLabels, setVisibleLabels] = useState<{ [key: number]: boolean }>({});
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [restaurantStates, setRestaurantStates] = useState<{[key: number]: { quizCompleted: boolean, hasDiscount: string | null }}>({});
+  const [qrCode, setQrCode] = useState<string | null>(null); 
 
   const fetchSpecialExperienceDetails = async (id: number) => {
     const details = await getCulinaryExperiencesByRestaurant(id);
@@ -73,8 +77,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   }
 
   const handleQuizCompletion = (restaurantId: number, scoredDiscount: string | null) => {
-    setRestaurantStates(prevState => ({
-      ...prevState,
+    setRestaurantStates(({
       [restaurantId]: {
         quizCompleted: true,
         hasDiscount: scoredDiscount
@@ -127,8 +130,14 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     }else{
       await deleteTableReservation(username, item.restaurantId, item.date, item.time || '');
     }
+
+    setAllReservations((prev: any) =>
+      prev.filter(
+        (res: Reservation) =>
+          res.id !== item.id // Filtra l'elemento eliminato
+      )
+    );
     setIsModalVisible(false);
-    fetchBookings();
   }
 
   const goToMap = () => {
@@ -138,6 +147,12 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   useEffect(() => {
     setAllReservations(reservations);
   }, [reservations]);  
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBookings(); 
+    }, [])
+  );
 
   const handleQuiz = () => {
     setIsQuizVisible(true);
@@ -179,10 +194,15 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   }
   };
 
-  const handleViewQRCode = (restaurantId: number) => {
+  const handleViewQRCode = async(restaurantId: number) => {
     const restaurantState = restaurantStates[restaurantId];
     if (restaurantState && restaurantState.hasDiscount) {
       setIsQRCodeVisible(true);
+    }
+    const savedQrCode = await AsyncStorage.getItem('qrCode'); // Recupera il QR code
+    if (savedQrCode) {
+      setQrCode(savedQrCode); // Aggiorna lo stato con il QR code recuperato
+      setIsQRCodeVisible(true); // Mostra il QR code
     }
   };
 
@@ -319,6 +339,20 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
             Price: {specialExperienceDetails[item.restaurantId].price}€
           </Text>
         </View>
+      )}
+      {isQRCodeVisible && qrCode && (
+      <Modal isVisible={isQRCodeVisible} onBackdropPress={() => setIsQRCodeVisible(false)}>
+        <View style={stylesBookings.qrCodeBox}>
+          <Text style={stylesBookings.qrCodeTitle}>{restaurantState.hasDiscount} discount on your current meal!</Text>
+          <QRCode value={qrCode} size={290} />
+          <TouchableOpacity
+            style={stylesBookings.buttonQRcode}
+            onPress={() => setIsQRCodeVisible(false)}
+          >
+          <Text style={[stylesBookings.buttonText, {}]}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       )}
     </View>
     </>
