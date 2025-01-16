@@ -119,71 +119,79 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
       {currentQuestion && (
         <>
           <View style={stylesQuiz.containerQuiz}>
-          <TouchableOpacity style={stylesQuiz.closeButton} onPress={onFinish}>
-            <AntDesign name="close" size={30} color="black" />
-          </TouchableOpacity>
-          <Text style={stylesQuiz.questionCounter}>
-            {`${currentQuestionIndex + 1} / ${questions.length}`}
-          </Text>
-          <Text style={stylesQuiz.questionText}>{currentQuestion.question}</Text>
-
-          <View style={stylesQuiz.optionsContainer}>
-            {currentQuestion.answers.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  stylesQuiz.optionButton,
-                  answersSelected[currentQuestionIndex] !== null &&
-                    (index === currentQuestion.correct
-                      ? stylesQuiz.correctOption
-                      : answersSelected[currentQuestionIndex] === index
-                      ? stylesQuiz.wrongOption
-                      : stylesQuiz.defaultOption),
-                ]}
-                onPress={() => handleAnswer(index, index === currentQuestion.correct)}
-                disabled={answersSelected[currentQuestionIndex] !== null} // Disabilita dopo aver risposto
-              >
-                <Text style={stylesQuiz.optionText}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {answersSelected[currentQuestionIndex] !== null && (
-            <View>
-            <Text>Solution</Text>
-            <Text style={stylesQuiz.explanationText}>{currentQuestion.explanation}</Text>
+            <TouchableOpacity style={stylesQuiz.closeButton} onPress={onFinish}>
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+            <View style={stylesQuiz.progressContainer}>
+              <Text style={stylesQuiz.questionCounter}>
+                {`${currentQuestionIndex + 1} / ${questions.length}`}
+              </Text>
+              <View style={stylesQuiz.progressBar}>
+                <View
+                  style={[
+                    stylesQuiz.progressFill,
+                    { width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` },  // Calcola la percentuale
+                  ]}
+                />
+              </View>
             </View>
-          )}
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
 
-          
-          <TouchableOpacity
-            style={[stylesQuiz.leftArrow]}
-            onPress={handleBack}
-            disabled={currentQuestionIndex === 0}
-          >
-            <AntDesign name="arrowleft" size={40} color="black" />
-          </TouchableOpacity>
+            <Text style={stylesQuiz.questionText}>{currentQuestion.question}</Text>
+            <View style={stylesQuiz.optionsContainer}>
+              {currentQuestion.answers.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    stylesQuiz.optionButton,
+                    answersSelected[currentQuestionIndex] !== null &&
+                      (index === currentQuestion.correct
+                        ? stylesQuiz.correctOption
+                        : answersSelected[currentQuestionIndex] === index
+                        ? stylesQuiz.wrongOption
+                        : stylesQuiz.defaultOption),
+                  ]}
+                  onPress={() => handleAnswer(index, index === currentQuestion.correct)}
+                  disabled={answersSelected[currentQuestionIndex] !== null} // Disabilita dopo aver risposto
+                >
+                  <Text style={stylesQuiz.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          {currentQuestionIndex === questions.length - 1 ? (
-    <TouchableOpacity
-      style={stylesQuiz.finishButton}
-      onPress={handleEnd}
-    >
-      <Text style={stylesQuiz.finishButtonText}>End Quiz</Text>
-    </TouchableOpacity>
-  ) : (
-    <TouchableOpacity
-      style={[stylesQuiz.rightArrow]}
-      onPress={handleNext}
-      disabled={isQuizCompleted}
-    >
-      <AntDesign name="arrowright" size={40} color="black" />
-    </TouchableOpacity>
-    )}
+            {answersSelected[currentQuestionIndex] !== null && (
+              <View>
+              <Text style={stylesQuiz.solutionText}>Explanation</Text>
+              <Text style={stylesQuiz.explanationText}>{currentQuestion.explanation}</Text>
+              </View>
+            )}
           </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>          
+            <TouchableOpacity
+              style={[stylesQuiz.leftArrow]}
+              onPress={handleBack}
+              disabled={currentQuestionIndex === 0}
+            >
+              <AntDesign name="arrowleft" size={40} color="rgba(98, 0, 238, 1)" />
+            </TouchableOpacity>
+
+            {currentQuestionIndex === questions.length - 1 ? (
+              <TouchableOpacity
+                style={stylesQuiz.finishButton}
+                onPress={handleEnd}
+              >
+                <Text style={stylesQuiz.finishButtonText}>End Quiz</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[stylesQuiz.rightArrow]}
+                onPress={handleNext}
+                disabled={isQuizCompleted}
+              >
+                <AntDesign name="arrowright" size={40} color="rgba(98, 0, 238, 1)" />
+              </TouchableOpacity>
+            )}
           </View>
-          </>
+        </>
       )}
     </>
   );
