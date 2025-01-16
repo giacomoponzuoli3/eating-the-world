@@ -130,7 +130,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 
   const handleQuiz = () => {
     setIsQuizVisible(true);
-    //setIsModalQuizVisible(false);
   }
 
   const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {

@@ -6,6 +6,8 @@ import { Question } from '../utils/interfaces';
 import { stylesQuiz } from '../styles/stylesQuiz';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import QRCode from 'react-native-qrcode-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 interface QuizScreenProps {
@@ -36,6 +38,7 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
   const [answersSelected, setAnswersSelected] = useState<(number | null)[]>(Array(questions.length).fill(null));
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [numberRight, setNumberRight] = useState(0);
+  const [finalDiscount, setFinalDiscount] = useState<(string | null)>(null);
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();  
 
   const fetchQuestions = async () => {
@@ -85,14 +88,21 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
     }
   };
 
-  const handleEnd = () => {
+  const handleEnd = async() => {
     setIsQuizCompleted(true);
     if(numberRight == questions.length){
-      console.log("20% off");
+      setFinalDiscount('20%'); 
     } else if (numberRight == questions.length-1){
-      console.log("10% off");
+      setFinalDiscount('10%'); 
     } else {
-      console.log("Loser");
+      setFinalDiscount(null); 
+    }
+
+    if(finalDiscount!=null){
+      const qrData = `Show this code at checkout: ${finalDiscount}`;
+      await AsyncStorage.setItem('qrCode', qrData); // Salva il QR code
+    } else {
+      await AsyncStorage.removeItem('qrCode'); // Rimuovi il QR code
     }
   }
 
@@ -101,18 +111,48 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
     onFinish();
   }
 
+  const goToMap = () => {
+    navigation.navigate('Maps');
+    onFinish();
+  }
+
+
   const currentQuestion = questions[currentQuestionIndex];
 
   if (isQuizCompleted) {
-    return (
-      <View style={stylesQuiz.completedContainer}>
-        <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
-        <TouchableOpacity onPress={goToProfile} style={stylesQuiz.finishButton}>
-          <Text style={stylesQuiz.finishButtonText}>Go to Profile</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }  
+    if(finalDiscount == null) {
+      return (
+        <View style={stylesQuiz.completedContainer}>
+          <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
+            <AntDesign name="close" size={30} color="black" />
+          </TouchableOpacity>
+          <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
+          <Text style={stylesQuiz.instructionsText}>Unfortunately, you didn't win a discount this time.{"\n"}Better luck next time!</Text>
+          <TouchableOpacity onPress={goToMap} style={stylesQuiz.button}>
+            <Text style={stylesQuiz.buttonText}>Go to Map</Text>
+          </TouchableOpacity>
+        </View>
+      );
+      } else {
+        return (
+          <View style={stylesQuiz.completedContainer}>
+            <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+            <Text style={stylesQuiz.completedText}>
+              Congratulations! You've won a {finalDiscount} discount!
+            </Text>
+            <Text style={stylesQuiz.instructionsText}>
+              Please show this QR code at the payment desk to redeem your discount.
+            </Text>
+            <QRCode value={`Discount: ${finalDiscount}`} size={250} />
+            <TouchableOpacity onPress={goToProfile} style={stylesQuiz.button}>
+              <Text style={stylesQuiz.buttonText}>Go to Profile</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+    }; 
 
   return (
     <>

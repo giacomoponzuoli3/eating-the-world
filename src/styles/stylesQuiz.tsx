@@ -91,13 +91,15 @@ export const stylesQuiz = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#ffffff',
+        height: height - 170,
+        overflow: 'hidden',   
       },
       completedText: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 22,
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 10,
         color: '#333',
+        fontFamily: 'Poppins-Medium'
       },
       finishButton: {
         position: 'absolute',
@@ -140,5 +142,37 @@ export const stylesQuiz = StyleSheet.create({
         height: '100%',
         backgroundColor: 'rgba(98, 0, 238, 1)',  
       },
-      
+      instructionsText: {
+        fontSize: 16, 
+        color: '#333',
+        textAlign: 'center', 
+        marginTop: 10,
+        fontFamily: 'Poppins-Light',
+        marginBottom: 20
+      },   
+      button: {
+        backgroundColor: '#6200ee',  
+        paddingVertical: 12,         
+        paddingHorizontal: 30,       
+        borderRadius: 25,            
+        justifyContent: 'center',    
+        alignItems: 'center',        
+        marginTop: 35,               
+        shadowColor: '#000',         
+        shadowOffset: { width: 0, height: 2 },  
+        shadowOpacity: 0.4,          
+        shadowRadius: 4,                 
+      },
+      buttonText: {
+          color: '#fff',               
+          fontSize: 18,                
+          fontFamily: 'Poppins-Light'
+      },
+      crossButton: {
+        top: 10,
+        position: 'absolute',
+        left: 370,
+        zIndex: 1
+      },  
+
 })
