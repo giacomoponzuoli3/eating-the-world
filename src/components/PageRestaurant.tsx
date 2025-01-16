@@ -16,6 +16,7 @@ import { deleteFavoriteRestaurant, insertFavoriteRestaurant, isFavoriteRestauran
 import { getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek } from "../dao/restaurantsDAO";
 import { BookTable } from "./BookTable";
 import { CulinaryExperienceComponent } from "./CulinaryExperienceComponent";
+import { MenuComponent } from "./MenuComponent";
 
 interface PageRestaurantProps{
     restaurant: Restaurant,
@@ -37,6 +38,8 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   //show components
   const [showBookTable, setShowBookTable] = useState<boolean>(false); // Stato per gestire il passaggio
   const [shouwCulinaryExperience, setShowCulinaryExperience] = useState<boolean>(false);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+
 
   //data di oggi
   const today = new Date();
@@ -154,6 +157,16 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
     );
   }
 
+  //mostro il menu
+  if (showMenu) {
+    return (
+      <MenuComponent 
+        onClose={() => setShowMenu(false)}
+        restaurant={restaurant}
+      />
+    )
+  }
+
   if (shouwCulinaryExperience && closingDays) {
     return <CulinaryExperienceComponent user={user} closingDays={closingDays} onCloseRestaurant={onClose} restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
   }
@@ -230,7 +243,8 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
                   <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
                 </View>
 
-                <TouchableOpacity onPress={() => {}}>   
+                {/* Icona del menu */}
+                <TouchableOpacity onPress={() => {setShowMenu(true)}}>   
                   <View style={stylesPageRestaurant.containerIconInformation}>  
                     <View style={stylesPageRestaurant.iconInformationWrapper}>
                       <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
