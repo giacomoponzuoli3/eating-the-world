@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface QuizScreenProps {
   id_restaurant: number;
   onFinish: () => void; // Aggiungiamo la funzione onFinish come prop
+  handleQuizCompletion: (id_resturant: number, discount: string | null) => void;
 }
 
 type RootTabParamList = {
@@ -32,7 +33,7 @@ const shuffleArray = (array: string[], correctIndex: number) => {
   };
 };
 
-const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
+const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCompletion }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answersSelected, setAnswersSelected] = useState<(number | null)[]>(Array(questions.length).fill(null));
@@ -98,6 +99,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
       setFinalDiscount(null); 
     }
 
+    handleQuizCompletion(id_restaurant, finalDiscount);
+
     if(finalDiscount!=null){
       const qrData = `Show this code at checkout: ${finalDiscount}`;
       await AsyncStorage.setItem('qrCode', qrData); // Salva il QR code
@@ -106,13 +109,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
     }
   }
 
-  const goToProfile = () => {
-    navigation.navigate('Profile');
-    onFinish();
-  }
-
-  const goToMap = () => {
-    navigation.navigate('Maps');
+  const goToBookings = () => {
+    navigation.navigate('Bookings');
     onFinish();
   }
 
@@ -128,8 +126,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
           </TouchableOpacity>
           <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
           <Text style={stylesQuiz.instructionsText}>Unfortunately, you didn't win a discount this time.{"\n"}Better luck next time!</Text>
-          <TouchableOpacity onPress={goToMap} style={stylesQuiz.button}>
-            <Text style={stylesQuiz.buttonText}>Go to Map</Text>
+          <TouchableOpacity onPress={goToBookings} style={stylesQuiz.button}>
+            <Text style={stylesQuiz.buttonText}>Go to Bookings</Text>
           </TouchableOpacity>
         </View>
       );
@@ -146,8 +144,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
               Please show this QR code at the payment desk to redeem your discount.
             </Text>
             <QRCode value={`Discount: ${finalDiscount}`} size={250} />
-            <TouchableOpacity onPress={goToProfile} style={stylesQuiz.button}>
-              <Text style={stylesQuiz.buttonText}>Go to Profile</Text>
+            <TouchableOpacity onPress={goToBookings} style={stylesQuiz.button}>
+              <Text style={stylesQuiz.buttonText}>Go to Bookings</Text>
             </TouchableOpacity>
           </View>
         );
