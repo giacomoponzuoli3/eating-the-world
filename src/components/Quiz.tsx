@@ -6,11 +6,14 @@ import { Question } from '../utils/interfaces';
 import { stylesQuiz } from '../styles/stylesQuiz';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import QRCode from 'react-native-qrcode-svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 interface QuizScreenProps {
   id_restaurant: number;
   onFinish: () => void; // Aggiungiamo la funzione onFinish come prop
+  handleQuizCompletion: (id_resturant: number, discount: string | null) => void;
 }
 
 type RootTabParamList = {
@@ -30,12 +33,13 @@ const shuffleArray = (array: string[], correctIndex: number) => {
   };
 };
 
-const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
+const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCompletion }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answersSelected, setAnswersSelected] = useState<(number | null)[]>(Array(questions.length).fill(null));
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [numberRight, setNumberRight] = useState(0);
+  const [finalDiscount, setFinalDiscount] = useState<(string | null)>(null);
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();  
 
   const fetchQuestions = async () => {
@@ -85,105 +89,147 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish }) => {
     }
   };
 
-  const handleEnd = () => {
+  const handleEnd = async() => {
     setIsQuizCompleted(true);
+    let discount = null;
     if(numberRight == questions.length){
-      console.log("20% off");
+      discount = '20%'; 
     } else if (numberRight == questions.length-1){
-      console.log("10% off");
+      discount = '10%'; 
+    } 
+
+    setFinalDiscount(discount);
+
+    if(discount!=null){
+      const qrData = `Show this code at checkout: ${finalDiscount}`;
+      await AsyncStorage.setItem('qrCode', qrData); // Salva il QR code
     } else {
-      console.log("Loser");
+      await AsyncStorage.removeItem('qrCode'); // Rimuovi il QR code
     }
+    handleQuizCompletion(id_restaurant, discount);
   }
 
-  const goToProfile = () => {
-    navigation.navigate('Profile');
+  const goToBookings = () => {
+    navigation.navigate('Bookings');
     onFinish();
   }
+
 
   const currentQuestion = questions[currentQuestionIndex];
 
   if (isQuizCompleted) {
-    return (
-      <View style={stylesQuiz.completedContainer}>
-        <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
-        <TouchableOpacity onPress={goToProfile} style={stylesQuiz.finishButton}>
-          <Text style={stylesQuiz.finishButtonText}>Go to Profile</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }  
+    if(finalDiscount == null) {
+      return (
+        <View style={stylesQuiz.completedContainer}>
+          <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
+            <AntDesign name="close" size={30} color="black" />
+          </TouchableOpacity>
+          <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
+          <Text style={stylesQuiz.instructionsText}>Unfortunately, you didn't win a discount this time.{"\n"}Better luck next time!</Text>
+          <TouchableOpacity onPress={goToBookings} style={stylesQuiz.button}>
+            <Text style={stylesQuiz.buttonText}>Go to Bookings</Text>
+          </TouchableOpacity>
+        </View>
+      );
+      } else {
+        return (
+          <View style={stylesQuiz.completedContainer}>
+            <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+            <Text style={stylesQuiz.completedText}>
+              Congratulations! You've won a {finalDiscount} discount!
+            </Text>
+            <Text style={stylesQuiz.instructionsText}>
+              Please show this QR code at the payment desk to redeem your discount.
+            </Text>
+            <QRCode value={`Discount: ${finalDiscount}`} size={250} />
+            <TouchableOpacity onPress={goToBookings} style={stylesQuiz.button}>
+              <Text style={stylesQuiz.buttonText}>Go to Bookings</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+    }; 
 
   return (
     <>
       {currentQuestion && (
         <>
           <View style={stylesQuiz.containerQuiz}>
-          <TouchableOpacity style={stylesQuiz.closeButton} onPress={onFinish}>
-            <AntDesign name="close" size={30} color="black" />
-          </TouchableOpacity>
-          <Text style={stylesQuiz.questionCounter}>
-            {`${currentQuestionIndex + 1} / ${questions.length}`}
-          </Text>
-          <Text style={stylesQuiz.questionText}>{currentQuestion.question}</Text>
-
-          <View style={stylesQuiz.optionsContainer}>
-            {currentQuestion.answers.map((option, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  stylesQuiz.optionButton,
-                  answersSelected[currentQuestionIndex] !== null &&
-                    (index === currentQuestion.correct
-                      ? stylesQuiz.correctOption
-                      : answersSelected[currentQuestionIndex] === index
-                      ? stylesQuiz.wrongOption
-                      : stylesQuiz.defaultOption),
-                ]}
-                onPress={() => handleAnswer(index, index === currentQuestion.correct)}
-                disabled={answersSelected[currentQuestionIndex] !== null} // Disabilita dopo aver risposto
-              >
-                <Text style={stylesQuiz.optionText}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {answersSelected[currentQuestionIndex] !== null && (
-            <View>
-            <Text>Solution</Text>
-            <Text style={stylesQuiz.explanationText}>{currentQuestion.explanation}</Text>
+            <TouchableOpacity style={stylesQuiz.closeButton} onPress={onFinish}>
+              <AntDesign name="close" size={30} color="black" />
+            </TouchableOpacity>
+            <View style={stylesQuiz.progressContainer}>
+              <Text style={stylesQuiz.questionCounter}>
+                {`${currentQuestionIndex + 1} / ${questions.length}`}
+              </Text>
+              <View style={stylesQuiz.progressBar}>
+                <View
+                  style={[
+                    stylesQuiz.progressFill,
+                    { width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` },  // Calcola la percentuale
+                  ]}
+                />
+              </View>
             </View>
-          )}
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
 
-          
-          <TouchableOpacity
-            style={[stylesQuiz.leftArrow]}
-            onPress={handleBack}
-            disabled={currentQuestionIndex === 0}
-          >
-            <AntDesign name="arrowleft" size={40} color="black" />
-          </TouchableOpacity>
+            <Text style={stylesQuiz.questionText}>{currentQuestion.question}</Text>
+            <View style={stylesQuiz.optionsContainer}>
+              {currentQuestion.answers.map((option, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    stylesQuiz.optionButton,
+                    answersSelected[currentQuestionIndex] !== null &&
+                      (index === currentQuestion.correct
+                        ? stylesQuiz.correctOption
+                        : answersSelected[currentQuestionIndex] === index
+                        ? stylesQuiz.wrongOption
+                        : stylesQuiz.defaultOption),
+                  ]}
+                  onPress={() => handleAnswer(index, index === currentQuestion.correct)}
+                  disabled={answersSelected[currentQuestionIndex] !== null} // Disabilita dopo aver risposto
+                >
+                  <Text style={stylesQuiz.optionText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          {currentQuestionIndex === questions.length - 1 ? (
-    <TouchableOpacity
-      style={stylesQuiz.finishButton}
-      onPress={handleEnd}
-    >
-      <Text style={stylesQuiz.finishButtonText}>End Quiz</Text>
-    </TouchableOpacity>
-  ) : (
-    <TouchableOpacity
-      style={[stylesQuiz.rightArrow]}
-      onPress={handleNext}
-      disabled={isQuizCompleted}
-    >
-      <AntDesign name="arrowright" size={40} color="black" />
-    </TouchableOpacity>
-    )}
+            {answersSelected[currentQuestionIndex] !== null && (
+              <View>
+              <Text style={stylesQuiz.solutionText}>Explanation</Text>
+              <Text style={stylesQuiz.explanationText}>{currentQuestion.explanation}</Text>
+              </View>
+            )}
           </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>          
+            <TouchableOpacity
+              style={[stylesQuiz.leftArrow]}
+              onPress={handleBack}
+              disabled={currentQuestionIndex === 0}
+            >
+              <AntDesign name="arrowleft" size={40} color="rgba(98, 0, 238, 1)" />
+            </TouchableOpacity>
+
+            {currentQuestionIndex === questions.length - 1 ? (
+              <TouchableOpacity
+                style={stylesQuiz.finishButton}
+                onPress={handleEnd}
+              >
+                <Text style={stylesQuiz.finishButtonText}>End Quiz</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[stylesQuiz.rightArrow]}
+                onPress={handleNext}
+                disabled={isQuizCompleted}
+              >
+                <AntDesign name="arrowright" size={40} color="rgba(98, 0, 238, 1)" />
+              </TouchableOpacity>
+            )}
           </View>
-          </>
+        </>
       )}
     </>
   );

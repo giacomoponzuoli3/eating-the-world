@@ -241,4 +241,34 @@ export const stylesBookings = StyleSheet.create({
     alignItems: 'center',
     padding: 5
   },
+  qrCodeTitle: {
+    fontSize: 22,
+    marginBottom: 30, 
+    justifyContent: 'center',
+    fontFamily: 'Poppins-Light',
+    width: '90%',
+    textAlign: 'center',
+  },
+  qrCodeBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    padding: 25,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    width: '100%',
+  },
+  buttonQRcode: {
+    backgroundColor: '#6200ee',  
+    paddingVertical: 12,         
+    paddingHorizontal: 30,       
+    borderRadius: 25,            
+    justifyContent: 'center',    
+    alignItems: 'center',        
+    marginTop: 50,               
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 2 },  
+    shadowOpacity: 0.4,          
+    shadowRadius: 4,             
+  }
 });

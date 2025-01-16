@@ -1,17 +1,20 @@
-import React, { FC, useState, useEffect, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
-import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import {deleteTableReservation, deleteCulinaryExperienceReservation, deleteExpiredReservations} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
 import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO';  
 import { stylesBookings } from '../styles/stylesBookings'; 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import QuizScreen from '../components/Quiz';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import QRCode from 'react-native-qrcode-svg';
+import { useIsFocused } from '@react-navigation/native';
 
 interface BookingScreenProps{
   username: string;
@@ -58,6 +61,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();  
   const [labelOpacity] = useState(new Animated.Value(0)); // Opacità animata della label
   const [visibleLabels, setVisibleLabels] = useState<{ [key: number]: boolean }>({});
+  const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
+  const [restaurantStates, setRestaurantStates] = useState<{[key: number]: { quizCompleted: boolean, hasDiscount: string | null }}>({});
+  const [qrCode, setQrCode] = useState<string | null>(null); 
 
   const fetchSpecialExperienceDetails = async (id: number) => {
     const details = await getCulinaryExperiencesByRestaurant(id);
@@ -68,8 +74,16 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         price: details[0].price,
       },
     }));
-    
   }
+
+  const handleQuizCompletion = (restaurantId: number, scoredDiscount: string | null) => {
+    setRestaurantStates(({
+      [restaurantId]: {
+        quizCompleted: true,
+        hasDiscount: scoredDiscount
+      }
+    }));
+  };
 
   const reservations = useMemo(() => {
     const tableReservations: Reservation[] = (tableBookings as any[]).map((res, index) => ({
@@ -116,8 +130,14 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     }else{
       await deleteTableReservation(username, item.restaurantId, item.date, item.time || '');
     }
+
+    setAllReservations((prev: any) =>
+      prev.filter(
+        (res: Reservation) =>
+          res.id !== item.id // Filtra l'elemento eliminato
+      )
+    );
     setIsModalVisible(false);
-    fetchBookings();
   }
 
   const goToMap = () => {
@@ -128,9 +148,14 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     setAllReservations(reservations);
   }, [reservations]);  
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchBookings(); 
+    }, [])
+  );
+
   const handleQuiz = () => {
     setIsQuizVisible(true);
-    //setIsModalQuizVisible(false);
   }
 
   const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
@@ -169,12 +194,25 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   }
   };
 
+  const handleViewQRCode = async(restaurantId: number) => {
+    const restaurantState = restaurantStates[restaurantId];
+    if (restaurantState && restaurantState.hasDiscount) {
+      setIsQRCodeVisible(true);
+    }
+    const savedQrCode = await AsyncStorage.getItem('qrCode'); // Recupera il QR code
+    if (savedQrCode) {
+      setQrCode(savedQrCode); // Aggiorna lo stato con il QR code recuperato
+      setIsQRCodeVisible(true); // Mostra il QR code
+    }
+  };
+
   const renderReservation = ({ item }: { item: Reservation }) => {
     const currentTime = new Date();
     const formattedDate = item.date.replace(/\//g, '-'); //Per confronto fra date yyyy/mm/dd e l'oggetto Date()
     const reservationTime = new Date(formattedDate + ' ' + item.time);
     const isLearnAndEarnEnabled = currentTime >= reservationTime;
     const isExpanded = expandedCards[item.id];
+    const restaurantState = restaurantStates[item.restaurantId] || { quizCompleted: false, hasDiscount: null };
 
     const openModalQuiz = async (id: number) => {
       setIsModalQuizVisible(true);
@@ -212,7 +250,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         }, 2000); 
       } 
     };
-  
+
+
     return (
       <View style={stylesBookings.containerExtern}>
         {!isQuizVisible && (
@@ -232,7 +271,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
                 <Text style={stylesBookings.restaurantName}>{item.restaurantName}</Text>
                 <Text style={{fontFamily: 'Poppins-Light'}}>{formatDate(item.date)}{` - ${item.time}`}</Text>
                 <Text style={{fontFamily: 'Poppins-LightItalic'}}>{item.numberOfGuests} {item.numberOfGuests === 1 ? 'Guest' : 'Guests'}</Text>
-                {!item.isSpecialExperience && ( 
+                {!item.isSpecialExperience && !restaurantState.quizCompleted ? ( 
                     <View>
                       <TouchableOpacity 
                         onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)}
@@ -249,7 +288,22 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
                         </Animated.View>
                       )}
                     </View>
-                )}
+                    ) : !item.isSpecialExperience && restaurantState.hasDiscount!=null ? (
+                      <TouchableOpacity 
+                        onPress={() => handleViewQRCode(item.restaurantId)} 
+                        style={stylesBookings.actionButton}>
+                        <View style={stylesBookings.actionButtonContent}>
+                          <Text style={stylesBookings.actionButtonText}>View QR Code</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ) : !item.isSpecialExperience && (
+                      <TouchableOpacity style={[stylesBookings.actionButton]}>
+                        <View style={stylesBookings.actionButtonContent}>
+                          <Text style={stylesBookings.actionButtonText}>No QR Code Available</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )
+                }
                 </View>
                 <View style={stylesBookings.upButtons}></View>
                   <TouchableOpacity onPress={() => showActionSheet()}>
@@ -286,6 +340,20 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
           </Text>
         </View>
       )}
+      {isQRCodeVisible && qrCode && (
+      <Modal isVisible={isQRCodeVisible} onBackdropPress={() => setIsQRCodeVisible(false)}>
+        <View style={stylesBookings.qrCodeBox}>
+          <Text style={stylesBookings.qrCodeTitle}>{restaurantState.hasDiscount} discount on your current meal!</Text>
+          <QRCode value={qrCode} size={290} />
+          <TouchableOpacity
+            style={stylesBookings.buttonQRcode}
+            onPress={() => setIsQRCodeVisible(false)}
+          >
+          <Text style={[stylesBookings.buttonText, {}]}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      )}
     </View>
     </>
   )}
@@ -296,6 +364,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         setIsQuizVisible(false);
         setIsModalQuizVisible(false);
       }}
+      handleQuizCompletion={handleQuizCompletion}
     />  
   )}
   </View>
