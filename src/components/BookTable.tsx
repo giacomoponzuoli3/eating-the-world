@@ -25,22 +25,24 @@ interface BookTableProps{
   onClose: () => void,
   closingDays: any[],
   user: any,
-  onCloseRestaurant: () => void
+  onCloseRestaurant: () => void,
+  specialRequest_: string | null,
+  isUpdate: boolean
 }
 
-const BookTable: FC<BookTableProps> = ({date, hour, people, restaurant, onClose, closingDays, user, onCloseRestaurant}) => {
+const BookTable: FC<BookTableProps> = ({specialRequest_, date, hour, people, restaurant, onClose, isUpdate, closingDays, user, onCloseRestaurant}) => {
 
   //orari di apertura del ristorante associato al pasto
   const [openingHours, setOpeningHours] = useState<any[] | null>(null);
-  
+ 
+
   //dati form
   //ho preparato i dati del form nel caso dell'edit
   const [selectedDate, setSelectedDate] = useState<string | null>(date == undefined ? null : date); // Stato per il giorno selezionato
   const [selectedHour, setSelectedHour] = useState<string | null>(hour == undefined ? null : hour); // Stato per l'ora selezionata
   const [dealSelected, setDealSelected] = useState<any | null>(null);
   const [selectedPeople, setSelectedPeople] = useState<number | null>(people == undefined ? null : people); // Stato per il numero di persone selezionate
-
-
+  const [specialRequest, setSpecialRequest] = useState<string | null>(specialRequest_ == null ? null : specialRequest_ )
 
   //step della prenotazione
   const [step, setStep] = useState<number>(1);
@@ -146,11 +148,17 @@ const BookTable: FC<BookTableProps> = ({date, hour, people, restaurant, onClose,
             selectedPeople={selectedPeople} 
             restaurant={restaurant}
             
+            specialRequest={specialRequest}
+
             setSelectedDate={setSelectedDate}
             setSelectedHour={setSelectedHour}
             setSelectedPeople={setSelectedPeople}
 
             onClose={onCloseRestaurant}
+            isUpdate={isUpdate}
+
+            oldDate={date}
+            oldHour={hour}
           />
         }
       </View>

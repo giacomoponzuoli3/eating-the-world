@@ -9,12 +9,13 @@ import getDatabase from './connectionDB';
 const getTableReservartionsByUsername = async (username: string) => {
     try{
         const db = await getDatabase();
-       
+
         const sql = `
             SELECT * FROM table_reservations
             WHERE username = ? 
         `;
         let reservations = await db.getAllAsync(sql, [username]);
+
         reservations = Array.isArray(reservations) ? reservations : [reservations];
 
         const tableReservations = await Promise.all(
@@ -50,21 +51,18 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
     try{
         const db = await getDatabase();
 
-        const [year, month, day] = data.split('-');
-        const formattedDate = `${year}/${month}/${day}`;
-
         if(special_request == null){
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people)
                 VALUES(?, ?, ?, ?, ?)
             `;
-            await db.runAsync(sql, [id_restaurant, username, formattedDate, hour, number_people]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people]);
         }else{
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people, special_request)
                 VALUES(?, ?, ?, ?, ?, ?)
             `;
-            await db.runAsync(sql, [id_restaurant, username, formattedDate, hour, number_people, special_request]);
+            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
         }
 
     }catch(error){
@@ -72,6 +70,45 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
         return error;
     }
 }
+
+
+/**
+ * 
+ * @param username username dell'utente che vuole prenotare un tavolo
+ * @param id_restaurant id del ristorante a cui vuole andare a mangiare l'utente
+ * @param data data selezionata dall'utente
+ * @param hour ora selezionata dall'utente
+ * @param number_people numero di persone per il quale ha chiamato
+ * @param special_request speciali richieste dell'utente (opzionale)
+ * @returns void
+ */
+const updateTableReservation = async (username: string, id_restaurant: number, oldHour: string, oldData: string,  data: string, hour: string, number_people: number, special_request: string | null ) => {
+    try{
+        const db = await getDatabase();
+
+        if(special_request == null){
+            const sql = `
+                UPDATE table_reservations 
+                SET data = ?, hour = ?, number_people = ?
+                WHERE username = ? AND id_restaurant = ? AND data = ? AND hour = ?
+            `;
+            await db.runAsync(sql, [data, hour, number_people, username, id_restaurant, oldData, oldHour]);
+        }else{
+            const sql = `
+            UPDATE table_reservations 
+            SET data = ?, hour = ?, number_people = ?, special_request = ?
+            WHERE username = ? AND id_restaurant = ? AND data = ? AND hour = ?
+            `;
+            await db.runAsync(sql, [data, hour, number_people, special_request, username, id_restaurant, oldData, oldHour]);
+        }
+
+    }catch(error){
+        console.error("Error in the updateTableReservation: ", error);
+        return error;
+    }
+}
+
+
 
 /**
  * 
@@ -135,7 +172,7 @@ const deleteExpiredReservations = async () => {
         const timeLimit = new Date(currentTime.getTime() - 5 * 60 * 60 * 1000);
 
         // Formatta la data e l'ora per SQLite
-        const formattedDate = timeLimit.toISOString().split('T')[0].replace(/-/g, '/'); // YYYY/MM/DD
+        const formattedDate = timeLimit.toISOString().split('T')[0]; // Rimuove la parte dell'orario
         const formattedTime = timeLimit.toTimeString().split(' ')[0].slice(0, 5); // HH:MM
 
         // Elimina tutte le prenotazioni con data e ora passate
@@ -152,8 +189,6 @@ const deleteExpiredReservations = async () => {
 
         await db.runAsync(sql, [formattedDate, formattedDate, formattedTime]);
         await db.runAsync(sql2, [formattedDate]);
-
-        console.log("Expired reservations deleted successfully.");
     } catch (error) {
         console.error("Error in deleteExpiredReservations: ", error);
         return error;
@@ -223,6 +258,6 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
 
 
 export {
-    insertTableReservation, deleteTableReservation, getTableReservartionsByUsername, deleteExpiredReservations,
+    insertTableReservation, deleteTableReservation, getTableReservartionsByUsername, deleteExpiredReservations, updateTableReservation,
     insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation, getCulinaryExperienceReservartionsByUsername
 }

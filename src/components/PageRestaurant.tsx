@@ -153,6 +153,8 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
         date={undefined}
         hour={undefined}
         people={undefined}
+        specialRequest_={null}
+        isUpdate={false}
       />
     );
   }

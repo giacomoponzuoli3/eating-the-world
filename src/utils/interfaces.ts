@@ -36,6 +36,7 @@ export interface Reservation {
     imageUrl: string; 
     isSpecialExperience: boolean;
     language?: string;
+    special_request: string | null
 }
 
 export interface Question {
