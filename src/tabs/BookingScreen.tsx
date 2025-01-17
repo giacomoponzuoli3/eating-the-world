@@ -331,12 +331,12 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       />
       {isExpanded && (
         <View>
-          <Text style={stylesBookings.specialExperienceTitle}>Details</Text>
+          <Text style={stylesBookings.specialExperienceTitle}>Details special experience</Text>
           <Text style={stylesBookings.specialExperienceDescription}>
             {specialExperienceDetails[item.restaurantId].description}
           </Text>
           <Text style={stylesBookings.specialExperiencePrice}>
-            Price: {specialExperienceDetails[item.restaurantId].price}€
+            Price: {specialExperienceDetails[item.restaurantId].price}€ per person
           </Text>
         </View>
       )}
