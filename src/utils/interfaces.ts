@@ -39,11 +39,18 @@ export interface Reservation {
     id: number;
     restaurantId: number;
     restaurantName: string;
-    date: string; // Formato: 'YYYY-MM-DD'
+    date: string; // Formato: 'YYYY/MM/DD'
     time?: string; // Formato: 'HH:mm'
     numberOfGuests: number;
     imageUrl: string; 
     isSpecialExperience: boolean;
     language?: string;
-  }
+}
+
+export interface Question {
+    question: string;
+    explanation: string;
+    answers: string[];
+    correct: number;
+}
   

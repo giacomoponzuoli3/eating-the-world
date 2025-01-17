@@ -50,18 +50,21 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
     try{
         const db = await getDatabase();
 
+        const [year, month, day] = data.split('-');
+        const formattedDate = `${year}/${month}/${day}`;
+
         if(special_request == null){
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people)
                 VALUES(?, ?, ?, ?, ?)
             `;
-            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people]);
+            await db.runAsync(sql, [id_restaurant, username, formattedDate, hour, number_people]);
         }else{
             const sql = `
                 INSERT INTO table_reservations(id_restaurant, username, data, hour, number_people, special_request)
                 VALUES(?, ?, ?, ?, ?, ?)
             `;
-            await db.runAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
+            await db.runAsync(sql, [id_restaurant, username, formattedDate, hour, number_people, special_request]);
         }
 
     }catch(error){
@@ -105,18 +108,57 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
     try{
         const db = await getDatabase();
 
+        const [year, month, day] = data.split('-');
+        const formattedDate = `${year}/${month}/${day}`;
+
         const sql = `
-            INSERT INTO table_reservations(id_restaurant, username, data, number_people, price, id_language_selected)
+            INSERT INTO culinary_experience_reservations(id_restaurant, username, data, number_people, price, id_language_selected)
             VALUES(?, ?, ?, ?, ?, ?)
         `;
 
-        await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
+        await db.runAsync(sql, [id_restaurant, username, formattedDate, number_people, price, id_language_selected]);
 
     }catch(error){
-        console.error("Error in insertCulinaryExperienzeReservation: ", error);
+        console.error("Error in insertCulinaryExperienceReservation: ", error);
         return error;
     }
 }
+
+const deleteExpiredReservations = async () => {
+    try {
+        const db = await getDatabase();
+
+        // Ottieni l'orario corrente
+        const currentTime = new Date();
+
+        // Calcola l'orario limite (5 ore fa)
+        const timeLimit = new Date(currentTime.getTime() - 5 * 60 * 60 * 1000);
+
+        // Formatta la data e l'ora per SQLite
+        const formattedDate = timeLimit.toISOString().split('T')[0].replace(/-/g, '/'); // YYYY/MM/DD
+        const formattedTime = timeLimit.toTimeString().split(' ')[0].slice(0, 5); // HH:MM
+
+        // Elimina tutte le prenotazioni con data e ora passate
+        const sql = `
+            DELETE FROM table_reservations
+            WHERE (data < ?)
+            OR (data = ? AND hour <= ?)
+        `;
+
+        const sql2 = `
+            DELETE FROM culinary_experience_reservations
+            WHERE (data < ?)
+        `;
+
+        await db.runAsync(sql, [formattedDate, formattedDate, formattedTime]);
+        await db.runAsync(sql2, [formattedDate]);
+
+        console.log("Expired reservations deleted successfully.");
+    } catch (error) {
+        console.error("Error in deleteExpiredReservations: ", error);
+        return error;
+    }
+};
 
 /**
  * 
@@ -160,10 +202,12 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
             reservations.map(async (res: { id_restaurant: number, id_language_selected: number; }) => {
                 const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
                 const languageName = await db.getAllAsync(`SELECT name FROM languages WHERE id = ?`, [res.id_language_selected]);
+                const time = await db.getAllAsync(`SELECT start_hour FROM culinary_experience WHERE id_restaurant = ?`, [res.id_restaurant]);
                 const result = {
                     ...res,
                     restaurant_name: restaurantName[0].name,
                     language_name: languageName[0].name,
+                    time: time[0].start_hour,
                     // image_url: restaurant.image_url
                 };
                 return result;
@@ -179,6 +223,6 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
 
 
 export {
-    insertTableReservation, deleteTableReservation, getTableReservartionsByUsername,
+    insertTableReservation, deleteTableReservation, getTableReservartionsByUsername, deleteExpiredReservations,
     insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation, getCulinaryExperienceReservartionsByUsername
 }

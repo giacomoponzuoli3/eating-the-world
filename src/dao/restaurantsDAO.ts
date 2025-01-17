@@ -1,6 +1,11 @@
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 
+/**
+ * Funzione che restituisce tutti i tag di uno specifico ristorante
+ * @param id_restaurant id del ristorante di cui voglio sapere i vari tag
+ * @returns un array di tag di uno specifico ristorante
+ */
 const getTagsByRestaurant = async (id_restaurant: number) => {
     try{
         const db = await getDatabase();
@@ -273,8 +278,72 @@ const getDaysWeek = async () => {
     }
 }
 
+/**
+ * Funzione che ritorna i vari orari di apertura di un ristorante specificando anche il nome del pasto
+ * @param id_restaurant 
+ * @returns un array che contiene i vari orari di apertura di un determinato ristorante
+ */
+const getHoursByRestaurant = async (id_restaurant: number) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT dr.id_deal, dr.id_restaurant, td.name, hour_start_deal, hour_end_deal
+            FROM deals_restaurants dr, type_deals td
+            WHERE dr.id_deal = td.id AND id_restaurant = ? 
+        `;
+
+        const hours = await db.getAllAsync(sql, [id_restaurant]);
+
+        return hours ?? [];
+
+    }catch(error){
+        console.error("Error in getHoursByRestaurant: ", error);
+        return error;
+    }
+}
+
+
+/**
+ * Funzione che restituisce il numero delle persone che hanno prenotato ad un derminato ristorante
+ * Funzione che viene utilizzata per capire se il ristorante è pieno o meno
+ * @param id_restaurant 
+ * @param deal 
+ * @param hour_start_deal 
+ * @param hour_end_deal 
+ * @param date 
+ * @returns una riga in cui è memorizzata la somma del numero di persone prenotate in un ristorante per uno specifico pasto
+ */
+const getTableReservationsByHour_Date_Deal_Restaurant = async (id_restaurant: number, deal: string, hour_start_deal: string, hour_end_deal: string, date: string) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT tr.data, SUM(tr.number_people) AS num_people, td.name AS deal
+            FROM table_reservations tr, restaurants r, deals_restaurants dr, type_deals td
+            WHERE tr.id_restaurant = r.id 
+                AND r.id = dr.id_restaurant 
+                AND dr.id_deal = td.id
+                AND r.id = ?
+                AND tr.hour >= ?
+                AND tr.hour <= ?
+                AND td.name = ?
+                AND tr.data = ?
+            GROUP BY tr.data, td.name
+        `;
+
+        const result = await db.getAllAsync(sql, [id_restaurant, hour_start_deal, hour_end_deal, deal, date]);
+        
+        return result ?? [];
+
+    }catch(error){
+        console.error("Error in getTableReservationsByHour_Date_Deal_Restaurant: ", error);
+        return null;
+    }
+};
 
 export { 
-    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant
+    getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant, 
+    getHoursByRestaurant, getTableReservationsByHour_Date_Deal_Restaurant
 }
 

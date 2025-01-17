@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator, Alert } from 'react-native';
 import { stylesFavorite } from '../styles/stylesFavorites';
 
 import { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant } from '../dao/favoritesDAO';
@@ -46,16 +46,14 @@ const FavoritesScreen = (props: any) => {
   const showActionSheet = (id_restaurant: number, name_restaurant: string) => {
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        options: ['Remove from Favorites', 'Book a table', 'Cancel'],
-        cancelButtonIndex: 2, // L'indice del pulsante "Cancel"
+        options: ['Remove from Favorites', 'Cancel'],
+        cancelButtonIndex: 1, // L'indice del pulsante "Cancel"
         destructiveButtonIndex: 0, // L'indice del pulsante "Remove from list"
         title: name_restaurant
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
           deleteAction(id_restaurant);
-        } else if (buttonIndex === 1) {
-          console.log('Book a table selected');
         }
       }
     );
@@ -69,8 +67,25 @@ const FavoritesScreen = (props: any) => {
 
       setFavorites(getFavorites);
 
+      // Popup di conferma
+      Alert.alert(
+        "Success",
+        "The restaurant has been successfully removed from your favorites.",
+        [
+          { text: "OK", onPress: () => {} }
+        ]
+      );
+
     }catch(error){
       console.error("Error in delete favorite restaurant: ", error);
+
+      Alert.alert(
+        "Error",
+        "There was an issue removing the restaurant from your favorites. Please try again.",
+        [
+          { text: "OK", onPress: () => {} }
+        ]
+      );
     }
   }
 

@@ -25,7 +25,7 @@ export type User = {
 //dao
 import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
-import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername } from './src/dao/reservationsDAO';
+import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteExpiredReservations } from './src/dao/reservationsDAO';
 import { ActivityIndicator, Text, View } from "react-native";
 
 const App = () => {
@@ -37,7 +37,7 @@ const App = () => {
   const [user, setUser] = useState<User | undefined>(); //prende il primo utente presente nel db
   const [tableReservations, setTableReservations] = useState<any[]>([]);
   const [specialReservations, setSpecialReservations] = useState<any[]>([]);
-
+  const [qrCodeLink, setQrCodeLink] = useState<string>("https://example.com/profile/1");
 
 
   useEffect(() => {
@@ -69,7 +69,8 @@ const App = () => {
     };
 
     fetchRestaurants();
-    fetchUsers();
+    fetchUsers(); 
+  
   }, []);
 
   async function fetchBookings(): Promise<void> {
@@ -90,6 +91,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    deleteExpiredReservations();
     fetchBookings();
   }, [user]);
 
@@ -137,7 +139,7 @@ const App = () => {
             })}
           >
             <Tab.Screen name="Profile">
-                {() => <ProfileScreen user={user} users={users} setUser={setUser} />}
+                {() => <ProfileScreen user={user} users={users} setUser={setUser} qrCodeLink={qrCodeLink}/>}
               </Tab.Screen>
             <Tab.Screen name="Maps">
                 {() => <MapsScreen restaurants={restaurants} setRestaurants={setRestaurants} user={user}/>}
