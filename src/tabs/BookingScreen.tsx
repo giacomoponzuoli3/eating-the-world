@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
-import {deleteTableReservation, deleteCulinaryExperienceReservation} from '../dao/reservationsDAO';
+import {deleteTableReservation, deleteCulinaryExperienceReservation, deleteExpiredReservations} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getRestaurantById } from '../dao/restaurantsDAO';
@@ -14,6 +14,7 @@ import imagesRestaurants from '../utils/imagesRestaurants';
 import QuizScreen from '../components/Quiz';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
+import CameraScreen from '../components/Camera';
 
 interface BookingScreenProps{
   username: string;
@@ -27,7 +28,6 @@ type RootTabParamList = {
   Maps: undefined;
   Bookings: undefined;
   Favorites: undefined;
-  Camera: undefined;
 };
 
 const ConfirmationModal = ({ isVisible, onConfirm, onCancel }: { isVisible: boolean, onConfirm: () => void, onCancel: () => void }) => {
@@ -157,8 +157,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
 
   const handleQuiz = () => {
     setIsQuizVisible(true);
-    setIsModalQuizVisible(false);
-    navigation.navigate('Camera');
   }
 
   const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
@@ -197,10 +195,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   }
   };
 
-  /*if (isQuizVisible && showCamera) {
-    navigation.navigate('Camera');
-  }*/
-
   const handleViewQRCode = async(restaurantId: number) => {
     const restaurantState = restaurantStates[restaurantId];
     if (restaurantState && restaurantState.hasDiscount) {
@@ -211,6 +205,10 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       setQrCode(savedQrCode); // Aggiorna lo stato con il QR code recuperato
       setIsQRCodeVisible(true); // Mostra il QR code
     }
+  };
+
+  const handleQrData = () => {
+    setShowCamera(false); 
   };
 
   const renderReservation = ({ item }: { item: Reservation }) => {
@@ -364,7 +362,10 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     </View>
     </>
   )}
-    {isQuizVisible && !showCamera && ( 
+    {isQuizVisible && (
+      showCamera ? (
+        <CameraScreen onQrScanned={handleQrData} />
+      ) : (
         <QuizScreen
         id_restaurant={item.restaurantId}
         onFinish={() => {
@@ -373,7 +374,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         }}
         handleQuizCompletion={handleQuizCompletion}
       />  
-    )}
+    ))}
   </View>
     );
 };
