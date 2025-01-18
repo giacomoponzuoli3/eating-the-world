@@ -18,6 +18,7 @@ import CameraScreen from '../components/Camera';
 import { BookTable } from '../components/BookTable';
 import { CulinaryExperienceComponent } from '../components/CulinaryExperienceComponent';
 import { BookCulinaryExperience } from '../components/BookCulinaryExperience';
+import { fontFamily } from '../constants/fontFamily';
 
 interface BookingScreenProps{
   user: any;
@@ -63,7 +64,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalQuizVisible, setIsModalQuizVisible] = useState(false);
   const [restaurantDescription, setRestaurantDescription] = useState('');
-  const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string; } }>({});
+  const [specialExperienceDetails, setSpecialExperienceDetails] = useState<{ [key: number]: { description: string; price: string;} }>({});
   const [isQuizVisible, setIsQuizVisible] = useState(false); 
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Bookings'>>();  
   const [labelOpacity] = useState(new Animated.Value(0)); // Opacità animata della label
@@ -110,7 +111,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
       time: res.hour, 
       numberOfGuests: res.number_people,
       isSpecialExperience: false,
-      imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
       special_request: res.special_request
     }));
 
@@ -123,7 +123,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
       isSpecialExperience: true,
       language: {id: res.id_language_selected, name: res.name},
       time: res.time,
-      imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
       special_request: null
     }));
 
@@ -231,7 +230,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   };
 
   const handleQrData = () => {
-    console.log("QR Code Data:");
     setIsCameraVisible(false);
     setIsQuizVisible(true);
   };
@@ -367,9 +365,18 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
                   <Text style={stylesBookings.specialExperienceDescription}>
                     {specialExperienceDetails[item.restaurantId].description}
                   </Text>
-                  <Text style={stylesBookings.specialExperiencePrice}>
-                    Price: {specialExperienceDetails[item.restaurantId].price}€ per person
-                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={stylesBookings.specialExperiencePrice}>Price: </Text>
+                    <Text style={[stylesBookings.specialExperiencePrice, {fontFamily:'Poppins-Light'}]}>
+                      {specialExperienceDetails[item.restaurantId].price}€ per person
+                    </Text>
+                  </View>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={stylesBookings.specialExperiencePrice}>Language: </Text>
+                    <Text style={[stylesBookings.specialExperiencePrice, {fontFamily:'Poppins-Light'}]}>
+                      {item.language && item.language.name}
+                    </Text>
+                  </View>
                 </View>
               )}
               {isQRCodeVisible && qrCode && (
@@ -451,7 +458,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
         time: res.hour, 
         numberOfGuests: res.number_people,
         isSpecialExperience: false,
-        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
         special_request: res.special_request
       }));
 
@@ -466,7 +472,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
         isSpecialExperience: true,
         language: res.language,
         time: res.time,
-        imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
         special_request: null
       }));
 

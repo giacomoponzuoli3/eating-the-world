@@ -33,7 +33,6 @@ export interface Reservation {
     date: string; // Formato: 'YYYY/MM/DD'
     time?: string; // Formato: 'HH:mm'
     numberOfGuests: number;
-    imageUrl: string; 
     isSpecialExperience: boolean;
     language?: any;
     special_request: string | null
