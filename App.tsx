@@ -27,7 +27,6 @@ import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteExpiredReservations } from './src/dao/reservationsDAO';
 import { ActivityIndicator, Text, View } from "react-native";
-import CameraScreen from "./src/components/Camera";
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
@@ -39,10 +38,6 @@ const App = () => {
   const [tableReservations, setTableReservations] = useState<any[]>([]);
   const [specialReservations, setSpecialReservations] = useState<any[]>([]);
   const [qrCodeLink, setQrCodeLink] = useState<string>("https://example.com/profile/1");
-
-  const handleQrData = () => {
-    console.log('Boh')
-  };
 
 
   useEffect(() => {
@@ -154,9 +149,6 @@ const App = () => {
             </Tab.Screen> 
             <Tab.Screen name="Favorites">
               {() => <FavoritesScreen user={user}/>}
-            </Tab.Screen>
-            <Tab.Screen name="Camera">
-              {() => <CameraScreen onQrScanned={handleQrData} />}
             </Tab.Screen>
           </Tab.Navigator>
         </NavigationContainer>

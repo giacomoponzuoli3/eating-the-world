@@ -1,26 +1,27 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { FC, useState } from 'react';
-import { Button, Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Button, Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';  // Assicurati di avere questa importazione
 
 const {height} = Dimensions.get("window");
 
-interface CameraScreenProps{
-    onQrScanned: () => void;
-  }  
+interface CameraScreenProps {
+  onQrScanned: () => void;
+  onClose: () => void;  
+}
 
-const CameraScreen: FC<CameraScreenProps> = ({ onQrScanned }) => {
+const CameraScreen: FC<CameraScreenProps> = ({ onQrScanned, onClose }) => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [qrData, setQrData] = useState<string | null>(null);
 
   const handleBarCodeScanned = (scanningResult: any) => {
-    const { data } = scanningResult; // Ottieni i dati dal risultato della scansione
+    const { data } = scanningResult;
     console.log("dati", data);
     setQrData(data);
   };
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View/>;
   }
 
@@ -35,20 +36,30 @@ const CameraScreen: FC<CameraScreenProps> = ({ onQrScanned }) => {
   }
 
   if (qrData) {
-    // Se i dati del QR code sono disponibili, mostra il quiz
     onQrScanned();
-    console.log('preso');
   }
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity 
+        style={styles.closeButton} 
+        onPress={onClose}
+      >
+        <Icon name="times" size={24} color="white" />
+      </TouchableOpacity>
+
       <CameraView 
         style={styles.camera} 
         facing={facing}
         barcodeScannerSettings={{
           barcodeTypes: ["qr"],
         }}
-        onBarcodeScanned={handleBarCodeScanned}
+        onBarcodeScanned={(data) => {
+          handleBarCodeScanned(data);
+        }}
+        onMountError={(error) => {
+          console.error("Errore durante il montaggio della fotocamera:", error);
+        }}
       />
     </View>
   );
@@ -62,6 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: height - 170,
     overflow: 'hidden',
+    position: 'relative', 
   },
   message: {
     textAlign: 'center',
@@ -69,6 +81,14 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    //backgroundColor: 'blue'
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 5,
+    right: 4,
+    zIndex: 10,
+    padding: 4,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
 });

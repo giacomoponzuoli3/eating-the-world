@@ -64,7 +64,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [restaurantStates, setRestaurantStates] = useState<{[key: number]: { quizCompleted: boolean, hasDiscount: string | null }}>({});
   const [qrCode, setQrCode] = useState<string | null>(null); 
-  const [showCamera, setShowCamera] = useState(true);
+  const [isCameraVisible, setIsCameraVisible] = useState(false);
 
   const fetchSpecialExperienceDetails = async (id: number) => {
     const details = await getCulinaryExperiencesByRestaurant(id);
@@ -155,11 +155,14 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     }, [])
   );
 
-  const handleQuiz = () => {
-    setIsQuizVisible(true);
-  }
 
   const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
+
+    const openCamera = () => {
+      onClose();
+      setIsCameraVisible(true);
+    };
+
     return (
         <Modal
           isVisible={isVisible}
@@ -177,7 +180,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
           Scan the QR code on the table to access a quick quiz about the history of the dishes and ingredients at our restaurant. If you score enough points, you'll receive a special discount at the checkout!
           </Text>
           
-          <TouchableOpacity style={stylesBookings.scanButton} onPress={() => handleQuiz()}>
+          <TouchableOpacity style={stylesBookings.scanButton} onPress={() => openCamera()}>
             <Text style={stylesBookings.scanButtonText}>Scan QR Code</Text>
           </TouchableOpacity>
           </View>
@@ -208,7 +211,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
   };
 
   const handleQrData = () => {
-    setShowCamera(false); 
+    console.log("QR Code Data:");
+    setIsCameraVisible(false);
+    setIsQuizVisible(true);
   };
 
   const renderReservation = ({ item }: { item: Reservation }) => {
@@ -279,7 +284,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
                 {!item.isSpecialExperience && !restaurantState.quizCompleted ? ( 
                     <View>
                       <TouchableOpacity 
-                        onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId)}
+                        onPress={() => isLearnAndEarnEnabled && openModalQuiz(item.restaurantId) }
                         onPressIn={() => handlePressIn(item.id)}
                         style={[stylesBookings.actionButton, !isLearnAndEarnEnabled && stylesBookings.disabledButton]}>
                         <View style={stylesBookings.actionButtonContent}>
@@ -362,10 +367,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
     </View>
     </>
   )}
+
     {isQuizVisible && (
-      showCamera ? (
-        <CameraScreen onQrScanned={handleQrData} />
-      ) : (
         <QuizScreen
         id_restaurant={item.restaurantId}
         onFinish={() => {
@@ -374,12 +377,16 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
         }}
         handleQuizCompletion={handleQuizCompletion}
       />  
-    ))}
+    )}
   </View>
     );
 };
 
   return (
+    <>
+    {isCameraVisible ? (
+      <CameraScreen onQrScanned={handleQrData} onClose={() => setIsCameraVisible(false)} />
+    ) : (
     <View style={{flex: 1}}>
       {allReservations.length > 0 ? (
       <FlatList
@@ -406,6 +413,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({username, tableBookings, specia
       </View>
     )}
       </View>
+    )}
+    </>
   );
 };
 
