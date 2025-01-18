@@ -84,6 +84,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
       {
         options: options,
         cancelButtonIndex: options.length - 1,
+        destructiveButtonIndex: options.length - 1,
       },
       (buttonIndex) => {
         if (buttonIndex !== options.length - 1) {
