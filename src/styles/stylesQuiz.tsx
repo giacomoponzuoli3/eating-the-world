@@ -13,7 +13,7 @@ export const stylesQuiz = StyleSheet.create({
       closeButton: {
         top: 10,
         position: 'relative',
-        left: 370,
+        left: 350,
       },
       questionText: {
         fontSize: 17,
@@ -171,7 +171,7 @@ export const stylesQuiz = StyleSheet.create({
       crossButton: {
         top: 10,
         position: 'absolute',
-        left: 370,
+        left: 350,
         zIndex: 1
       },  
 
