@@ -33,6 +33,7 @@ const markerImages: { [key: string]: any } = {
   "Lactose-Free": require('../../assets/img/restaurantMarkers/Lactose-Free.png'),
   "Gluten-Free": require('../../assets/img/restaurantMarkers/Gluten-Free.png'),
   "Fish": require('../../assets/img/restaurantMarkers/Fish.png'),
+  "Cafeteria" : require("../../assets/img/restaurantMarkers/Cafeteria.png")
 };
 
 const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
@@ -44,7 +45,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const mapRef = React.useRef<MapView>(null);
 
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  
 
   useEffect(() => {
     const setupLocation = async () => {
@@ -104,7 +104,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
     fetchRestaurants();
   }, [filters]);
   
-
   // Function to center the map on the user's current location
   const centerOnUserLocation = async () => {
     const location = await getCurrentLocation();
@@ -171,8 +170,12 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
                   }}
                   title={restaurantMarker.restaurant.name}
                   description={restaurantMarker.restaurant.description}
-                  image={markerImages[restaurantMarker.restaurant.tags[0]]}
                 >
+                  <Image
+                    source={markerImages[restaurantMarker.restaurant.tags[0]?.name] || require('../../assets/img/restaurantMarkers/favicon.png')}
+                    style={{ width: 40, height: 40 }} 
+                    resizeMode="contain"
+                  />
                   <Callout
                     onPress={() => {
                       setSelectedRestaurant(restaurantMarker.restaurant)
