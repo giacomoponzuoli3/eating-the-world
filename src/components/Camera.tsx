@@ -13,12 +13,12 @@ interface CameraScreenProps {
 const CameraScreen: FC<CameraScreenProps> = ({ onQrScanned, onClose }) => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [qrData, setQrData] = useState<string | null>(null);
 
   const handleBarCodeScanned = (scanningResult: any) => {
     const { data } = scanningResult;
-    console.log("dati", data);
-    setQrData(data);
+    if (data){
+      onQrScanned();
+    }
   };
 
   if (!permission) {
@@ -29,14 +29,14 @@ const CameraScreen: FC<CameraScreenProps> = ({ onQrScanned, onClose }) => {
     return (
       <View style={styles.container}>
         <Text style={styles.message}>Eating The World would Like to access the camera</Text>
-        <Button onPress={requestPermission} title="Allow" />
-        <Button onPress={requestPermission} title="Don't allow" />
+        <TouchableOpacity onPress={requestPermission} style={styles.button}>
+          <Text style={styles.buttonText}>Allow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={requestPermission} style={styles.button}>
+          <Text style={styles.buttonText}>Don't allow</Text>
+        </TouchableOpacity>
       </View>
     );
-  }
-
-  if (qrData) {
-    onQrScanned();
   }
 
   return (
@@ -78,6 +78,10 @@ const styles = StyleSheet.create({
   message: {
     textAlign: 'center',
     paddingBottom: 10,
+    fontSize: 18,
+    width: '80%',
+    alignSelf: 'center',
+    fontFamily: 'Poppins-Light',
   },
   camera: {
     flex: 1,
@@ -90,5 +94,28 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 10,
     backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  button: {
+    backgroundColor: '#6200ee',  
+    paddingVertical: 12,         
+    paddingHorizontal: 10,       
+    borderRadius: 25,            
+    justifyContent: 'center',    
+    alignItems: 'center',        
+    marginTop: 20,               
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 2 },  
+    shadowOpacity: 0.4,          
+    shadowRadius: 4,    
+    color: '#fff',               
+    fontSize: 18,                
+    fontFamily: 'Poppins-Light'  ,
+    width: '40%',  
+    alignSelf: 'center',    
+  },
+  buttonText: {
+    color: '#fff',               
+    fontSize: 16,                
+    fontFamily: 'Poppins-Light'
   },
 });
