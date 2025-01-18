@@ -32,106 +32,78 @@ const getTagsByRestaurant = async (id_restaurant: number) => {
 const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | null> => {
     try {
         const db = await getDatabase();
-        let results: Restaurant[] = [];
-        console.log(filters)
-        if (!filters) {
-            // Nessun filtro applicato
-            results = await db.getAllAsync('SELECT * FROM restaurants', []);
-        } else {
-            const { typeOfMeal, specialExperience, openNow } = filters;
-            const hours = new Date().getHours();
+        let query = `
+            SELECT DISTINCT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, printf("%.2f", AVG(d.price)) AS price_range, r.phone_number
+            FROM restaurants r
+            LEFT JOIN deals_restaurants dr ON r.id = dr.id_restaurant
+            LEFT JOIN type_deals td ON dr.id_deal = td.id
+            LEFT JOIN culinary_experience ce ON r.id = ce.id_restaurant
+            LEFT JOIN tags_restaurants tr ON r.id = tr.id_restaurant
+            LEFT JOIN tags t ON tr.id_tag = t.id
+            LEFT JOIN dishes d ON r.id = d.id_restaurant
+            WHERE 1=1
+        `;
 
-            // Calcola i diversi percorsi in base ai filtri
-            if (typeOfMeal && specialExperience && openNow) {
-                // Tutti i filtri applicati
-                results = await db.getAllAsync(
-                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
-                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
-                     AND ce.id_restaurant = r.id 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [typeOfMeal, hours, hours]
-                );
-            } else if (typeOfMeal && specialExperience) {
-                // Filtro su typeOfMeal e specialExperience
-                results = await db.getAllAsync(
-                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r, culinary_experience ce 
-                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
-                     AND ce.id_restaurant = r.id
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [typeOfMeal]
-                );
-            } else if (typeOfMeal && openNow) {
-                // Filtro su typeOfMeal e openNow
-                results = await db.getAllAsync(
-                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
-                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ? 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [typeOfMeal, hours, hours]
-                );
-            } else if (specialExperience && openNow) {
-                // Filtro su specialExperience e openNow
-                results = await db.getAllAsync(
-                    `SELECT * FROM deals_restaurants dr, restaurants r, culinary_experience ce 
-                     WHERE ce.id_restaurant = r.id 
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [hours, hours]
-                );
-            } else if (typeOfMeal) {
-                // Solo filtro su typeOfMeal
-                results = await db.getAllAsync(
-                    `SELECT * FROM type_deals td, deals_restaurants dr, restaurants r 
-                     WHERE dr.id_deal = td.id AND r.id = dr.id_restaurant AND td.name = ?
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [typeOfMeal]
-                );
-            } else if (specialExperience) {
-                // Solo filtro su specialExperience
-                results = await db.getAllAsync(
-                    `SELECT * FROM restaurants r, culinary_experience ce 
-                     WHERE ce.id_restaurant = r.id
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    []
-                );
-            } else if (openNow) {
-                // Solo filtro su openNow
-                results = await db.getAllAsync(
-                    `SELECT * FROM deals_restaurants dr, restaurants r 
-                     WHERE dr.id_restaurant = r.id
-                     AND hour_start_deal <= ? AND hour_end_deal >= ?
-                     GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`,
-                    [hours, hours]
-                );
+        const queryParams: any[] = [];
+        const hours = new Date().getHours();
+
+        if (filters) {
+            const { typeOfMeal, foodRestrictions, priceRange, specialExperience, openNow } = filters;
+
+            // Filtro per tipo di pasto (typeOfMeal)
+            if (typeOfMeal) {
+                query += ` AND td.name = ?`;
+                queryParams.push(typeOfMeal);
+            }
+
+            // Filtro per esperienza speciale (specialExperience)
+            if (specialExperience) {
+                query += ` AND r.culinary_experience = 1`;
+                queryParams.push(specialExperience);
+            }
+
+            // Filtro per ristoranti aperti ora (openNow)
+            if (openNow) {
+                query += ` AND dr.hour_start_deal <= ? AND dr.hour_end_deal >= ?`;
+                queryParams.push(hours, hours);
+            }
+
+            // Filtro per restrizioni alimentari (foodRestrictions)
+            if (foodRestrictions) {
+                query += ` AND t.name = ?`;
+                queryParams.push(foodRestrictions);
+            }
+
+            // Filtro per range di prezzo (priceRange)
+            if (priceRange) {
+                // Estrai i valori min e max dal range (es. "10 - 30 $" => [10, 30])
+                const [minPrice, maxPrice] = priceRange.replace('$', '').split('-').map(s => parseFloat(s.trim()));
+                query += ` AND d.price BETWEEN ? AND ?`;
+                queryParams.push(minPrice, maxPrice);
             }
         }
 
-        // const sql = `
-        //         SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, AVG(d.price) AS price_range
-        //         FROM restaurants AS r, dishes d
-        //         WHERE r.id = d.id_restaurant
-        //         GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience
-        // `;
+        // Gruppo per evitare duplicati
+        query += ` GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`;
 
-        // const results: any[] = await db.getAllAsync(sql, []);
-        console.log('Ristoranti trovati:', results);
+        // Esegui la query
+        const results: Restaurant[] = await db.getAllAsync(query, queryParams);
 
         const resultWithTags = await Promise.all(results.map(async (row: any) => {
-            const tags = await getTagsByRestaurant(row.id); // Assicurati che questa funzione ritorni un array o un valore corretto
+            const tags = await getTagsByRestaurant(row.id); 
             return {
                 ...row,
-                tags, // Aggiungi i tags all'oggetto della riga
+                tags, 
             };
         }));
-    
 
         return resultWithTags ?? null;
     } catch (error) {
         console.error('Error in the getRestaurants: ', error);
         return null;
     }
-}
+};
+
 
 /**
  * get all the restaurants associated with a specific type of deal

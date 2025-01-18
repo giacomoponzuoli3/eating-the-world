@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons"; // Icone da Expo
+import * as eva from '@eva-design/eva';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 //components
 import { ProfileScreen } from './src/tabs/ProfileScreen';
@@ -27,6 +28,7 @@ import { getRestaurants } from "./src/dao/restaurantsDAO";
 import { getUsers } from "./src/dao/usersDAO";
 import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername, deleteExpiredReservations } from './src/dao/reservationsDAO';
 import { ActivityIndicator, Text, View } from "react-native";
+import { ApplicationProvider } from "@ui-kitten/components";
 
 const App = () => {
   const [fontsLoaded] = loadFonts();
@@ -108,7 +110,7 @@ const App = () => {
   }
 
   return (
-    <>
+    <ApplicationProvider {...eva} theme={eva.light}>
       {user && restaurants &&
         <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer>
@@ -141,9 +143,11 @@ const App = () => {
             <Tab.Screen name="Profile">
                 {() => <ProfileScreen user={user} users={users} setUser={setUser} qrCodeLink={qrCodeLink}/>}
               </Tab.Screen>
+            
             <Tab.Screen name="Maps">
                 {() => <MapsScreen restaurants={restaurants} setRestaurants={setRestaurants} user={user}/>}
             </Tab.Screen>
+            
             <Tab.Screen name="Bookings">
                 {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
             </Tab.Screen> 
@@ -154,7 +158,7 @@ const App = () => {
         </NavigationContainer>
         </GestureHandlerRootView>
       }
-    </>
+    </ApplicationProvider>
   );
 };
 

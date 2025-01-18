@@ -107,6 +107,20 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
     }
   };
 
+  const handleSelectRestaurant = async (restaurant: Restaurant) => {
+    if(restaurant.address){
+      const coordinates = await getCoordinatesFromAddress(restaurant.address);
+      if(coordinates){
+        mapRef.current?.animateToRegion({
+          latitude: coordinates.lat,
+          longitude: coordinates.lng,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        });
+      }
+    }
+  }
+
   return (
     
     <View style={styles.container}>
@@ -116,7 +130,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
           user={user}
           onClose={() => {
             setSelectedRestaurant(null);
-          }} // Funzione per chiudere il componente
+          }}
         />
       ) : (
         <>
@@ -161,10 +175,13 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
             </MapView>
           )}
           {/* Searchbar */}
-          <SearchWithFilter setFilters={setFilters} setShowRestaurantNotFound={setShowRestaurantNotFound} />
+          <SearchWithFilter restaurants={restaurants} 
+            onSelectRestaurant={handleSelectRestaurant} 
+            setFilters={setFilters}
+            />
           {/* Center User Location Button */}
           <TouchableOpacity style={styles.locationButton} onPress={centerOnUserLocation}>
-            <FontAwesome5 name={"location-arrow"} size={25} color={"black"} />
+            <FontAwesome5 name={"location-arrow"} size={18} color={"black"} />
           </TouchableOpacity>
           {showRestaurantNotFound && (
             <RestaurantNotFound onClose={() => setShowRestaurantNotFound(false)} />
@@ -190,14 +207,17 @@ const styles = StyleSheet.create({
   locationButton: {
     position: 'absolute',
     bottom: 20,
-    right: 20,
+    right: 10,
+    width: 50,
+    height: 50,
     backgroundColor: 'white',
-    padding: 18,
-    borderRadius: 30,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.7,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
     elevation: 5,
   },
   markerImage:{

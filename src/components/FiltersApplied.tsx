@@ -89,16 +89,17 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 100,
-    width: "90%",
+    top: 80,
+    width: "95%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    zIndex: 1,
+    zIndex: 0,
   },
   scrollContainer: {
     gap: 10,
+    paddingBottom: 20
   },
   filterBox: {
     display: "flex",
@@ -109,11 +110,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     gap: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   text: {
     fontSize: 12,

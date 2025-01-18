@@ -1,248 +1,354 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
-import { CheckBox } from "react-native-elements";
-import { FiltersOptions } from "../utils/interfaces";
+import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Platform, Modal, Text } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { BlurView } from 'expo-blur';
+import { MaterialIcons } from '@expo/vector-icons';
+import { CheckBox } from 'react-native-elements';
+import { FiltersOptions } from '../utils/interfaces';
 
 interface FiltersProps {
   setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
   onClose: () => void;
+  visible: boolean;
 }
 
-const typeOfMeal = [
+interface FilterItem {
+  label: string;
+  value: string;
+}
+
+const typeOfMeal: FilterItem[] = [
   { label: 'Breakfast', value: 'Breakfast' },
   { label: 'Brunch', value: 'Brunch' },
   { label: 'Lunch', value: 'Lunch' },
   { label: 'Dinner', value: 'Dinner' },
 ];
 
-const foodRestrictions = [
+const foodRestrictions: FilterItem[] = [
+  { label: 'Traditional', value: 'Traditional' },
+  { label: 'Pizza', value: 'Pizza' },
+  { label: 'Pasta', value: 'Pasta' },
+  { label: 'Sushi', value: 'Sushi' },
   { label: 'Vegan', value: 'Vegan' },
-  { label: 'Celiac', value: 'Celiac' },
-  { label: 'Lactose free', value: 'Lactose Free' },
+  { label: 'Vegetarian', value: 'Vegetarian' },
+  { label: 'Gluten Free', value: 'Gluten-Free' },
+  { label: 'Lactose Free', value: 'Lactose-Free' },
+  { label: 'Salads', value: 'Salads' },
+  { label: 'Local', value: 'Local' },
+  { label: 'Modern', value: 'Modern' },
+  { label: 'Cafeteria', value: 'Cafeteria' },
+  { label: 'Gourmet', value: 'Gourmet' },
+  { label: 'Fish', value: 'Fish' },
 ];
 
-const priceRange = [
+const priceRange: FilterItem[] = [
   { label: '0 - 10 $', value: '0-10 $' },
   { label: '10 - 30 $', value: '10-30 $' },
   { label: '30 - 80 $', value: '30-80 $' },
   { label: '80+ $', value: '80+ $' },
 ];
 
-const distance = [
+const distance: FilterItem[] = [
   { label: 'Nearby', value: 'Nearby' },
   { label: 'Within 5km', value: 'Within 5km' },
   { label: 'Within 10km', value: 'Within 10km' },
   { label: 'Any distance', value: 'Any distance' },
 ];
 
-const Filters: FC<FiltersProps> = ({setFilters, onClose}) => {
-  const [mealType, setMealType] = useState<string | undefined>(undefined);
-  const [foodRestriction, setFoodRestriction] = useState<string | undefined>(undefined);
-  const [priceRangeValue, setPriceRangeValue] = useState<string | undefined>(undefined);
-  const [distanceValue, setDistanceValue] = useState<string | undefined>(undefined); 
-  const [specialExperienceFilter, setSpecialExperienceFilter] = useState<boolean>(false);
-  const [openNowFlter, setOpenNowFilter] = useState<boolean>(false);
-  
-  const reset = () => {
-    setMealType(undefined);
-    setFoodRestriction(undefined);
-    setPriceRangeValue(undefined);
-    setDistanceValue(undefined);
-    setSpecialExperienceFilter(false);
-    setOpenNowFilter(false);
-  }
-  const handleResetButton = () => {
-    reset();
-  }
-
-  const handleApplyButton = async () => {
-    setFilters({
-      typeOfMeal: mealType,
-      foodRestrictions: foodRestriction,
-      priceRange: priceRangeValue,
-      distance: distanceValue,
-      specialExperience: specialExperienceFilter,
-      openNow: openNowFlter,
-    });
-    reset();
-    onClose();
-  }
+const FilterSelect: FC<{
+  label: string;
+  value: string;
+  items: FilterItem[];
+  onValueChange: (value: string) => void;
+}> = ({ label, value, items, onValueChange }) => {
+  const [showPicker, setShowPicker] = useState(false);
 
   return (
-    <View style={styles.filtersWindow}>
-      <View style={styles.arrow}></View>
-      <Text style={styles.filtersTitle}>Filter Options</Text>
-      <View style={styles.filtersDropdownRow}>
-        <View style={styles.dropdownContainer}>
-          <Dropdown
-            style={[
-              styles.dropdown,
-              mealType ? styles.dropdownSelected : null,
-            ]}
-            selectedTextStyle={{fontWeight: "bold"}}
-            placeholder="Type of Meal"
-            data={typeOfMeal}
-            labelField={"label"}
-            valueField={"value"}
-            value={mealType}
-            onChange={item => setMealType(item.value)}
-            activeColor="lightblue"
-          />
+    <View style={styles.selectContainer}>
+      <TouchableOpacity
+        style={styles.selectButton}
+        onPress={() => setShowPicker(true)}
+      >
+        <Text style={styles.selectLabel}>{label}</Text>
+        <View style={styles.selectValue}>
+          <Text style={styles.valueText}>
+            {value ? items.find(item => item.value === value)?.label : 'Select...'}
+          </Text>
+          <MaterialIcons name="keyboard-arrow-down" size={24} color="#666" />
         </View>
-        <View style={styles.dropdownContainer}>
-          <Dropdown
-            style={[
-              styles.dropdown,
-              foodRestriction ? styles.dropdownSelected : null,
-            ]}
-            selectedTextStyle={{fontWeight: "bold"}}
-            placeholder="Restrictions"
-            data={foodRestrictions}
-            labelField={"label"}
-            valueField={"value"}
-            value={foodRestriction}
-            onChange={item => setFoodRestriction(item.value)}
-          />
-        </View>
-        </View>
-        <View style={styles.filtersDropdownRow}>
-          <View style={styles.dropdownContainer}>
-            <Dropdown
-              style={[
-                styles.dropdown,
-                priceRangeValue ? styles.dropdownSelected : null,
-              ]}
-              selectedTextStyle={{fontWeight: "bold"}}
-              placeholder="Price Range"
-              data={priceRange}
-              labelField={"label"}
-              valueField={"value"}
-              value={priceRangeValue}
-              onChange={item => setPriceRangeValue(item.value)}
-            />
+      </TouchableOpacity>
+
+      <Modal
+        visible={showPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPicker(false)}
+      >
+        <BlurView intensity={Platform.OS === 'ios' ? 30 : 100} style={styles.pickerModalOverlay}>
+          <View style={styles.pickerModalContent}>
+            <View style={styles.pickerHeader}>
+              <TouchableOpacity onPress={() => setShowPicker(false)}>
+                <Text style={styles.pickerDoneButton}>Done</Text>
+              </TouchableOpacity>
+            </View>
+            <Picker
+              selectedValue={value}
+              onValueChange={(itemValue) => {
+                onValueChange(itemValue);
+                Platform.OS === 'android' && setShowPicker(false);
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select..." value="" />
+              {items.map((item) => (
+                <Picker.Item
+                  key={item.value}
+                  label={item.label}
+                  value={item.value}
+                />
+              ))}
+            </Picker>
           </View>
-          <View style={styles.dropdownContainer}>
-            <Dropdown
-              style={[
-                styles.dropdown,
-                distanceValue ? styles.dropdownSelected : null,
-              ]}
-              selectedTextStyle={{fontWeight: "bold"}}
-              placeholder="Distance"
-              data={distance}
-              labelField={"label"}
-              valueField={"value"}
-              value={distanceValue}
-              onChange={item => setDistanceValue(item.value)}
-            />
-          </View>
-        </View>
-        <View style={styles.filtersDropdownRow}>
-          <View style={styles.checkboxContainer}>
-              <CheckBox 
-                  containerStyle={styles.checkbox}
-                  style={styles.checkbox}
-                  title={<Text>Special Experience</Text>}
-                  checked={specialExperienceFilter}
-                  onPress={() => setSpecialExperienceFilter(prev => ! prev)}
-              />
-          </View>
-          <View style={styles.checkboxContainer}>
-              <CheckBox 
-                  containerStyle={styles.checkbox}
-                  title={<Text>Open Now</Text>}
-                  checked={openNowFlter}
-                  onPress={() => setOpenNowFilter(prev => ! prev)}
-                  />
-          </View>
-        </View>
-      <View style={styles.buttonsContainer}>
-        <Button 
-            title="Reset" 
-            onPress={() => handleResetButton()}
-            color={"red"}
-        />
-        <Button 
-            title="Apply" 
-            onPress={() => handleApplyButton()}
-        />
-      </View>
+        </BlurView>
+      </Modal>
     </View>
   );
 };
 
+const Filters: FC<FiltersProps> = ({ setFilters, onClose, visible }) => {
+  const [mealType, setMealType] = useState<string>('');
+  const [foodRestriction, setFoodRestriction] = useState<string>('');
+  const [selectedPriceRange, setPriceRange] = useState<string>('');
+  const [selectedDistance, setDistance] = useState<string>('');
+  const [selectedSpecialExperience, setSelectedSpecialExperience] = useState<boolean>(false);
+  const [selectedOpenNow, setSelectedOpenNow] = useState<boolean>(false);
+
+  const handleResetButton = () => {
+    setMealType('');
+    setFoodRestriction('');
+    setPriceRange('');
+    setDistance('');
+    setSelectedSpecialExperience(false);
+    setSelectedOpenNow(false);
+  };
+
+  const handleApplyButton = () => {
+    setFilters({
+      typeOfMeal: mealType || undefined,
+      foodRestrictions: foodRestriction || undefined,
+      priceRange: selectedPriceRange || undefined,
+      distance: selectedDistance || undefined,
+      specialExperience: selectedSpecialExperience || undefined,
+      openNow: selectedOpenNow || undefined
+    });
+    onClose();
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <BlurView intensity={90} style={styles.container}>
+        <View style={styles.filtersWindow}>
+          <View style={styles.header}>
+            <Text style={styles.filtersTitle}>Filters</Text>
+            <TouchableOpacity onPress={onClose}>
+              <MaterialIcons name="close" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.filtersContent}>
+            <FilterSelect
+              label="Type of Meal"
+              value={mealType}
+              items={typeOfMeal}
+              onValueChange={setMealType}
+            />
+            <FilterSelect
+              label="Food Restrictions"
+              value={foodRestriction}
+              items={foodRestrictions}
+              onValueChange={setFoodRestriction}
+            />
+            <FilterSelect
+              label="Price Range"
+              value={selectedPriceRange}
+              items={priceRange}
+              onValueChange={setPriceRange}
+            />
+            <FilterSelect
+              label="Distance"
+              value={selectedDistance}
+              items={distance}
+              onValueChange={setDistance}
+            />
+            <View style={styles.checkboxContainer}>
+              <CheckBox
+                title="Special Experience"
+                checked={selectedSpecialExperience}
+                checkedColor="rgba(90, 0, 230, 1)"
+                onPress={() => setSelectedSpecialExperience(!selectedSpecialExperience)}
+                containerStyle={styles.checkbox}
+                textStyle={styles.checkboxText}
+              />
+              <CheckBox
+                title="Open Now"
+                checked={selectedOpenNow}
+                checkedColor="rgba(90, 0, 230, 1)"
+                onPress={() => setSelectedOpenNow(!selectedOpenNow)}
+                containerStyle={styles.checkbox}
+                textStyle={styles.checkboxText}
+              />
+            </View>
+          </View>
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={[styles.button, styles.resetButton]}
+              onPress={handleResetButton}
+            >
+              <Text style={styles.resetButtonText}>Reset</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.applyButton]}
+              onPress={handleApplyButton}
+            >
+              <Text style={styles.applyButtonText}>Apply</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </BlurView>
+    </Modal>
+  );
+};
+
 const styles = StyleSheet.create({
-  filtersWindow: {
-    position: "absolute",
-    top: 80, 
-    left: -10,
-    width: "110%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3,
-    elevation: 5,
-    zIndex: 2,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  arrow: {
-    position: "absolute",
-    top: -10, 
-    right: 12, 
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderBottomWidth: 10,
-    borderStyle: "solid",
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderBottomColor: "white",
+  filtersWindow: {
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   filtersTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  filtersContent: {
     marginBottom: 20,
-    textAlign: "left",
   },
-  filtersDropdownRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignContent: "center",
-    flexDirection: "row",
+  selectContainer: {
+    marginBottom: 15,
   },
-  dropdownContainer: {
-    width: "50%", 
-    padding: 7,
-  },
-  dropdown: {
+  selectButton: {
     borderWidth: 1,
-    padding: 10,
-    borderStyle: "solid",
-    borderColor: "black",
-    borderRadius: 10,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    padding: 12,
+    backgroundColor: '#F8F8F8',
   },
-  dropdownSelected:{
-    transform: [{ scale: 1.05 }], 
-    
+  selectLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
   },
-  checkboxContainer:{
-    width: "50%"
+  selectValue: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  checkbox:{
+  valueText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  pickerModalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  pickerModalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+  },
+  pickerHeader: {
+    borderBottomWidth: 1,
+    borderColor: '#E0E0E0',
+    padding: 15,
+    alignItems: 'flex-end',
+  },
+  pickerDoneButton: {
+    color: '#007AFF',
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  picker: {
+    height: 216,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  resetButton: {
+    backgroundColor: '#F5F5F5',
+  },
+  applyButton: {
+    backgroundColor: "rgba(90, 0, 230, 1)"
+  },
+  resetButtonText: {
+    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  applyButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 0,
+  },
+  checkbox: {
+    flex: 1,
     borderWidth: 1,
-    padding: 11,
-    marginLeft: 7, 
-    borderStyle: "solid",
-    borderColor: "black",
-    borderRadius: 10,
+    borderColor: '#E0E0E0',
+    borderRadius: 12,
+    paddingVertical: 12, // Spazio verticale uniforme
+    paddingHorizontal: 8, // Spazio orizzontale uniforme
+    backgroundColor: '#F8F8F8',
+    alignItems: 'center', // Allinea gli elementi centrati
+    justifyContent: 'center', // Allinea il contenuto verticalmente
+    marginHorizontal: 5, // Spazio tra le checkbox
+    width: '48%',
   },
-  buttonsContainer:{
-    display: "flex",
-    justifyContent: "space-between",
-    flexDirection: "row"
-  }
+  checkboxText: {
+    fontSize: 14,
+    color: '#333',
+  },
 });
 
 export default Filters;
