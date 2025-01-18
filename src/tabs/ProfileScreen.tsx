@@ -42,6 +42,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           style={styles.textInput}
           placeholder={placeholder}
           placeholderTextColor={colors.iconSecondary}
+          editable={false}
           {...rest}
         />
       </View>
