@@ -30,11 +30,12 @@ interface BookCulinaryExperienceProps {
     restaurant: any,
     user: any,
     culinaryExperience: any,
-    onCloseRestaurant: () => void
+    onCloseRestaurant: () => void,
+    isUpdate: boolean
 
 }
 
-export const BookCulinaryExperience: FC<BookCulinaryExperienceProps> = ({language, date, people, onClose, closingDays, user, culinaryExperience, restaurant, onCloseRestaurant}) => {
+export const BookCulinaryExperience: FC<BookCulinaryExperienceProps> = ({isUpdate, language, date, people, onClose, closingDays, user, culinaryExperience, restaurant, onCloseRestaurant}) => {
     const [selectedDate, setSelectedDate] = useState<string | null>(date == undefined ? null : date); // Stato per il giorno selezionato
     const [selectedPeople, setSelectedPeople] = useState<number | null>(people == undefined ? null : people); // Stato per il numero di persone selezionate
     const [selectedLanguage, setSelectedLanguage] = useState<any | null>(language == undefined ? null : language);
@@ -124,7 +125,7 @@ export const BookCulinaryExperience: FC<BookCulinaryExperienceProps> = ({languag
 
                 {/* Riepilogo prenotazione */}
                 {
-                step == 4 && selectedDate && selectedPeople && selectedLanguage &&
+                step == 4 && selectedDate && selectedPeople && selectedLanguage && restaurant && 
                 <SummaryCulinaryComponent 
                     user={user} 
                     selectedDate={selectedDate} 
@@ -137,6 +138,10 @@ export const BookCulinaryExperience: FC<BookCulinaryExperienceProps> = ({languag
                     culinaryExperience={culinaryExperience}
 
                     onClose={onCloseRestaurant}
+
+                    oldDate={date}
+
+                    isUpdate={isUpdate}
                 />
                 }
             </View>
