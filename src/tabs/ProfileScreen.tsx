@@ -248,13 +248,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
 
       {/* Coupon Card */}
       
-      <CouponCard
+     {/*<CouponCard
         restaurant={restaurant}
         discount={discount}
         expiryDate={expiryDate}
         qrCodeLink={qrCodeLink}
         onPressQRCode={openModal}
-      />
+      /> */}
      
     </View>
       {/* Modal per mostrare il QR Code ingrandito */}
