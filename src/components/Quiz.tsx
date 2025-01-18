@@ -203,7 +203,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
               </View>
             )}
           </View>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>          
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>    
+          {currentQuestionIndex != 0 && (      
             <TouchableOpacity
               style={[stylesQuiz.leftArrow]}
               onPress={handleBack}
@@ -211,6 +212,7 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
             >
               <AntDesign name="arrowleft" size={40} color="rgba(98, 0, 238, 1)" />
             </TouchableOpacity>
+          )}
 
             {currentQuestionIndex === questions.length - 1 ? (
               <TouchableOpacity
