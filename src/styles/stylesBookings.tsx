@@ -216,7 +216,6 @@ export const stylesBookings = StyleSheet.create({
   specialExperienceDescription: {
     fontSize: 12, 
     color: '#555', 
-    marginBottom: 10,  
     fontFamily: 'Poppins-Light'
   },
   specialExperiencePrice: {
@@ -224,6 +223,7 @@ export const stylesBookings = StyleSheet.create({
     fontWeight: '600',
     color: '#000',
     fontFamily: 'Poppins-Medium',
+    marginTop: 10,
   },
   ellipsis: {
     alignSelf: 'center',  

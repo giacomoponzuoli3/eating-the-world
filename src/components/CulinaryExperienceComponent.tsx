@@ -21,7 +21,7 @@ interface CulinaryExperienceComponentProps {
     user: any,
     onClose: () => void,
     onCloseRestaurant: () => void,
-    closingDays: any[]
+    closingDays: any[],
 }
 
 export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> = ({user, restaurant, onClose, onCloseRestaurant, closingDays}) => {
@@ -96,6 +96,7 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
 
     if(showBookCulinary){
         //restituire il componente che permette di prenotare l'esperienza culinaria
+        
         return (
                 <BookCulinaryExperience 
                     onCloseRestaurant={onCloseRestaurant} 
@@ -107,6 +108,8 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
                     closingDays={closingDays}
                     restaurant={restaurant}
                     user={user}
+
+                    isUpdate={false}
                 />
         );
     }

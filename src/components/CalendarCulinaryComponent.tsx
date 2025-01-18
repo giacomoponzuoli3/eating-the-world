@@ -18,14 +18,6 @@ export const CalendarCulinaryComponent: FC<CalendarCulinaryComponentProps>  = ({
 
     const [reservations, setReservations] = useState<any[] | null>(null);
 
-    const getBookSpecialExperiences = async () => {
-        try{
-
-        }catch(error){
-            console.error("Error in getBookSpecialExperiences: ", error);
-        }
-    }
-
     // Mappatura dei numeri dei giorni con i nomi
     const dayNamesMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 

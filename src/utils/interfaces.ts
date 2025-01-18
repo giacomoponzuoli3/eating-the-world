@@ -42,9 +42,9 @@ export interface Reservation {
     date: string; // Formato: 'YYYY/MM/DD'
     time?: string; // Formato: 'HH:mm'
     numberOfGuests: number;
-    imageUrl: string; 
     isSpecialExperience: boolean;
-    language?: string;
+    language?: any;
+    special_request: string | null
 }
 
 export interface Question {

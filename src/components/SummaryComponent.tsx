@@ -10,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 //dao
-import { getTableReservartionsByUsername, insertTableReservation } from "../dao/reservationsDAO";
+import { getTableReservartionsByUsername, insertTableReservation, updateTableReservation } from "../dao/reservationsDAO";
 
 interface SummaryComponentProps{
     user: any,
@@ -21,11 +21,16 @@ interface SummaryComponentProps{
     setSelectedHour: (hour: string | null) => void,
     selectedPeople: number,
     setSelectedPeople: (num: number | null) => void,
-    onClose: () => void
+    onClose: () => void,
+    specialRequest: string | null,
+    isUpdate: boolean,
+
+    oldHour: string | undefined, 
+    oldDate: string | undefined
 }
 
-export const SummaryComponent: FC<SummaryComponentProps> = ({user, restaurant, selectedDate, selectedHour, selectedPeople, setSelectedDate, setSelectedHour, setSelectedPeople, onClose }) => {
-    const [text, setText] = useState('');
+export const SummaryComponent: FC<SummaryComponentProps> = ({specialRequest, oldHour, oldDate, user, restaurant, selectedDate, selectedHour, isUpdate, selectedPeople, setSelectedDate, setSelectedHour, setSelectedPeople, onClose }) => {
+    const [text, setText] = useState(specialRequest ? specialRequest : '');
 
     const formatDate = (inputDate: string) => {
         const date = new Date(inputDate);
@@ -54,6 +59,36 @@ export const SummaryComponent: FC<SummaryComponentProps> = ({user, restaurant, s
             Alert.alert(
                 "Booking Error",
                 "An error occurred while registering your booking. Please try again.",
+                [{ text: "OK", onPress: () => onClose() }]
+            );
+
+            console.error("Error in confirmReservation: ", error);
+        }finally{
+            setSelectedDate(null);
+            setSelectedHour(null);
+            setSelectedPeople(null);
+        }
+    }
+
+    const updateReservation = async () => {
+        try{
+            
+            if(oldDate != undefined && oldHour != undefined){
+                await updateTableReservation(user.username, restaurant.id, oldHour, oldDate, selectedDate, selectedHour, selectedPeople, text != '' ? text : null);
+            }
+            
+            // Popup di conferma
+            Alert.alert(
+                "Booking Updated",
+                "Your booking has been successfully uptated!",
+                [{ text: "OK", onPress: () => onClose() }]
+            );
+        }catch(error){
+
+            // Mostra il popup di errore
+            Alert.alert(
+                "Booking Error",
+                "An error occurred while updating your booking. Please try again.",
                 [{ text: "OK", onPress: () => onClose() }]
             );
 
@@ -122,8 +157,14 @@ export const SummaryComponent: FC<SummaryComponentProps> = ({user, restaurant, s
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
 
-            <TouchableOpacity onPress={() => {confirmReservation()}} style={[stylesBookTable.buttonBookTable, {zIndex: 3}]}>
-                <Text style={stylesBookTable.textBookTable}>Confirm booking</Text>
+            <TouchableOpacity 
+                onPress={() => {isUpdate ? updateReservation() : confirmReservation()}} 
+                style={[stylesBookTable.buttonBookTable, {zIndex: 3}]}
+            >
+                {isUpdate ? 
+                        <Text style={stylesBookTable.textBookTable}>Update booking</Text>
+                    : <Text style={stylesBookTable.textBookTable}>Confirm booking</Text>
+                }
             </TouchableOpacity>
 
         </ScrollView>

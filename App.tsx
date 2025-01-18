@@ -79,6 +79,7 @@ const App = () => {
     try {
       if(user){
         const tableRes = await getTableReservartionsByUsername(user.username);
+
         const specialRes = await getCulinaryExperienceReservartionsByUsername(user.username);
         if (Array.isArray(tableRes)) {
           setTableReservations(tableRes);
@@ -149,7 +150,7 @@ const App = () => {
             </Tab.Screen>
             
             <Tab.Screen name="Bookings">
-                {() => user ? <BookingsScreen username={user.username} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
+                {() => user ? <BookingsScreen user={user} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
             </Tab.Screen> 
             <Tab.Screen name="Favorites">
               {() => <FavoritesScreen user={user}/>}

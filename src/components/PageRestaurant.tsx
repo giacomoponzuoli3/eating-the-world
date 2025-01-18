@@ -153,6 +153,8 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
         date={undefined}
         hour={undefined}
         people={undefined}
+        specialRequest_={null}
+        isUpdate={false}
       />
     );
   }
@@ -168,7 +170,15 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
   }
 
   if (shouwCulinaryExperience && closingDays) {
-    return <CulinaryExperienceComponent user={user} closingDays={closingDays} onCloseRestaurant={onClose} restaurant={restaurant} onClose={() => {setShowCulinaryExperience(false)}} />
+    return  (
+      <CulinaryExperienceComponent 
+        user={user} 
+        closingDays={closingDays} 
+        onCloseRestaurant={onClose} 
+        restaurant={restaurant} 
+        onClose={() => {setShowCulinaryExperience(false)}} 
+      />
+    )
   }
 
   return (
