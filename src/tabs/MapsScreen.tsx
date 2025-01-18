@@ -19,6 +19,22 @@ interface MapScreenProps{
   restaurants: Restaurant[],
   user: any
 }
+
+const markerImages: { [key: string]: any } = {
+  "Pizza": require('../../assets/img/restaurantMarkers/Pizza.png'),
+  "Fast-Food": require('../../assets/img/restaurantMarkers/Fast-Food.png'),
+  "Sushi": require('../../assets/img/restaurantMarkers/Sushi.png'),
+  "Vegan": require('../../assets/img/restaurantMarkers/Vegan.png'),
+  "Vegetarian": require('../../assets/img/restaurantMarkers/Vegetarian.png'),
+  "Gourmet": require('../../assets/img/restaurantMarkers/Gourmet.png'),
+  "Pasta": require('../../assets/img/restaurantMarkers/Pasta.png'),
+  "Salads": require('../../assets/img/restaurantMarkers/Salads.png'),
+  "Traditional": require('../../assets/img/restaurantMarkers/Traditional.png'),
+  "Lactose-Free": require('../../assets/img/restaurantMarkers/Lactose-Free.png'),
+  "Gluten-Free": require('../../assets/img/restaurantMarkers/Gluten-Free.png'),
+  "Fish": require('../../assets/img/restaurantMarkers/Fish.png'),
+};
+
 const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
@@ -155,10 +171,10 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
                   }}
                   title={restaurantMarker.restaurant.name}
                   description={restaurantMarker.restaurant.description}
+                  image={markerImages[restaurantMarker.restaurant.tags[0]]}
                 >
                   <Callout
                     onPress={() => {
-                      // Funzione chiamata quando si clicca sul popup
                       setSelectedRestaurant(restaurantMarker.restaurant)
                     }}
                   >
@@ -169,7 +185,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
                       </Text>
                     </View>
                   </Callout>
-
                 </Marker>
               ))}
             </MapView>
