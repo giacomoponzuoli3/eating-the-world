@@ -5,7 +5,7 @@ import {deleteTableReservation, deleteCulinaryExperienceReservation, deleteExpir
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getClosureDaysByRestaurant, getRestaurantById } from '../dao/restaurantsDAO';
-import { getCulinaryExperiencesByRestaurant } from '../dao/culinaryExperienceDAO';  
+import { getCulinaryExperiencesByRestaurant, getLanguagesByCulinaryExperience } from '../dao/culinaryExperienceDAO';  
 import { stylesBookings } from '../styles/stylesBookings'; 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -16,6 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import { useIsFocused } from '@react-navigation/native';
 import { BookTable } from '../components/BookTable';
+import { CulinaryExperienceComponent } from '../components/CulinaryExperienceComponent';
+import { BookCulinaryExperience } from '../components/BookCulinaryExperience';
 
 interface BookingScreenProps{
   user: any;
@@ -75,6 +77,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   const [bookingSelected, setBookingSelected] = useState<Reservation | null>(null);
   const [closingDays, setClosingDays] = useState<any[] | null>(null);
   const [restaurant, setRestaurant] = useState<any | null>(null);
+  const [culinaryExperience, setCulinaryExperience] = useState<any | null>(null)
 
 
   const fetchSpecialExperienceDetails = async (id: number) => {
@@ -117,7 +120,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
       date: res.data,  
       numberOfGuests: res.number_people,
       isSpecialExperience: true,
-      language: res.language,
+      language: {id: res.id_language_selected, name: res.name},
       time: res.time,
       imageUrl: res.image_url || 'default_image_path', // Se l'immagine non è disponibile, usa un valore predefinito
       special_request: null
@@ -387,16 +390,27 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
     );
   };
 
-  const getInformationsEditBooking = async (id_restaurant: number) => {
+  const getInformationsEditBooking = async (booking: any) => {
     try{
-      //restaurant
-      const r: any = await getRestaurantById(id_restaurant);
       
-      setRestaurant({...r, id: id_restaurant});
+      //restaurant
+      const r: any = await getRestaurantById(booking.restaurantId);
+      setRestaurant({...r[0], id: booking.restaurantId});
 
       //closure days
-      const cd: any[] = await getClosureDaysByRestaurant(id_restaurant);
+      const cd: any[] = await getClosureDaysByRestaurant(booking.restaurantId);
       setClosingDays(cd);
+
+      //se è una special experience
+      if(booking.isSpecialExperience){
+        const ce = await getCulinaryExperiencesByRestaurant(booking.restaurantId);
+
+        const languages = await getLanguagesByCulinaryExperience(ce[0].id);
+
+        ce[0] = {...ce[0], languages: languages} 
+
+        setCulinaryExperience(ce[0]);
+      }
 
     }catch(error){
       console.error("Error in restaurantClosureDaysHours: ", error);
@@ -406,7 +420,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
 
   useEffect(() => {
     if(bookingSelected){
-      getInformationsEditBooking(bookingSelected.restaurantId);
+      getInformationsEditBooking(bookingSelected);
     }
     
   }, [bookingSelected])
@@ -460,8 +474,34 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   /** */
   if(showBook && bookingSelected && closingDays && restaurant){
 
-    if(bookingSelected.isSpecialExperience){
+    if(bookingSelected.isSpecialExperience && culinaryExperience){
+      return (
+        <BookCulinaryExperience
+          user={user}
+          closingDays={closingDays}
+          culinaryExperience={culinaryExperience}
+          onCloseRestaurant={
+            () => {
+              setShowBook(false);
+              setBookingSelected(null);
+              getReservations();
+            }
+          } 
+          restaurant={restaurant}
+          onClose={
+            () => {
+              setShowBook(false);
+              setBookingSelected(null);
+              getReservations();
+            }
+          } 
+          date={bookingSelected.date}
+          people={bookingSelected.numberOfGuests}
+          language={bookingSelected.language}
 
+          isUpdate={true}
+        />
+      );
     }else{
       return (
         <BookTable
@@ -481,7 +521,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
 
           closingDays={closingDays}
           restaurant={restaurant}
-          date={bookingSelected.date.replace(/\//g, "-")}
+          date={bookingSelected.date}
           hour={bookingSelected.time}
           people={bookingSelected.numberOfGuests}
           specialRequest_={bookingSelected.special_request}

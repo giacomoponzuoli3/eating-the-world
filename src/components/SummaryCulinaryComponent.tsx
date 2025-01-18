@@ -11,7 +11,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 //dao
-import {insertCulinaryExperienzeReservation } from "../dao/reservationsDAO";
+import {insertCulinaryExperienzeReservation, updateCulinaryExperienceReservation } from "../dao/reservationsDAO";
 
 interface SummaryCulinaryComponentProps{
     user: any,
@@ -23,10 +23,12 @@ interface SummaryCulinaryComponentProps{
     selectedLanguage: any,
     setSelectedLanguage: (language: any) => void,
     culinaryExperience: any,
-    onClose: () => void
+    onClose: () => void,
+    isUpdate: boolean,
+    oldDate: string | undefined
 }
 
-export const SummaryCulinaryComponent: FC<SummaryCulinaryComponentProps> = ({user, culinaryExperience, setSelectedLanguage, selectedLanguage, restaurant, selectedDate,  selectedPeople, setSelectedDate, setSelectedPeople, onClose }) => {
+export const SummaryCulinaryComponent: FC<SummaryCulinaryComponentProps> = ({isUpdate, oldDate, user, culinaryExperience, setSelectedLanguage, selectedLanguage, restaurant, selectedDate,  selectedPeople, setSelectedDate, setSelectedPeople, onClose }) => {
 
     const formatDate = (inputDate: string) => {
         const date = new Date(inputDate);
@@ -55,6 +57,35 @@ export const SummaryCulinaryComponent: FC<SummaryCulinaryComponentProps> = ({use
             Alert.alert(
                 "Special Experience Booking Error",
                 "An error occurred while registering your booking. Please try again.",
+                [{ text: "OK", onPress: () => onClose() }]
+            );
+
+            console.error("Error in confirmReservation: ", error);
+        }finally{
+            setSelectedDate(null);
+            setSelectedPeople(null);
+            setSelectedLanguage(null);
+        }
+    }
+
+    const editBookingSpecialExperience = async () => {
+        try{
+            
+            if(oldDate != undefined){
+                await updateCulinaryExperienceReservation(restaurant.id, user.username, oldDate, selectedDate, selectedPeople, selectedPeople*culinaryExperience.price, selectedLanguage.id );
+            }
+            // Popup di conferma
+            Alert.alert(
+                "Special Experience Booking Updated",
+                "Your booking has been successfully updated!",
+                [{ text: "OK", onPress: () => onClose() }]
+            );
+        }catch(error){
+
+            // Mostra il popup di errore
+            Alert.alert(
+                "Special Experience Booking Error",
+                "An error occurred while updating your booking. Please try again.",
                 [{ text: "OK", onPress: () => onClose() }]
             );
 
@@ -147,8 +178,11 @@ export const SummaryCulinaryComponent: FC<SummaryCulinaryComponentProps> = ({use
 
             </View>
 
-            <TouchableOpacity onPress={() => {confirmBookingSpecialExperience()}} style={[stylesSummaryCulinaryBook.buttonBookSpecialExperience, {zIndex: 3}]}>
-                <Text style={stylesSummaryCulinaryBook.textBookSpecialExperience}>Confirm Special Experience Booking</Text>
+            <TouchableOpacity onPress={() => {isUpdate ? editBookingSpecialExperience() : confirmBookingSpecialExperience()}} style={[stylesSummaryCulinaryBook.buttonBookSpecialExperience, {zIndex: 3}]}>
+                {   isUpdate ?
+                        <Text style={stylesSummaryCulinaryBook.textBookSpecialExperience}>Update Special Experience Booking</Text>
+                    : <Text style={stylesSummaryCulinaryBook.textBookSpecialExperience}>Confirm Special Experience Booking</Text>
+                }
             </TouchableOpacity>
 
         </View>

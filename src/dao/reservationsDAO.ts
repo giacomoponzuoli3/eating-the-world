@@ -145,15 +145,12 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
     try{
         const db = await getDatabase();
 
-        const [year, month, day] = data.split('-');
-        const formattedDate = `${year}/${month}/${day}`;
-
         const sql = `
             INSERT INTO culinary_experience_reservations(id_restaurant, username, data, number_people, price, id_language_selected)
             VALUES(?, ?, ?, ?, ?, ?)
         `;
 
-        await db.runAsync(sql, [id_restaurant, username, formattedDate, number_people, price, id_language_selected]);
+        await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
 
     }catch(error){
         console.error("Error in insertCulinaryExperienceReservation: ", error);
@@ -217,6 +214,34 @@ const deleteCulinaryExperienceReservation = async (username: string, id_restaura
 }
 
 /**
+ * 
+ * @param id_restaurant id del ristorante a cui l'utente vuole andare ad effettuare l'esperienza culinaria 
+ * @param username username dell'utente loggato
+ * @param data data selezionata dall'utente
+ * @param number_people numero di persone che perteciperanno 
+ * @param id_language_selected 
+ * @param oldDate
+ * @returns 
+ */
+const updateCulinaryExperienceReservation = async (id_restaurant: number, username: string, oldDate: string, data: string, number_people: number, price: number, id_language_selected: number) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = `
+            UPDATE culinary_experience_reservations
+            SET data = ?, number_people = ?, price = ?, id_language_selected = ?
+            WHERE username = ? AND data = ? AND id_restaurant = ?
+        `;
+
+        await db.runAsync(sql, [data, number_people, price, id_language_selected, username, oldDate, id_restaurant]);
+
+    }catch(error){
+        console.error("Error in insertCulinaryExperienceReservation: ", error);
+        return error;
+    }
+}
+
+/**
  * get culinary experience reservations by username
  * @param username username dell'utente loggato 
  * @returns the array of rows that represent the culinary experience reservations of a specific client
@@ -226,8 +251,9 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
         const db = await getDatabase();
 
         const sql = `
-            SELECT * FROM culinary_experience_reservations
-            WHERE username = ? 
+        SELECT id_restaurant, username, data, number_people, price, id_language_selected, name
+        FROM culinary_experience_reservations cer, languages l 
+        WHERE cer.id_language_selected = l.id AND username = ?
         `;
 
         let reservations = await db.getAllAsync(sql, [username]);
@@ -236,12 +262,10 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
         const specialReservations = await Promise.all(
             reservations.map(async (res: { id_restaurant: number, id_language_selected: number; }) => {
                 const restaurantName = await db.getAllAsync(`SELECT name FROM restaurants WHERE id = ?`, [res.id_restaurant]);
-                const languageName = await db.getAllAsync(`SELECT name FROM languages WHERE id = ?`, [res.id_language_selected]);
                 const time = await db.getAllAsync(`SELECT start_hour FROM culinary_experience WHERE id_restaurant = ?`, [res.id_restaurant]);
                 const result = {
                     ...res,
                     restaurant_name: restaurantName[0].name,
-                    language_name: languageName[0].name,
                     time: time[0].start_hour,
                     // image_url: restaurant.image_url
                 };
@@ -259,5 +283,5 @@ const getCulinaryExperienceReservartionsByUsername = async (username: string) =>
 
 export {
     insertTableReservation, deleteTableReservation, getTableReservartionsByUsername, deleteExpiredReservations, updateTableReservation,
-    insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation, getCulinaryExperienceReservartionsByUsername
+    updateCulinaryExperienceReservation, insertCulinaryExperienzeReservation, deleteCulinaryExperienceReservation, getCulinaryExperienceReservartionsByUsername
 }
