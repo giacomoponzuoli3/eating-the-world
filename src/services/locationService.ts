@@ -36,10 +36,10 @@ export const requestLocationPermission = async (): Promise<boolean> => {
   };
 
   // Sostituisci con la tua chiave API di Google Maps
-const GOOGLE_API_KEY = "";
+const GOOGLE_API_KEY = "AIzaSyDlQRuSjZKUaZPV3ADMXDW0JTnWv8jkwGM";
 
 // Funzione per ottenere coordinate da un indirizzo
-const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | null> => {
+const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number, lng: number } | undefined> => {
   try {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`
@@ -47,7 +47,7 @@ const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number
 
     if (!response.ok) {
       console.error("HTTP error:", response.status, response.statusText);
-      return null;
+      return undefined;
     }
 
     const data = await response.json();
@@ -57,28 +57,14 @@ const getCoordinatesFromAddress = async (address: string): Promise<{ lat: number
       return { lat: location.lat, lng: location.lng };
     } else {
       console.error("Geocoding error:", data.status);
-      return null;
+      return undefined;
     }
   } catch (error) {
     console.error("Error fetching coordinates:", error);
-    return null;
+    return undefined;
   }
 };
 
 export default getCoordinatesFromAddress;
-
-const placeMarker = async () => {
-  const address = "1600 Amphitheatre Parkway, Mountain View, CA";
-  const coordinates = await getCoordinatesFromAddress(address);
-
-  if (coordinates) {
-    // Usali per creare un marker personalizzato sulla tua mappa
-    // Esempio: map.addMarker(coordinates.lat, coordinates.lng);
-  } else {
-    console.error("Impossibile ottenere coordinate per l'indirizzo fornito.");
-  }
-};
-
-//placeMarker();
 
   

@@ -42,6 +42,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
           style={styles.textInput}
           placeholder={placeholder}
           placeholderTextColor={colors.iconSecondary}
+          editable={false}
           {...rest}
         />
       </View>
@@ -131,10 +132,10 @@ const qrCode: QRCodeData = {
 
 // Mapping delle immagini
 const userImages: { [key: string]: any } = {
-  giacomo_gugu: require("../../assets/giacomo_gugu.png"),
-  alice_gugu: require("../../assets/alice_gugu.png"),
-  lorenzo_gugu: require("../../assets/lorenzo_gugu.png"),
-  francesca_gugu: require("../../assets/francesca_gugu.png"),
+  giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
+  alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
+  lorenzo_gugu: require("../../assets/img/profile/lorenzo_gugu.png"),
+  francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
 };
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLink }) => {
@@ -248,13 +249,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
 
       {/* Coupon Card */}
       
-      <CouponCard
+     {/*<CouponCard
         restaurant={restaurant}
         discount={discount}
         expiryDate={expiryDate}
         qrCodeLink={qrCodeLink}
         onPressQRCode={openModal}
-      />
+      /> */}
      
     </View>
       {/* Modal per mostrare il QR Code ingrandito */}

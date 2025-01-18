@@ -1,3 +1,4 @@
+import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 
 /**
@@ -28,35 +29,81 @@ const getTagsByRestaurant = async (id_restaurant: number) => {
  * 
  * @returns array di tutti i ristoranti presenti nel db
  */
-const getRestaurants = async () => {
-    try{
-        console.log("entra in getRestaurants");
+const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | null> => {
+    try {
         const db = await getDatabase();
-
-        const sql = `
-                SELECT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, printf("%.2f", AVG(d.price)) AS price_range, r.phone_number
-                FROM restaurants AS r, dishes AS d
-                WHERE r.id = d.id_restaurant
-                GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience, r.phone_number
+        let query = `
+            SELECT DISTINCT r.id, r.name, r.description, r.address, r.capacity, r.culinary_experience, printf("%.2f", AVG(d.price)) AS price_range, r.phone_number
+            FROM restaurants r
+            LEFT JOIN deals_restaurants dr ON r.id = dr.id_restaurant
+            LEFT JOIN type_deals td ON dr.id_deal = td.id
+            LEFT JOIN culinary_experience ce ON r.id = ce.id_restaurant
+            LEFT JOIN tags_restaurants tr ON r.id = tr.id_restaurant
+            LEFT JOIN tags t ON tr.id_tag = t.id
+            LEFT JOIN dishes d ON r.id = d.id_restaurant
+            WHERE 1=1
         `;
 
-        const results: any[] = await db.getAllAsync(sql, []);
+        const queryParams: any[] = [];
+        const hours = new Date().getHours();
+
+        if (filters) {
+            const { typeOfMeal, foodRestrictions, priceRange, specialExperience, openNow } = filters;
+
+            // Filtro per tipo di pasto (typeOfMeal)
+            if (typeOfMeal) {
+                query += ` AND td.name = ?`;
+                queryParams.push(typeOfMeal);
+            }
+
+            // Filtro per esperienza speciale (specialExperience)
+            if (specialExperience) {
+                query += ` AND r.culinary_experience = 1`;
+                queryParams.push(specialExperience);
+            }
+
+            // Filtro per ristoranti aperti ora (openNow)
+            if (openNow) {
+                query += ` AND dr.hour_start_deal <= ? AND dr.hour_end_deal >= ?`;
+                queryParams.push(hours, hours);
+            }
+
+            // Filtro per restrizioni alimentari (foodRestrictions)
+            if (foodRestrictions) {
+                query += ` AND t.name = ?`;
+                queryParams.push(foodRestrictions);
+            }
+
+            // Filtro per range di prezzo (priceRange)
+            if (priceRange) {
+                // Estrai i valori min e max dal range (es. "10 - 30 $" => [10, 30])
+                const [minPrice, maxPrice] = priceRange.replace('$', '').split('-').map(s => parseFloat(s.trim()));
+                query += ` AND d.price BETWEEN ? AND ?`;
+                queryParams.push(minPrice, maxPrice);
+            }
+        }
+
+        // Gruppo per evitare duplicati
+        query += ` GROUP BY r.name, r.description, r.address, r.capacity, r.culinary_experience`;
+
+        // Esegui la query
+        const results: Restaurant[] = await db.getAllAsync(query, queryParams);
 
         const resultWithTags = await Promise.all(results.map(async (row: any) => {
-            const tags = await getTagsByRestaurant(row.id); // Assicurati che questa funzione ritorni un array o un valore corretto
+            const tags = await getTagsByRestaurant(row.id); 
             return {
                 ...row,
-                tags, // Aggiungi i tags all'oggetto della riga
+                tags, 
             };
         }));
-    
 
         return resultWithTags ?? null;
     } catch (error) {
         console.error('Error in the getRestaurants: ', error);
-        return error;
+        return null;
     }
-}
+};
+
 
 /**
  * get all the restaurants associated with a specific type of deal
@@ -93,7 +140,8 @@ const getRestaurantsByTypeDeal = async (id_type_deal: number) => {
         console.error('Error in the getRestaurantsByTypeDeal: ', error);
         return error;
     }
-}
+};
+
 
 /**
  * 
