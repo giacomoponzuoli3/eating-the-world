@@ -21,6 +21,7 @@ type CustomInputProps = {
   placeholder: string;
   type?: string;
   value?: string;
+  textStyle?: object;
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -28,23 +29,23 @@ const CustomInput: React.FC<CustomInputProps> = ({
   icon,
   placeholder,
   type,
+  textStyle,
   ...rest
 }) => {
   return (
     <View style={styles.container2}>
       <View style={styles.inputFieldsContainer}>
-        {label && <Text style={styles.label2}>{label}</Text>}
+        {label && <Text style={[styles.label2, textStyle]}>{label}</Text>}
         {icon && (
-           <View style={[stylesPageRestaurant.iconInformationWrapper, { marginRight: 10 }]}>
-           {icon}
-         </View>
+          <View style={[stylesPageRestaurant.iconInformationWrapper, { marginRight: 10 }]}>
+            {icon}
+          </View>
         )}
         <TextInput
           style={styles.textInput}
           placeholder={placeholder}
           placeholderTextColor={colors.iconSecondary}
           editable={false}
-          
           {...rest}
         />
       </View>
@@ -58,7 +59,6 @@ interface ProfileScreenProps {
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
 
-
 const userImages: { [key: string]: any } = {
   giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
   alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
@@ -66,7 +66,7 @@ const userImages: { [key: string]: any } = {
   francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
 };
 
-const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser}) => {
+const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
@@ -112,7 +112,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser}) => {
     >
       <View style={styles.profileContainer}>
         <View style={styles.profileHeaderContainer}>
-         
           <View style={styles.profileImageContainer}>
             <Image
               source={
@@ -122,7 +121,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser}) => {
               }
               style={styles.profileImage}
             />
-          </View> 
+          </View>
           <Text style={styles.name}>
             {user?.username || "Username not available"}
           </Text>
@@ -137,12 +136,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser}) => {
             label="First name:"
             placeholder="John"
             value={user?.name}
+            textStyle={{ color: 'rgba(98, 0, 238, 1)' }}
           />
           <CustomInput
             label="Last name:"
             placeholder="Doe"
             value={user?.surname}
+            textStyle={{ color: 'rgba(98, 0, 238, 1)' }}
           />
+          <Text style={[styles.headerText, { fontSize: 20, marginTop: 20, textAlign: 'left' }]}>Contacts</Text>
           <CustomInput
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
