@@ -102,6 +102,7 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
       {
         options: ['Apple Maps', 'Google Maps', 'Cancel'],
         cancelButtonIndex: 2,
+        
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
@@ -223,9 +224,29 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
                     <View style={stylesPageRestaurant.iconInformationWrapper}>
                       <Ionicons name="location-outline" style={stylesPageRestaurant.iconInformation} />
                     </View>
-                    <Text style={stylesPageRestaurant.textInformation}>{restaurant.address}</Text>
+                    <Text style={stylesPageRestaurant.textInformationUnderline}>{restaurant.address}</Text>
                   </View>
                 </TouchableOpacity>
+
+                {/* Icona del menu */}
+                <TouchableOpacity onPress={() => {setShowMenu(true)}}>   
+                  <View style={stylesPageRestaurant.containerIconInformation}>  
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
+                    </View>
+                    <Text style={stylesPageRestaurant.textInformationUnderline}>Menu</Text>
+                  </View>  
+                </TouchableOpacity>
+                
+                {/* Icona del numero di telefono */}
+                <TouchableOpacity onPress={() => Linking.openURL(`tel:${restaurant.phone_number}`)}>        
+                  <View style={stylesPageRestaurant.containerIconInformation}>
+                    <View style={stylesPageRestaurant.iconInformationWrapper}>
+                      <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
+                    </View>
+                    <Text style={stylesPageRestaurant.textInformationUnderline}>+{restaurant.phone_number}</Text>
+                  </View>
+                </TouchableOpacity> 
 
 
                 {/* Icona del tipo di cucina */}
@@ -252,26 +273,6 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
                   </View>
                   <Text style={stylesPageRestaurant.textInformation}>Average price {restaurant.price_range} €</Text>
                 </View>
-
-                {/* Icona del menu */}
-                <TouchableOpacity onPress={() => {setShowMenu(true)}}>   
-                  <View style={stylesPageRestaurant.containerIconInformation}>  
-                    <View style={stylesPageRestaurant.iconInformationWrapper}>
-                      <Ionicons name="book-outline" style={stylesPageRestaurant.iconMenu} />
-                    </View>
-                    <Text style={stylesPageRestaurant.textInformation}>Menu</Text>
-                  </View>  
-                </TouchableOpacity>
-                
-                {/* Icona del numero di telefono */}
-                <TouchableOpacity onPress={() => Linking.openURL(`tel:${restaurant.phone_number}`)}>        
-                  <View style={stylesPageRestaurant.containerIconInformation}>
-                    <View style={stylesPageRestaurant.iconInformationWrapper}>
-                      <Feather name="phone" style={stylesPageRestaurant.iconInformation} />
-                    </View>
-                    <Text style={stylesPageRestaurant.textInformation}>+{restaurant.phone_number}</Text>
-                  </View>
-                </TouchableOpacity> 
 
                 {/* Icona dell'orario di apertura */}
                 <TouchableOpacity style={stylesPageRestaurant.touchHoursDays} onPress={() => {setShowHoursDays((precedence) => !precedence)}}>

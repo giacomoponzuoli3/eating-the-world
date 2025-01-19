@@ -110,6 +110,12 @@ export const stylesPageRestaurant = StyleSheet.create({
         fontFamily: 'Poppins-Light'
     },
 
+    textInformationUnderline: {
+        marginLeft: 8,
+        fontFamily: 'Poppins-Light',
+        borderBottomWidth: 0.5
+    },
+
     textOpen: {
         marginLeft: 8,
         fontFamily: 'Poppins-Bold',
