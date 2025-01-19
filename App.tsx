@@ -10,6 +10,10 @@ import { BookingsScreen } from './src/tabs/BookingScreen';
 import { FavoritesScreen } from './src/tabs/FavoritesScreen';
 import loadFonts from './src/styles/font';
 import { styles } from "./src/styles/styles";
+import { LogBox } from 'react-native';
+
+// Disabilita tutti i warning
+LogBox.ignoreAllLogs(true);
 
 // === Configurazione del Navigatore a Schede ===
 const Tab = createBottomTabNavigator();
