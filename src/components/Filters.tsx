@@ -183,30 +183,30 @@ const Filters: FC<FiltersProps> = ({ filters, setFilters, onClose, visible }) =>
               onValueChange={setFoodRestriction}
             />
             <FilterSelect
-              label="Price Range"
+              label={"Price Range"}
               value={selectedPriceRange}
               items={priceRange}
               onValueChange={setPriceRange}
             />
             <FilterSelect
-              label="Distance"
+              label={"Distance"}
               value={selectedDistance}
               items={distance}
               onValueChange={setDistance}
             />
             <View style={styles.checkboxContainer}>
               <CheckBox
-                title="Special Experience"
+                title={"Special Experience"}
                 checked={selectedSpecialExperience}
-                checkedColor="rgba(90, 0, 230, 1)"
+                checkedColor={"rgba(90, 0, 230, 1)"}
                 onPress={() => setSelectedSpecialExperience(!selectedSpecialExperience)}
                 containerStyle={styles.checkbox}
                 textStyle={styles.checkboxText}
               />
               <CheckBox
-                title="Open Now"
+                title={"Open Now"}
                 checked={selectedOpenNow}
-                checkedColor="rgba(90, 0, 230, 1)"
+                checkedColor={"rgba(90, 0, 230, 1)"}
                 onPress={() => setSelectedOpenNow(!selectedOpenNow)}
                 containerStyle={styles.checkbox}
                 textStyle={styles.checkboxText}

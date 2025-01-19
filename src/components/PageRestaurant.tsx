@@ -206,9 +206,9 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
             <View style={stylesPageRestaurant.containerText}>
               {restaurant && restaurant.culinary_experience == 1 &&
-                <TouchableOpacity onPress={() => setShowCulinaryExperience(true)} style={stylesPageRestaurant.buttonCulinaryExperience}>
+                (<TouchableOpacity onPress={() => setShowCulinaryExperience(true)} style={stylesPageRestaurant.buttonCulinaryExperience}>
                   <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>)
               }
 
               <Text style={stylesPageRestaurant.titleRestaurant}>{restaurant.name}</Text>

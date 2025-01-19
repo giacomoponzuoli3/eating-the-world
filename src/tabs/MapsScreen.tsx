@@ -178,10 +178,8 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
               loadingEnabled={true}
               initialRegion={initialRegion}
               showsUserLocation={true}
-              showsPointsOfInterest={false}
-              showsCompass={false}
+              showsPointsOfInterest={true}
             >
-              
               {isReady && restaurantMarkers.map((restaurantMarker, index) => (
                 <Marker
                   key={index}
