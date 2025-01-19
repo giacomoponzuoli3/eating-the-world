@@ -144,7 +144,7 @@ const App = () => {
             })}
           >
             <Tab.Screen name="Profile">
-                {() => <ProfileScreen user={user} users={users} setUser={setUser} qrCodeLink={qrCodeLink}/>}
+                {() => <ProfileScreen user={user} users={users} setUser={setUser}/>}
               </Tab.Screen>
             
             <Tab.Screen name="Maps">

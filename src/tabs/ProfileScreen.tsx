@@ -7,6 +7,7 @@ import {
   ActionSheetIOS,
 } from "react-native";
 import { styles } from "../styles/styles";
+import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
 import { iconSize } from "../constants/dimensions";
@@ -33,12 +34,17 @@ const CustomInput: React.FC<CustomInputProps> = ({
     <View style={styles.container2}>
       <View style={styles.inputFieldsContainer}>
         {label && <Text style={styles.label2}>{label}</Text>}
-        {icon && <View style={styles.icon}>{icon}</View>}
+        {icon && (
+           <View style={[stylesPageRestaurant.iconInformationWrapper, { marginRight: 10 }]}>
+           {icon}
+         </View>
+        )}
         <TextInput
           style={styles.textInput}
           placeholder={placeholder}
           placeholderTextColor={colors.iconSecondary}
           editable={false}
+          
           {...rest}
         />
       </View>
@@ -50,20 +56,8 @@ interface ProfileScreenProps {
   user: User | undefined;
   users: User[];
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
-  qrCodeLink: string;
 }
 
-interface QRCodeData {
-  restaurantName: string;
-  discount: string;
-  expiryDate: string;
-}
-
-const qrCode: QRCodeData = {
-  restaurantName: "Ristorante La Pergola",
-  discount: "20%",
-  expiryDate: "2025-01-31",
-};
 
 const userImages: { [key: string]: any } = {
   giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
@@ -72,11 +66,10 @@ const userImages: { [key: string]: any } = {
   francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
 };
 
-const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLink }) => {
+const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser}) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
-
 
   const showActionSheet = () => {
     const options = users.map((user) => user.username).concat("Cancel");
@@ -117,22 +110,9 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
       contentContainerStyle={styles.scrollViewContent}
       enableOnAndroid={true}
     >
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "flex-start",
-        }}
-      >
+      <View style={styles.profileContainer}>
         <View style={styles.profileHeaderContainer}>
-          <View style={styles.nameRoleContainer}>
-            <TouchableOpacity onPress={showActionSheet}>
-              <Text style={styles.name}>
-                {user?.username || "Username non disponibile"}
-              </Text>
-              <Text style={styles.role}>{"Tap to change user"}</Text>
-            </TouchableOpacity>
-          </View>
+         
           <View style={styles.profileImageContainer}>
             <Image
               source={
@@ -142,17 +122,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
               }
               style={styles.profileImage}
             />
-            <TouchableOpacity style={styles.editIconContainer}>
-              <Feather
-                name="edit-3"
-                size={iconSize.medium}
-                color={colors.iconWhite}
-              />
-            </TouchableOpacity>
-          </View>
+          </View> 
+          <Text style={styles.name}>
+            {user?.username || "Username not available"}
+          </Text>
+          <TouchableOpacity onPress={showActionSheet}>
+            <Text style={styles.role}>{"Tap to change user"}</Text>
+          </TouchableOpacity>
         </View>
         {/* Input fields container */}
-        <View >
+        <View style={styles.inputFieldsWrapper}>
           {/* All the input fields */}
           <CustomInput
             label="First name:"
@@ -166,12 +145,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser, qrCodeLin
           />
           <CustomInput
             placeholder="example@gmail.com"
-            icon={<Ionicons name="mail-outline" size={iconSize.medium} />}
+            icon={<Ionicons name="mail-outline" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
             value={user?.email}
           />
           <CustomInput
             placeholder="+39 1234567890"
-            icon={<Feather name="phone" size={iconSize.medium} />}
+            icon={<Feather name="phone" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
             value={user?.phone_number}
           />
         </View>

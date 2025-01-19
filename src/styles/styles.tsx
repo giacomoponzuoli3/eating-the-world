@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { fontSize, spacing } from "../constants/dimensions";
 import { colors } from "../constants/color";
-import { fontFamily } from "../constants/fontFamily";
+
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,45 +16,18 @@ export const styles = StyleSheet.create({
     color: "#6200ee",
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: "#6200ee",
-    padding: 10,
-    borderRadius: 5,
-  },
+  button: { backgroundColor: "#6200ee", padding: 10, borderRadius: 5 },
+  profileContainer: { flex: 1, backgroundColor: "#fff", padding: 20 },
   profileImageContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: spacing.md,
+    marginVertical: spacing.md,
   },
-  profileImage: {
-    height: 140,
-    width: 140,
-    borderRadius: 15,
-  },
+  profileImage: { height: 140, width: 140, borderRadius: 15 },
   profileHeaderContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  editIconContainer: {
-    height: 31,
-    width: 31,
-    backgroundColor: colors.orange,
-    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -18,
-    marginLeft: 120,
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 20,
+    marginBottom: 20,
   },
   nameRoleContainer: {
     alignItems: "center",
@@ -62,15 +35,18 @@ export const styles = StyleSheet.create({
     marginLeft: 15,
   },
   name: {
-    fontFamily: fontFamily.bold,
+    fontFamily: "Poppins-Bold",
     fontSize: fontSize.extraLarge,
     color: colors.textPrimary,
+    textAlign: "center",
   },
   role: {
-    fontFamily: fontFamily.regular,
+    fontFamily: "Poppins-Regular",
     fontSize: fontSize.medium,
     color: colors.textSecondary,
+    textAlign: "center",
   },
+  inputFieldsWrapper: { marginTop: 20 },
   inputFieldsContainer: {
     borderWidth: 1,
     borderColor: "#F1ECEC",
@@ -82,24 +58,13 @@ export const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontFamily: fontFamily.medium,
+    fontFamily: "Poppins-Medium",
     fontSize: fontSize.medium,
   },
-  container2: {
-    marginVertical: spacing.xs,
-    marginBottom: 5,
-  },
-  icon: {
-    marginHorizontal: spacing.md,
-  },
-  label: {
-    marginRight: 10,
-    fontSize: 16,
-    color: colors.iconSecondary,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
+  container2: { marginVertical: spacing.xs, marginBottom: 5 },
+  icon: { marginHorizontal: spacing.md },
+  label: { marginRight: 10, fontSize: 16, color: colors.iconSecondary },
+  scrollViewContent: { flexGrow: 1 },
   headerText: {
     fontSize: 24,
     fontWeight: "bold",
@@ -114,71 +79,15 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  label2: {
-    fontSize: 16,
-    marginRight: 10,
-  },
-  picker: {
-    height: 50,
-    width: 200,
-  },
-  qrList: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
-  qrContainer: {
-    marginRight: 20,
-    alignItems: "center",
-  },
-  qrText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: "#333",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#333",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalText: {
-    fontSize: 18,
-    marginVertical: 20,
-    color: "#FFF", // Colore corretto per il testo in contrasto con il background scuro
-    textAlign: "center",
-  },
+  label2: { fontSize: 16, marginRight: 10 },
+  picker: { height: 50, width: 200 },
   closeButton: {
     backgroundColor: "#ff5555",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
-  pickerItem: {
-    color: "#000",
-  },
-  closeButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-  },
+  closeButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   confirmButton: {
     padding: 10,
     borderRadius: 5,
@@ -187,63 +96,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
-  confirmButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  qrCardContainer: {
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    marginVertical: 20,
-  },
-  qrCardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  qrCardDiscount: {
-    fontSize: 16,
-    color: colors.textPrimary,
-    marginVertical: 5,
-  },
-  qrCardExpiry: {
-    fontSize: 14,
-    color: colors.iconSecondary,
-  },
-  qrCardButton: {
-    backgroundColor: colors.textPrimary,
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 15,
-  },
-  qrCardButtonText: {
-    color: colors.iconWhite,
-    fontSize: 16,
-  },
-  qrDataCard: {
-    backgroundColor: "#FFF",
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-    marginVertical: 10,
-    alignItems: "center",
-  },
-  qrDataText: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 5,
-  },
+  confirmButtonText: { fontSize: 16, fontWeight: "bold" },
   loadingText: {
     marginTop: 10,
     fontSize: 22,
