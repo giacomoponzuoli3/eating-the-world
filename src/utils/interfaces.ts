@@ -34,6 +34,7 @@ export interface FiltersOptions{
     distance?: string;
     specialExperience?: boolean;
     openNow?: boolean;
+    [key: string]: string | boolean | undefined;
 }
 export interface Reservation {
     id: number;

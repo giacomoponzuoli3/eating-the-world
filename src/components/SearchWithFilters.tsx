@@ -5,12 +5,14 @@ import AnimatedSearchView from './AnimatedSearchView';
 import Filters from './Filters';
 
 interface SearchWithFilterProps {
+  filters: FiltersOptions | undefined;
   restaurants: Restaurant[];
   setFilters: React.Dispatch<React.SetStateAction<FiltersOptions | undefined>>;
   onSelectRestaurant?: (restaurant: Restaurant) => void;
 }
 
 const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
+  filters,
   restaurants,
   setFilters,
   onSelectRestaurant,
@@ -32,6 +34,7 @@ const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
       />
       {showFilters && (
         <Filters
+          filters={filters}
           visible={showFilters}
           setFilters={setFilters}
           onClose={() => setShowFilters(false)}

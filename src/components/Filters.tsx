@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Platform, Modal, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { BlurView } from 'expo-blur';
@@ -7,6 +7,7 @@ import { CheckBox } from 'react-native-elements';
 import { FiltersOptions } from '../utils/interfaces';
 
 interface FiltersProps {
+  filters: FiltersOptions | undefined;
   setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
   onClose: () => void;
   visible: boolean;
@@ -43,16 +44,18 @@ const foodRestrictions: FilterItem[] = [
 
 const priceRange: FilterItem[] = [
   { label: '0 - 10 $', value: '0-10 $' },
-  { label: '10 - 30 $', value: '10-30 $' },
-  { label: '30 - 80 $', value: '30-80 $' },
-  { label: '80+ $', value: '80+ $' },
+  { label: '10 - 20 $', value: '10-20 $' },
+  { label: '20 - 30 $', value: '20-30 $' },
+  { label: '30+ $', value: '30+ $' },
 ];
 
 const distance: FilterItem[] = [
   { label: 'Nearby', value: 'Nearby' },
-  { label: 'Within 5km', value: 'Within 5km' },
-  { label: 'Within 10km', value: 'Within 10km' },
-  { label: 'Any distance', value: 'Any distance' },
+  { label: 'Within 1Km', value: '1Km' },
+  { label: 'Within 2Km', value: '2Km' },
+  { label: 'Within 3Km', value: '3Km' },
+  { label: 'Within 5km', value: '5Km' },
+  { label: 'Within 10km', value: '10Km' },
 ];
 
 const FilterSelect: FC<{
@@ -115,13 +118,24 @@ const FilterSelect: FC<{
   );
 };
 
-const Filters: FC<FiltersProps> = ({ setFilters, onClose, visible }) => {
+const Filters: FC<FiltersProps> = ({ filters, setFilters, onClose, visible }) => {
   const [mealType, setMealType] = useState<string>('');
   const [foodRestriction, setFoodRestriction] = useState<string>('');
   const [selectedPriceRange, setPriceRange] = useState<string>('');
   const [selectedDistance, setDistance] = useState<string>('');
   const [selectedSpecialExperience, setSelectedSpecialExperience] = useState<boolean>(false);
   const [selectedOpenNow, setSelectedOpenNow] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (filters) {
+      setMealType(filters.typeOfMeal || '');
+      setFoodRestriction(filters.foodRestrictions || '');
+      setPriceRange(filters.priceRange || '');
+      setDistance(filters.distance || '');
+      setSelectedSpecialExperience(filters.specialExperience || false);
+      setSelectedOpenNow(filters.openNow || false);
+    }
+  }, [filters]);
 
   const handleResetButton = () => {
     setMealType('');
@@ -163,7 +177,7 @@ const Filters: FC<FiltersProps> = ({ setFilters, onClose, visible }) => {
               onValueChange={setMealType}
             />
             <FilterSelect
-              label="Food Restrictions"
+              label="Preferencies"
               value={foodRestriction}
               items={foodRestrictions}
               onValueChange={setFoodRestriction}
