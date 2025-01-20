@@ -33,8 +33,9 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
     try {
         const db = await getDatabase();
         const queryParams: any[] = [];
-        const hours = new Date().getHours();
-
+        const now = new Date();
+        const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        console.log(currentTime);
         let query = `
             SELECT DISTINCT 
                 r.id, 
@@ -71,8 +72,8 @@ const getRestaurants = async (filters?: FiltersOptions): Promise<Restaurant[] | 
 
             // Filtro per ristoranti aperti ora
             if (openNow) {
-                query += ` AND dr.hour_start_deal <= ? AND dr.hour_end_deal >= ?`;
-                queryParams.push(hours, hours);
+                query += ` AND time(?) >= time(dr.hour_start_deal) AND time(?) <= time(dr.hour_end_deal)`;
+                queryParams.push(currentTime, currentTime);
             }
 
             // Filtro per restrizioni alimentari
