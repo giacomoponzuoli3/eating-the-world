@@ -16,10 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import QRCode from 'react-native-qrcode-svg';
 import CameraScreen from '../components/Camera';
 import { BookTable } from '../components/BookTable';
-import { CulinaryExperienceComponent } from '../components/CulinaryExperienceComponent';
 import { BookCulinaryExperience } from '../components/BookCulinaryExperience';
-import { fontFamily } from '../constants/fontFamily';
-
+import {getRestaurantsWithQuiz} from '../dao/quizDAO';
 interface BookingScreenProps{
   user: any;
   tableBookings: any[];
@@ -72,6 +70,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   const [isQRCodeVisible, setIsQRCodeVisible] = useState(false);
   const [restaurantStates, setRestaurantStates] = useState<{[key: number]: { quizCompleted: boolean, hasDiscount: string | null }}>({});
   const [qrCode, setQrCode] = useState<string | null>(null); 
+  const [quizFound, setQuizFound] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
 
   //for edit booking
   const [showBook, setShowBook] = useState<boolean>(false);
@@ -171,11 +171,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
     }, [])
   );
 
-  const handleQuiz = () => {
-    setIsQuizVisible(true);
-  }
-
-  const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description,}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string;}) => {
+  const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description, quizFound}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string; quizFound: boolean;}) => {
 
     const openCamera = () => {
       onClose();
@@ -192,7 +188,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
           <TouchableOpacity onPress={onClose} style={stylesBookings.closeButton}>
             <Icon name="times" size={30} color="black" />
           </TouchableOpacity>
-  
+
+          {quizFound ? (
+            <>
           <Text style={stylesBookings.modalTitle}>{restaurantName}</Text>
           <Text style={stylesBookings.modalDescription}>{description}</Text>
           <Text style={stylesBookings.explanationText}>
@@ -202,6 +200,13 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
           <TouchableOpacity style={stylesBookings.scanButton} onPress={() => openCamera()}>
             <Text style={stylesBookings.scanButtonText}>Scan QR Code</Text>
           </TouchableOpacity>
+            </>
+          ) : (
+            <>
+            <Text style={stylesBookings.modalTitle}>Not Found 😭</Text>
+            <Text style={stylesBookings.modalDescription}> Quiz isn't available for this restaurant yet.</Text>
+            </>
+          )}
           </View>
         </Modal>
       );
@@ -243,9 +248,16 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
     const restaurantState = restaurantStates[item.restaurantId] || { quizCompleted: false, hasDiscount: null };
 
     const openModalQuiz = async (id: number) => {
+      const restaurantsWithQuiz = await getRestaurantsWithQuiz();
+      if(restaurantsWithQuiz.find((r: any) => r.id_restaurant === id)){ 
+        setQuizFound(true);
+        const restaurant: any = await getRestaurantById(id);
+        setRestaurantDescription(restaurant[0].description); 
+        setName(restaurant[0].name);  
+      } else {
+        setQuizFound(false);
+      }
       setIsModalQuizVisible(true);
-      const restaurant: any = await getRestaurantById(id);
-      setRestaurantDescription(restaurant[0].description);
     }
 
 
@@ -351,8 +363,9 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
               <RestaurantLearnModal
                 isVisible={isModalQuizVisible}
                 onClose={() => setIsModalQuizVisible(false)}
-                restaurantName={item.restaurantName}
+                restaurantName={name}
                 description={restaurantDescription}
+                quizFound={quizFound}
               />
               <ConfirmationModal
                   isVisible={isModalVisible}
@@ -403,6 +416,13 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
               onFinish={() => {
                 setIsQuizVisible(false);
                 setIsModalQuizVisible(false);
+                setRestaurantStates((prev) => ({
+                  ...prev,
+                  [item.restaurantId]: {
+                    quizCompleted: true,
+                    hasDiscount: null,
+                  },
+                }));
               }}
               handleQuizCompletion={handleQuizCompletion}
             />  

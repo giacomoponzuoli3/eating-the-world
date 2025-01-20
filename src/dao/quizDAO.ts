@@ -55,6 +55,22 @@ const getQuestionsByRestaurantId = async (id_restaurant: number) => {
     }
 };
 
+const getRestaurantsWithQuiz = async () => {
+    try {
+        const db = await getDatabase();
+
+        const sql = `
+            SELECT DISTINCT id_restaurant
+            FROM restaurants_questions
+        `;
+        const restaurants_with_quiz = await db.getAllAsync(sql);
+        return restaurants_with_quiz;
+    } catch (error) {
+        console.error("Error in getRestaurantsWithQuiz:", error);
+        return error;
+    }
+}
+
 export {
-    getQuestionsByRestaurantId,
+    getQuestionsByRestaurantId, getRestaurantsWithQuiz
 };
