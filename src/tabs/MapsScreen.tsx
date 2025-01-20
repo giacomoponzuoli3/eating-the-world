@@ -84,7 +84,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
     const fetchRestaurants = async () => {
       try {
         const restaurants = await getRestaurants(filters);
-        if (restaurants) {
+        if (restaurants?.length) {
           let restaurantMarkers = (await Promise.all(
             restaurants.map(async (restaurant) => {
               const coordinates = await getCoordinatesFromAddress(restaurant.address);
@@ -106,6 +106,9 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
           setRestaurantMarkers(restaurantMarkers);
           console.log(restaurantMarkers.length);
           setIsReady(1);
+        }else{
+          setFilters(undefined);
+          setShowRestaurantNotFound(true);
         }
       } catch (err) {
         console.error(err);
