@@ -1,4 +1,4 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Alert, TouchableOpacity, Image, Text, ScrollView} from "react-native";
 import MapView, { Callout, MapMarker, Marker, Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
@@ -9,7 +9,7 @@ import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interface
 import { getRestaurants } from '../dao/restaurantsDAO';
 import FiltersApplied from '../components/FiltersApplied';
 import { PageRestaurant } from '../components/PageRestaurant';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import { filterByDistance } from '../utils/filterDistance';
 
@@ -80,42 +80,45 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
     setupLocation();
   }, []);
 
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const restaurants = await getRestaurants(filters);
-        if (restaurants?.length) {
-          let restaurantMarkers = (await Promise.all(
-            restaurants.map(async (restaurant) => {
-              const coordinates = await getCoordinatesFromAddress(restaurant.address);
-              if (coordinates) {
-                return { restaurant, coordinates };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchRestaurants = async () => {
+        try {
+          const restaurants = await getRestaurants(filters);
+          console.log(restaurants?.length);
+          if (restaurants?.length) {
+            let restaurantMarkers = (await Promise.all(
+              restaurants.map(async (restaurant) => {
+                const coordinates = await getCoordinatesFromAddress(restaurant.address);
+                if (coordinates) {
+                  return { restaurant, coordinates };
+                }
+                return null;
+              })
+            ))
+            .filter((marker): marker is RestaurantMarker => marker !== null);
+  
+            if(filters?.distance){
+              const current_location = await getCurrentLocation();
+              if(current_location){
+                const user_coordinates = {lat: current_location?.latitude, lng: current_location?.longitude}
+                restaurantMarkers = filterByDistance(restaurantMarkers, user_coordinates, filters.distance)
               }
-              return null;
-            })
-          ))
-          .filter((marker): marker is RestaurantMarker => marker !== null);
-
-          if(filters?.distance){
-            const current_location = await getCurrentLocation();
-            if(current_location){
-              const user_coordinates = {lat: current_location?.latitude, lng: current_location?.longitude}
-              restaurantMarkers = filterByDistance(restaurantMarkers, user_coordinates, filters.distance)
             }
+            setRestaurantMarkers(restaurantMarkers);
+            console.log(restaurantMarkers.length);
+            setIsReady((prev) => prev + 1);
+          }else{
+            setFilters(undefined);
+            setShowRestaurantNotFound(true);
           }
-          setRestaurantMarkers(restaurantMarkers);
-          console.log(restaurantMarkers.length);
-          setIsReady(1);
-        }else{
-          setFilters(undefined);
-          setShowRestaurantNotFound(true);
+        } catch (err) {
+          console.error(err);
         }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchRestaurants();
-  }, [filters]);
+      };
+      fetchRestaurants();
+    }, [filters])
+  );
   
   // Function to center the map on the user's current location
   const centerOnUserLocation = async () => {

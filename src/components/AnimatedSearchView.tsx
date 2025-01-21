@@ -37,7 +37,8 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   useEffect(() => {
     if (searchText) {
       const filtered = restaurants.filter(restaurant =>
-        restaurant.name.toLowerCase().includes(searchText.toLowerCase())
+        restaurant.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        restaurant.address.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredRestaurants(filtered);
     } else {
@@ -213,6 +214,8 @@ const styles = StyleSheet.create({
   },
   expandedContainer: {
     position: 'absolute',
+    paddingTop: 80,
+    paddingBottom: 100,
     top: 0,
     left: 0,
     right: 0,
@@ -220,7 +223,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   listContent: {
-    paddingTop: 80,
+    paddingBottom: 80
   },
   restaurantItem: {
     flexDirection: 'row',

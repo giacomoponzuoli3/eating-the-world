@@ -62,14 +62,14 @@ export const stylesPageRestaurant = StyleSheet.create({
 
     iconMenuWrapper: {
         flexDirection: 'column',
-        width: 36, // Larghezza del cerchio
-        height: 36, // Altezza del cerchio
+        width: 36, 
+        height: 36,
         borderRadius: 4,
-        backgroundColor: 'rgba(98, 0, 238, 0.1)', // Sfondo nero opaco
-        borderWidth: 1, // Spessore del bordo
-        borderColor: 'rgba(98, 0, 238, 0.0)', // Colore del bordo
-        justifyContent: 'center', // Centrare l'icona verticalmente
-        alignItems: 'center', // Centrare l'icona orizzontalmente
+        backgroundColor: 'rgba(98, 0, 238, 0.1)', 
+        borderWidth: 1, 
+        borderColor: 'rgba(98, 0, 238, 0.0)', 
+        justifyContent: 'center', 
+        alignItems: 'center',
         marginLeft: 20
     },
 
@@ -98,7 +98,7 @@ export const stylesPageRestaurant = StyleSheet.create({
     iconInformationWrapper: {
         width: 30,
         height: 30, 
-        borderRadius: 4,
+        borderRadius: 25,
         backgroundColor: 'rgba(98, 0, 238, 0.1)', 
         borderWidth: 1, // Spessore del bordo
         borderColor: 'rgba(0, 0, 0, 0.0)', // Colore del bordo
@@ -194,7 +194,7 @@ export const stylesPageRestaurant = StyleSheet.create({
     },
     buttonBookTable: { 
         marginTop: 5,
-        borderRadius: 4,
+        borderRadius: 25,
         backgroundColor: 'rgba(98, 0, 238, 1)', 
         flex: 1, 
         marginRight: 5,
@@ -206,7 +206,7 @@ export const stylesPageRestaurant = StyleSheet.create({
         marginTop: 10,
         alignSelf: 'flex-start', // Si estende per tutta la larghezza del contenitore
         borderWidth: 2,
-        borderRadius: 2,
+        borderRadius: 25,
         borderColor: 'rgba(90, 0, 230, 1)',
 
     },
