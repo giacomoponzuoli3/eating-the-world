@@ -81,12 +81,6 @@ const insertFavoriteRestaurant = async (username: string, id_restaurant: number)
             INSERT INTO favorites(username, id_restaurant) VALUES(?, ?)
         `;
         await db.runAsync(sql, [username, id_restaurant]);
-
-        /*
-        const sqlCheck = "SELECT * FROM favorites";
-        const result = await db.getAllAsync(sqlCheck, []);
-        console.log("Current data in favorites:", result);
-        */
     }catch(error){
         console.error("Error in insertFavoriteRestaurant: ", error);
         return error;

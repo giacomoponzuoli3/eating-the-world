@@ -6,7 +6,6 @@ import { User } from '../../App';
  */
 const getUsers = async () => {
     try{
-        console.log("entra in getUsers");
         const db = await getDatabase();
         const results: any[] = await db.getAllAsync('SELECT * FROM users', []);
         
@@ -28,7 +27,6 @@ const getUsers = async () => {
       `;
       const params = [user.name, user.surname, user.email, user.username, user.phone_number, user.username];
       await db.runAsync(query, params);
-      console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user: ', error);
     }

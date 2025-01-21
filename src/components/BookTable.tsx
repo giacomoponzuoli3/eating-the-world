@@ -53,7 +53,7 @@ const BookTable: FC<BookTableProps> = ({specialRequest_, date, hour, people, res
       setOpeningHours(oh);
 
     }catch(error){
-      console.log("Error in getOpeningHours: ", error);
+      console.error("Error in getOpeningHours: ", error);
       setOpeningHours([]);
     }
   }

@@ -33,16 +33,15 @@ import { getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUs
 import { ActivityIndicator, Text, View } from "react-native";
 
 const App = () => {
-  const [fontsLoaded] = loadFonts();
 
+  const [fontsLoaded] = loadFonts();
+  
   const [restaurants, setRestaurants] = useState<any[]>([]);
 
   const [users, setUsers] = useState<User[]>([]); // users è un array di utenti
   const [user, setUser] = useState<User | undefined>(); //prende il primo utente presente nel db
   const [tableReservations, setTableReservations] = useState<any[]>([]);
   const [specialReservations, setSpecialReservations] = useState<any[]>([]);
-  const [qrCodeLink, setQrCodeLink] = useState<string>("https://example.com/profile/1");
-
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -139,8 +138,7 @@ const App = () => {
               },
               tabBarActiveTintColor: '#6200ee', // Colore quando è selezionato
               tabBarInactiveTintColor: 'gray', // Colore quando non è selezionato
-              headerTitle: 'Eating The World', // Titolo impostato per tutti i tab
-              
+              headerTitle: 'Eating The World  🥦', // Titolo impostato per tutti i tab
             })}
           >
             <Tab.Screen name="Profile">
@@ -148,7 +146,7 @@ const App = () => {
               </Tab.Screen>
             
             <Tab.Screen name="Maps">
-                {() => <MapsScreen restaurants={restaurants} setRestaurants={setRestaurants} user={user}/>}
+                {() => <MapsScreen user={user} restaurants={restaurants}/>}
             </Tab.Screen>
             
             <Tab.Screen name="Bookings">

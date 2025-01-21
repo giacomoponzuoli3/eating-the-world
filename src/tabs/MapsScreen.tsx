@@ -12,14 +12,10 @@ import { PageRestaurant } from '../components/PageRestaurant';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import { filterByDistance } from '../utils/filterDistance';
-
-interface MapScreenProps{
-  restaurants: Restaurant[];
-  setRestaurants: Dispatch<SetStateAction<Restaurant[]>>;
-}
+import { User } from '../../App';
 interface MapScreenProps{
   restaurants: Restaurant[],
-  user: any
+  user: User,
 }
 
 const markerImages: { [key: string]: any } = {
@@ -85,7 +81,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
       const fetchRestaurants = async () => {
         try {
           const restaurants = await getRestaurants(filters);
-          console.log(restaurants?.length);
           if (restaurants?.length) {
             let restaurantMarkers = (await Promise.all(
               restaurants.map(async (restaurant) => {
@@ -106,7 +101,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
               }
             }
             setRestaurantMarkers(restaurantMarkers);
-            console.log(restaurantMarkers.length);
             setIsReady((prev) => prev + 1);
           }else{
             setFilters(undefined);
@@ -258,6 +252,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
           )}
           {/* Searchbar */}
           <SearchWithFilter 
+            user={user}
             filters={filters}
             restaurants={restaurants} 
             onSelectRestaurant={handleSelectRestaurant} 

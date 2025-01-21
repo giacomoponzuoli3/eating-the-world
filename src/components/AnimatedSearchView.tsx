@@ -9,19 +9,39 @@ import {
   Text,
   Keyboard,
   Dimensions,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Restaurant } from '../utils/interfaces';
+import { User } from '../../App';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 interface AnimatedSearchViewProps {
+  user: User,
   restaurants: Restaurant[];
   onSelectRestaurant: (restaurant: Restaurant) => void;
   onShowFilters: () => void;
 }
 
+type RootTabParamList = {
+  Profile: undefined;
+  Maps: undefined;
+  Bookings: undefined;
+  Favorites: undefined;
+};
+
+const userImages: { [key: string]: any } = {
+  giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
+  alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
+  lorenzo_gugu: require("../../assets/img/profile/lorenzo_gugu.png"),
+  francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
+};
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
+  user,
   restaurants,
   onSelectRestaurant,
   onShowFilters,
@@ -29,6 +49,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
+  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Maps'>>();  
   
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -62,6 +83,10 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     ]).start(() => {
       searchInputRef.current?.focus();
     });
+  };
+
+  const goToProfile= () => {
+    navigation.navigate('Profile'); // Naviga alla tab "Maps"
   };
 
   const collapseSearch = () => {
@@ -115,18 +140,18 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
       <View style={styles.searchbarContainer}>
         <View style={styles.searchWrapper}>
             {!isExpanded ?
-                    <TouchableOpacity
-                        style={[styles.backButton, styles.visible]}
-                    >
-                        <Ionicons name="search" size={24} color="black" />
-                    </TouchableOpacity> :
-                    <TouchableOpacity
-                        style={[styles.backButton, isExpanded && styles.visible]}
-                        onPress={collapseSearch}
-                    >
-                        {isExpanded && <Ionicons name="arrow-back" size={24} color="black" />}
-                    </TouchableOpacity>
-                }
+              <TouchableOpacity
+                  style={[styles.backButton, styles.visible]}
+              >
+                  <Ionicons name="search" size={24} color="black" />
+              </TouchableOpacity> :
+              <TouchableOpacity
+                  style={[styles.backButton, isExpanded && styles.visible]}
+                  onPress={collapseSearch}
+              >
+                  {isExpanded && <Ionicons name="arrow-back" size={24} color="black" />}
+              </TouchableOpacity>
+            }
           <TextInput
             ref={searchInputRef}
             placeholder="Search restaurants"
@@ -135,6 +160,11 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
             onFocus={expandSearch}
             style={[styles.searchbar, isExpanded && styles.expandedSearchbar]}
           />
+          <View style={styles.profileImageContainer}>
+            <TouchableOpacity onPress={goToProfile} style={{ width: '100%', height: '100%' }}>
+              <Image source={userImages[user.username]} style={styles.profileImage} resizeMode="cover" />
+            </TouchableOpacity>
+          </View>
         </View>
         <TouchableOpacity 
           style={styles.filterButton} 
@@ -193,11 +223,29 @@ const styles = StyleSheet.create({
   searchbar: {
     flex: 1,
     height: 50,
+    paddingRight: 60,
     paddingHorizontal: 15,
     fontSize: 16,
   },
   expandedSearchbar: {
     backgroundColor: 'transparent',
+  },
+  profileImageContainer: {
+    width: 42, 
+    height: 42,
+    borderRadius: 25, 
+    overflow: 'hidden', 
+    borderWidth: 3, 
+    borderColor: 'rgba(98, 0, 238, 1)',
+    backgroundColor: '#eee', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8
+  },
+  profileImage: {
+    width: '100%', 
+    height: '100%',
+    resizeMode: 'cover', 
   },
   filterButton: {
     width: 50,

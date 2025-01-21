@@ -3,8 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import AnimatedSearchView from './AnimatedSearchView';
 import Filters from './Filters';
+import { User } from '../../App';
 
 interface SearchWithFilterProps {
+  user: User;
   filters: FiltersOptions | undefined;
   restaurants: Restaurant[];
   setFilters: React.Dispatch<React.SetStateAction<FiltersOptions | undefined>>;
@@ -12,6 +14,7 @@ interface SearchWithFilterProps {
 }
 
 const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
+  user,
   filters,
   restaurants,
   setFilters,
@@ -28,6 +31,7 @@ const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
   return (
     <View style={styles.container}>
       <AnimatedSearchView
+      user={user}
         restaurants={restaurants}
         onSelectRestaurant={handleSelectRestaurant}
         onShowFilters={() => setShowFilters(true)}

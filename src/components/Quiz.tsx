@@ -63,7 +63,6 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
   };
 
   const handleCloseQuiz = () => {
-    console.log("handleCloseQuiz called");
     Alert.alert(
       "Warning",
       "You only have one chance to complete this quiz. If you exit now, you won't be able to earn the discount anymore.",

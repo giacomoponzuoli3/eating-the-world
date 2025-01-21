@@ -47,25 +47,7 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
     },
   ].filter((filter) => filter.label); 
 
-  // const handleRemoveFilter = (key: string) => {
-  //   setFilters((prevFilters) => {
-  //     const updatedFilters = {
-  //       ...prevFilters,
-  //       [key]: undefined, // Rimuove il filtro specifico.
-  //     };
-  
-  //     // Controlla se tutti i valori di updatedFilters sono undefined o false.
-  //     const isFiltersEmpty = Object.values(updatedFilters).every(
-  //       (value) => value === undefined || value === false
-  //     );
-  
-  //     // Se tutti i valori sono undefined/false, resettare lo stato.
-  //     return isFiltersEmpty ? undefined : updatedFilters;
-  //   });
-  // };
-
   const handleRemoveFilter = (key: string) => {
-    console.log(key);
     
     setFilters((prevFilters) => {
       if (!prevFilters) return undefined;
@@ -78,22 +60,6 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
         specialExperience: key === "specialExperience" ? undefined : prevFilters.specialExperience,
         openNow: key === "openNow" ? undefined : prevFilters.openNow,
       }
-      console.log(newFilters);
-
-      // // Crea un nuovo oggetto senza il filtro rimosso
-      // const { [key]: removedFilter, ...remainingFilters } = prevFilters;
-
-      // // Verifica se ci sono ancora filtri attivi
-      // const hasActiveFilters = Object.values(remainingFilters).some(
-      //   value => value !== undefined && value !== false
-      // );
-
-      // // Se non ci sono più filtri attivi, restituisci undefined
-      // if (!hasActiveFilters) {
-      //   return undefined;
-      // }
-
-      // Crea un nuovo oggetto per forzare il re-render
       return newFilters;
     });
   };

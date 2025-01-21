@@ -21,13 +21,12 @@ import { MenuComponent } from "./MenuComponent";
 interface PageRestaurantProps{
     restaurant: Restaurant,
     user: any,
-    onClose: () => void
+    onClose: () => void,
+    onSpecialExperience?: () => void,
 }
 
-const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: any) => {
+const PageRestaurant: FC<PageRestaurantProps> = ({ onSpecialExperience, restaurant, onClose, user}: any) => {
   const navigation = useNavigation();  // Ottieni l'oggetto di navigazione
-  
-
   const [isFavorite, setIsFavorite] = useState<Boolean>(false);
   const [workingHours, setWorkingHours] = useState<any[] | null>(null);
   const [closingDays, setClosingDays] = useState<any[] | null>(null);
@@ -207,7 +206,9 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ restaurant, onClose, user}: a
 
             <View style={stylesPageRestaurant.containerText}>
               {restaurant && restaurant.culinary_experience == 1 &&
-                (<TouchableOpacity onPress={() => setShowCulinaryExperience(true)} style={stylesPageRestaurant.buttonCulinaryExperience}>
+                (<TouchableOpacity onPress={() => setShowCulinaryExperience(true)} 
+                  style={stylesPageRestaurant.buttonCulinaryExperience}>
+                  <Ionicons name={"arrow-forward"} size={25} color="black" />
                   <Text style={stylesPageRestaurant.textCulinaryExperience}>Special Experience</Text>
                 </TouchableOpacity>)
               }

@@ -172,8 +172,6 @@ export const stylesPageRestaurant = StyleSheet.create({
 
     },
 
-    
-
     containerCategory: {
         flexDirection: 'row', 
         flexWrap: 'wrap',
@@ -201,13 +199,21 @@ export const stylesPageRestaurant = StyleSheet.create({
         alignItems: 'center'
     },
 
-    buttonCulinaryExperience: { 
+    buttonCulinaryExperience: {
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "row",
         backgroundColor: 'rgba(98, 0, 238, 0.1)', 
         marginTop: 10,
         alignSelf: 'flex-start', // Si estende per tutta la larghezza del contenitore
         borderWidth: 2,
         borderRadius: 25,
         borderColor: 'rgba(90, 0, 230, 1)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.30,
+        shadowRadius: 3.84,
+        elevation: 5,
 
     },
 

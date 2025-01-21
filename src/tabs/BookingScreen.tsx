@@ -95,7 +95,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   }
 
   const handleQuizCompletion = (restaurantId: number, scoredDiscount: string | null) => {
-    console.log(scoredDiscount);
     setRestaurantStates(({
       [restaurantId]: {
         quizCompleted: true,
