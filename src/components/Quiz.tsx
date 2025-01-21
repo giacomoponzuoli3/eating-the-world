@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity, Alert} from 'react-native';
 import { AntDesign } from '@expo/vector-icons'; // Per le icone (freccia e chiusura)
 import { getQuestionsByRestaurantId } from '../dao/quizDAO';
 import { Question } from '../utils/interfaces';
@@ -44,6 +44,8 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
 
   const fetchQuestions = async () => {
     const rawQuestions = await getQuestionsByRestaurantId(id_restaurant) as any[]; // Usare id_restaurant
+    console.log("id: ", id_restaurant);
+    console.log(rawQuestions);
     const formattedQuestions: Question[] = rawQuestions.map((res) => {
       const { shuffledArray, newCorrectIndex } = shuffleArray(
         [res.answers[0], res.answers[1], res.answers[2]],
@@ -60,6 +62,24 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
 
     setQuestions(formattedQuestions);
     setAnswersSelected(new Array(formattedQuestions.length).fill(null));
+  };
+
+  const handleCloseQuiz = () => {
+    Alert.alert(
+      "Warning",
+      "You only have one chance to complete this quiz. If you exit now, you won't be able to earn the discount anymore.",
+      [
+        {
+          text: "Continue Quiz",
+          style: "cancel" // This will appear in blue on iOS
+        },
+        {
+          text: "Exit Quiz",
+          style: "destructive", // This will appear in red on iOS
+          onPress: onFinish
+        }
+      ]
+    );
   };
 
   useEffect(() => {
@@ -121,7 +141,7 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
     if(finalDiscount == null) {
       return (
         <View style={stylesQuiz.completedContainer}>
-          <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
+          <TouchableOpacity style={stylesQuiz.crossButton} onPress={handleCloseQuiz}>
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
           <Text style={stylesQuiz.completedText}>Quiz completed!</Text>

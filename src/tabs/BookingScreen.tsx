@@ -72,6 +72,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   const [qrCode, setQrCode] = useState<string | null>(null); 
   const [quizFound, setQuizFound] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+  const [activeQuizRestaurantId, setActiveQuizRestaurantId] = useState<number>(0);
 
   //for edit booking
   const [showBook, setShowBook] = useState<boolean>(false);
@@ -249,6 +250,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
 
     const openModalQuiz = async (id: number) => {
       const restaurantsWithQuiz = await getRestaurantsWithQuiz();
+      setActiveQuizRestaurantId(id);
       if(restaurantsWithQuiz.find((r: any) => r.id_restaurant === id)){ 
         setQuizFound(true);
         const restaurant: any = await getRestaurantById(id);
@@ -410,7 +412,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
           </>
         )}
       
-    {isQuizVisible && (
+    {activeQuizRestaurantId === item.restaurantId && isQuizVisible && (
               <QuizScreen
               id_restaurant={item.restaurantId}
               onFinish={() => {
