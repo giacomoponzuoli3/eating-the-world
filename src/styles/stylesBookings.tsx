@@ -47,7 +47,7 @@ export const stylesBookings = StyleSheet.create({
     backgroundColor: 'rgba(98, 0, 238, 0.1)', 
     alignSelf: 'flex-start',
     borderWidth: 2,
-    borderRadius: 2,
+    borderRadius: 25,
     borderColor: 'rgba(90, 0, 230, 1)',
     marginBottom: 2,
   },
@@ -73,6 +73,7 @@ export const stylesBookings = StyleSheet.create({
   },
   actionButtonContent: {
     marginTop: 3,
+    borderRadius: 25,
     backgroundColor: 'rgba(98, 0, 238, 1)', 
     flex: 1, 
     alignItems: 'center',

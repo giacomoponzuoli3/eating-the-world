@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,7 +12,7 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Restaurant } from '../utils/interfaces';
+import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import { User } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -20,8 +20,11 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 interface AnimatedSearchViewProps {
   user: User,
   restaurants: Restaurant[];
+  isExpanded: boolean;
+  setIsExpanded: Dispatch<SetStateAction<boolean>>;
   onSelectRestaurant: (restaurant: Restaurant) => void;
   onShowFilters: () => void;
+  setFilters: Dispatch<SetStateAction<FiltersOptions | undefined>>;
 }
 
 type RootTabParamList = {
@@ -45,8 +48,10 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   restaurants,
   onSelectRestaurant,
   onShowFilters,
+  setFilters,
+  isExpanded,
+  setIsExpanded,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
   const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Maps'>>();  
@@ -90,6 +95,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   };
 
   const collapseSearch = () => {
+    setFilters(undefined);
     Keyboard.dismiss();
     Animated.parallel([
       Animated.timing(animatedHeight, {

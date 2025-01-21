@@ -16,7 +16,6 @@ async function copyDatabaseFile() {
       from: asset.localUri ? asset.localUri : "",
       to: dbPath
     });
-
 }
 
 async function openDatabase() {

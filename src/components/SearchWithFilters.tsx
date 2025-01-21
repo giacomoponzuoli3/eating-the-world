@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FiltersOptions, Restaurant } from '../utils/interfaces';
+import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interfaces';
 import AnimatedSearchView from './AnimatedSearchView';
 import Filters from './Filters';
 import { User } from '../../App';
@@ -11,6 +11,8 @@ interface SearchWithFilterProps {
   restaurants: Restaurant[];
   setFilters: React.Dispatch<React.SetStateAction<FiltersOptions | undefined>>;
   onSelectRestaurant?: (restaurant: Restaurant) => void;
+  isExpanded: boolean;
+  setIsExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
 const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
@@ -19,6 +21,8 @@ const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
   restaurants,
   setFilters,
   onSelectRestaurant,
+  isExpanded,
+  setIsExpanded
 }) => {
   const [showFilters, setShowFilters] = React.useState(false);
 
@@ -31,10 +35,13 @@ const SearchWithFilter: React.FC<SearchWithFilterProps> = ({
   return (
     <View style={styles.container}>
       <AnimatedSearchView
-      user={user}
+        user={user}
         restaurants={restaurants}
         onSelectRestaurant={handleSelectRestaurant}
         onShowFilters={() => setShowFilters(true)}
+        setFilters={setFilters}
+        isExpanded={isExpanded}
+        setIsExpanded={setIsExpanded}
       />
       {showFilters && (
         <Filters

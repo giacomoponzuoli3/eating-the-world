@@ -37,11 +37,12 @@ const markerImages: { [key: string]: any } = {
 const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
-  const [restaurantMarkers, setRestaurantMarkers] = useState<RestaurantMarker[]>([])
+  const [restaurantMarkers, setRestaurantMarkers] = useState<RestaurantMarker[]>([]);
   const [filters, setFilters] = useState<FiltersOptions | undefined>(undefined);
   const [isReady, setIsReady] = useState<number>(0);
   const mapRef = React.useRef<MapView>(null);
-  const nav = useNavigation();
+
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const markersRef = useRef<MapMarker[]>([]);
@@ -100,8 +101,10 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
                 restaurantMarkers = filterByDistance(restaurantMarkers, user_coordinates, filters.distance)
               }
             }
-            setRestaurantMarkers(restaurantMarkers);
-            setIsReady((prev) => prev + 1);
+            if(!filters && !isExpanded){
+              setRestaurantMarkers(restaurantMarkers);
+              setIsReady((prev) => prev + 1);
+            }
           }else{
             setFilters(undefined);
             setShowRestaurantNotFound(true);
@@ -257,6 +260,8 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
             restaurants={restaurants} 
             onSelectRestaurant={handleSelectRestaurant} 
             setFilters={setFilters}
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
             />
           {/* Center User Location Button */}
           <TouchableOpacity style={styles.locationButton} onPress={centerOnUserLocation}>

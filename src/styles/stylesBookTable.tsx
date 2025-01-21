@@ -417,7 +417,7 @@ export const stylesBookTable = StyleSheet.create({
         marginLeft: 10,
         width: 30, // Larghezza del cerchio
         height: 30, // Altezza del cerchio
-        borderRadius: 4,
+        borderRadius: 25,
         backgroundColor: 'rgba(98, 0, 238, 0.1)', // Sfondo nero opaco
         borderWidth: 1, // Spessore del bordo
         borderColor: 'rgba(0, 0, 0, 0.0)', // Colore del bordo
@@ -451,7 +451,7 @@ export const stylesBookTable = StyleSheet.create({
 
     buttonBookTable: { 
       marginTop: 5,
-      borderRadius: 6,
+      borderRadius: 25,
       backgroundColor: 'rgba(0, 160, 0, 1)', 
       flex: 1, 
       marginRight: 10,

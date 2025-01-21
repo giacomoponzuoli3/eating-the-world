@@ -96,7 +96,7 @@ export const stylesCulinaryExperience = StyleSheet.create({
     iconInformationWrapper: {
         width: 30,
         height: 30, 
-        borderRadius: 4,
+        borderRadius: 25,
         backgroundColor: 'rgba(98, 0, 238, 0.1)', 
         borderWidth: 1, // Spessore del bordo
         borderColor: 'rgba(0, 0, 0, 0.0)', // Colore del bordo
@@ -133,7 +133,7 @@ export const stylesCulinaryExperience = StyleSheet.create({
         flex: 1, 
         marginRight: 5,
         alignItems: 'center',
-        borderRadius: 4,
+        borderRadius: 25,
     },
 
     textBookSpecialExperience: {
@@ -142,5 +142,4 @@ export const stylesCulinaryExperience = StyleSheet.create({
         fontFamily: 'Poppins-Light', 
         fontSize: 15
     },
-
 });

@@ -55,7 +55,7 @@ export const stylesSummaryCulinaryBook = StyleSheet.create({
         left: 0, // Allinealo al bordo sinistro
         right: 0, // Allinealo al bordo destro
         marginTop: 5,
-        borderRadius: 6,
+        borderRadius: 25,
         backgroundColor: 'rgba(0, 160, 0, 1)', 
         flex: 1, 
         marginRight: 10,
