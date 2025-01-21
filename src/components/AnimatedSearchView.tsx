@@ -10,12 +10,14 @@ import {
   Keyboard,
   Dimensions,
   Image,
+  ImageSourcePropType,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import { User } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { preloadImages, userImages } from '../utils/images';
 
 interface AnimatedSearchViewProps {
   user: User,
@@ -32,13 +34,6 @@ type RootTabParamList = {
   Maps: undefined;
   Bookings: undefined;
   Favorites: undefined;
-};
-
-const userImages: { [key: string]: any } = {
-  giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
-  alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
-  lorenzo_gugu: require("../../assets/img/profile/lorenzo_gugu.png"),
-  francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -59,6 +54,21 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
+
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const loadAssets = async () => {
+      try {
+        await preloadImages();
+        setIsReady(true);
+      } catch (error) {
+        console.error("Error loading images:", error);
+      }
+    };
+
+    loadAssets();
+  }, []);
 
   useEffect(() => {
     if (searchText) {

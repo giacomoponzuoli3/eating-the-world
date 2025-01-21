@@ -13,6 +13,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import { filterByDistance } from '../utils/filterDistance';
 import { User } from '../../App';
+import { BottomTabNavigationProp, BottomTabOptionsArgs } from '@react-navigation/bottom-tabs';
 interface MapScreenProps{
   restaurants: Restaurant[],
   user: User,
@@ -34,6 +35,13 @@ const markerImages: { [key: string]: any } = {
   "Cafeteria" : require("../../assets/img/restaurantMarkers/Cafeteria.png")
 };
 
+type RootTabParamList = {
+  Profile: undefined;
+  Maps: undefined;
+  Bookings: undefined;
+  Favorites: undefined;
+};
+
 const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
@@ -41,6 +49,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
   const [filters, setFilters] = useState<FiltersOptions | undefined>(undefined);
   const [isReady, setIsReady] = useState<number>(0);
   const mapRef = React.useRef<MapView>(null);
+  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList, 'Maps'>>();  
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -169,6 +178,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
           user={user}
           onClose={() => {
             setSelectedRestaurant(null);
+            navigation.navigate("Maps");
           }}
         />
       ) : (
