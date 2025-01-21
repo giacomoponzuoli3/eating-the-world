@@ -5,7 +5,7 @@ const {height} = Dimensions.get("window");
 export const stylesQuiz = StyleSheet.create({
     containerQuiz: {
         backgroundColor: 'white',
-        height: height - 170,
+        height: height - 180,
         overflow: 'hidden',
         paddingBottom: 60,
         flex: 1

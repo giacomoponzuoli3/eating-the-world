@@ -44,8 +44,6 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
 
   const fetchQuestions = async () => {
     const rawQuestions = await getQuestionsByRestaurantId(id_restaurant) as any[]; // Usare id_restaurant
-    console.log("id: ", id_restaurant);
-    console.log(rawQuestions);
     const formattedQuestions: Question[] = rawQuestions.map((res) => {
       const { shuffledArray, newCorrectIndex } = shuffleArray(
         [res.answers[0], res.answers[1], res.answers[2]],
@@ -65,6 +63,7 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
   };
 
   const handleCloseQuiz = () => {
+    console.log("handleCloseQuiz called");
     Alert.alert(
       "Warning",
       "You only have one chance to complete this quiz. If you exit now, you won't be able to earn the discount anymore.",
@@ -138,10 +137,10 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
   const currentQuestion = questions[currentQuestionIndex];
 
   if (isQuizCompleted) {
-    if(finalDiscount == null) {
+    if(finalDiscount === null) {
       return (
         <View style={stylesQuiz.completedContainer}>
-          <TouchableOpacity style={stylesQuiz.crossButton} onPress={handleCloseQuiz}>
+          <TouchableOpacity style={stylesQuiz.crossButton} onPress={onFinish}>
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
           <Text style={stylesQuiz.completedText}>Quiz completed!</Text>
@@ -177,7 +176,7 @@ const QuizScreen: FC<QuizScreenProps> = ({ id_restaurant, onFinish, handleQuizCo
       {currentQuestion && (
         <>
           <View style={stylesQuiz.containerQuiz}>
-            <TouchableOpacity style={stylesQuiz.closeButton} onPress={onFinish}>
+            <TouchableOpacity style={stylesQuiz.closeButton} onPress={handleCloseQuiz}>
               <AntDesign name="close" size={30} color="black" />
             </TouchableOpacity>
             <View style={stylesQuiz.progressContainer}>
