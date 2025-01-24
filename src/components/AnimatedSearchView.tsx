@@ -79,7 +79,6 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     const fetchHistory = async () => {
       try{
         const new_history = await getUserHistory(user.username);
-        console.log(new_history);
         setRestaurantHistory(new_history);
       }catch(err){
         console.error(err);
