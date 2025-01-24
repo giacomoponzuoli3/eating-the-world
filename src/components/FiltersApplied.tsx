@@ -60,7 +60,11 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
         specialExperience: key === "specialExperience" ? undefined : prevFilters.specialExperience,
         openNow: key === "openNow" ? undefined : prevFilters.openNow,
       }
-      return newFilters;
+      // Controlla se tutti i valori sono undefined
+    const allUndefined = Object.values(newFilters).every((value) => value === undefined);
+
+    // Se tutti i campi sono undefined, restituisci undefined, altrimenti restituisci i nuovi filtri
+    return allUndefined ? undefined : newFilters;
     });
   };
 

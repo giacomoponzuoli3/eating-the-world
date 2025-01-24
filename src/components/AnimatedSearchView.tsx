@@ -10,15 +10,15 @@ import {
   Keyboard,
   Dimensions,
   Image,
-  ImageSourcePropType,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import { User } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { preloadImages, userImages } from '../utils/images';
 import FilterApplied from './FiltersApplied';
+import { getUserHistory } from '../dao/restaurantsDAO';
 
 interface AnimatedSearchViewProps {
   user: User,
@@ -58,6 +58,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const animatedBackgroundOpacity = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
+  const [restaurantHistory, setRestaurantHistory] = useState<Restaurant[]>([]);
 
   const [isReady, setIsReady] = useState(false);
 
@@ -65,6 +66,8 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     const loadAssets = async () => {
       try {
         await preloadImages();
+        const history = await getUserHistory(user.username);
+        setRestaurantHistory(history);
         setIsReady(true);
       } catch (error) {
         console.error("Error loading images:", error);
@@ -145,6 +148,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
         collapseSearch();
       }}
     >
+      <MaterialIcons name="restaurant" size={24} color="black" />
       <View style={styles.restaurantInfo}>
         <Text style={styles.restaurantName}>{item.name}</Text>
         <Text style={styles.restaurantAddress} numberOfLines={1}>
@@ -155,14 +159,24 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     </TouchableOpacity>
   );
 
-  const animatedContainerStyle = {
-    ...styles.expandedContainer,
-    opacity: animatedOpacity,
-    height: animatedHeight.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, SCREEN_HEIGHT],
-    }),
-  };
+  const renderHistoryItem = ({ item }: { item: Restaurant }) => (
+    <TouchableOpacity
+      style={styles.restaurantItem}
+      onPress={() => {
+        onSelectRestaurant(item);
+        collapseSearch();
+      }}
+    >
+      <MaterialIcons name="history" size={24} color="black" />
+      <View style={styles.restaurantInfo}>
+        <Text style={styles.restaurantName}>{item.name}</Text>
+        <Text style={styles.restaurantAddress} numberOfLines={1}>
+          {item.address}
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={20} color="#666" />
+    </TouchableOpacity>
+  );
 
   const animatedBackgroundStyle = {
     ...StyleSheet.absoluteFillObject,
@@ -246,13 +260,37 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
               )}
 
               {/* Lista dei ristoranti */}
-              <FlatList
-                data={filteredRestaurants}
-                renderItem={renderRestaurantItem}
-                keyExtractor={(item, index) => `${item.name}-${index}`}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={styles.listContent}
-              />
+              {(searchText || filters) ? (
+                filteredRestaurants.length !== 0 ? (
+                  <>
+                    <Text style={styles.historyText}>Results</Text>
+                    <FlatList
+                      data={filteredRestaurants}
+                      renderItem={renderRestaurantItem}
+                      keyExtractor={(item, index) => `${item.name}-${index}`}
+                      keyboardShouldPersistTaps="handled"
+                      contentContainerStyle={styles.listContent}
+                    />
+                  </>
+                ) : (
+                  <View style={styles.noResultsContainer}>
+                    <Text style={styles.noResultsText}>
+                      No restaurants found
+                    </Text>
+                  </View>
+                )
+              ) : (
+                <>
+                  <Text style={styles.historyText}>Recents</Text>
+                  <FlatList
+                    data={restaurantHistory}
+                    renderItem={renderHistoryItem}
+                    keyExtractor={(item, index) => `${item.name}-${index}`}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={styles.listContent}
+                  />
+                </>
+              )}
             </View>
         </Animated.View>
       )}
@@ -334,9 +372,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   appliedFiltersContainer: {
-    marginTop: 50, // Posiziona i filtri sotto la search bar
+    marginTop: 50, 
     width: '100%',
-    zIndex: 2, // Mantiene i filtri visibili sopra altri elementi
+    zIndex: 2, 
   },
   expandedContainer: {
     position: 'absolute',
@@ -357,8 +395,6 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
     zIndex: 3,
   },
   restaurantItem: {
@@ -372,6 +408,26 @@ const styles = StyleSheet.create({
   restaurantInfo: {
     flex: 1,
     marginRight: 10,
+    marginLeft: 16,
+  },
+  noResultsContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: "flex-start",
+    paddingTop: 20
+  },
+  noResultsText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  historyText:{
+    padding: 20,
+    fontFamily: "Poppins-bold",
+    fontSize: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
   restaurantName: {
     fontSize: 16,

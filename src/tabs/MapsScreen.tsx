@@ -6,7 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import SearchWithFilter from '../components/SearchWithFilters';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interfaces';
-import { getRestaurants } from '../dao/restaurantsDAO';
+import { getRestaurants, getUserHistory } from '../dao/restaurantsDAO';
 import FiltersApplied from '../components/FiltersApplied';
 import { PageRestaurant } from '../components/PageRestaurant';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -113,7 +113,6 @@ const MapScreen: FC<MapScreenProps> = ({user}) => {
                 const filteredRestaurants = restaurants.filter((restaurant) =>
                   newRestaurantMarkers.some((marker) => marker.restaurant.id === restaurant.id)
                 );
-      
                 setRestaurants(filteredRestaurants); 
               }
             }
@@ -133,10 +132,6 @@ const MapScreen: FC<MapScreenProps> = ({user}) => {
       fetchRestaurants();
     }, [filters, isExpanded])
   );
-
-  useEffect(() => {
-    console.log(restaurantMarkers.length);
-  }, [restaurantMarkers])
   
   // Function to center the map on the user's current location
   const centerOnUserLocation = async () => {

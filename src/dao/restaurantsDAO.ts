@@ -1,3 +1,4 @@
+import { User } from '../../App';
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 
@@ -330,8 +331,28 @@ const getTableReservationsByHour_Date_Deal_Restaurant = async (id_restaurant: nu
     }
 };
 
+const getUserHistory = async (username: string) => {
+    try{
+        const db = await getDatabase();
+
+        const sql = 
+        `   SELECT r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number 
+            FROM restaurants r, users u, history h
+            WHERE r.id = h.id_restaurant AND u.username = h.username AND u.username = ?
+            GROUP BY r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number
+        `;
+
+        const result = await db.getAllAsync(sql, [username]);
+
+        return result ?? null;
+    }catch(error){
+        console.error("Error in getUserHistory: ", error);
+        return null;
+    }
+}
+
 export { 
     getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant, 
-    getHoursByRestaurant, getTableReservationsByHour_Date_Deal_Restaurant
+    getHoursByRestaurant, getTableReservationsByHour_Date_Deal_Restaurant, getUserHistory
 }
 
