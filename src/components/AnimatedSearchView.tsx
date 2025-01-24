@@ -18,7 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { preloadImages, userImages } from '../utils/images';
 import FilterApplied from './FiltersApplied';
-import { getUserHistory } from '../dao/restaurantsDAO';
+import { getUserHistory, insertRestaurantInHistory } from '../dao/restaurantsDAO';
 
 interface AnimatedSearchViewProps {
   user: User,
@@ -66,8 +66,6 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     const loadAssets = async () => {
       try {
         await preloadImages();
-        const history = await getUserHistory(user.username);
-        setRestaurantHistory(history);
         setIsReady(true);
       } catch (error) {
         console.error("Error loading images:", error);
@@ -76,6 +74,20 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
 
     loadAssets();
   }, []);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try{
+        const new_history = await getUserHistory(user.username);
+        console.log(new_history);
+        setRestaurantHistory(new_history);
+      }catch(err){
+        console.error(err);
+      }
+    }
+    fetchHistory();
+    
+  }, [onSelectRestaurant])
 
   useEffect(() => {
     if (searchText) {
@@ -140,13 +152,16 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     });
   };
 
+  const handleRestaurantPress = async (restaurant: Restaurant) => {
+    await insertRestaurantInHistory(restaurant.id, user.username);
+    onSelectRestaurant(restaurant);
+    collapseSearch()
+  }
+
   const renderRestaurantItem = ({ item }: { item: Restaurant }) => (
     <TouchableOpacity
       style={styles.restaurantItem}
-      onPress={() => {
-        onSelectRestaurant(item);
-        collapseSearch();
-      }}
+      onPress={() => handleRestaurantPress(item)}
     >
       <MaterialIcons name="restaurant" size={24} color="black" />
       <View style={styles.restaurantInfo}>

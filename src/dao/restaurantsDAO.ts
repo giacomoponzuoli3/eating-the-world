@@ -336,10 +336,11 @@ const getUserHistory = async (username: string) => {
         const db = await getDatabase();
 
         const sql = 
-        `   SELECT r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number 
+        `   SELECT r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number, h.timestamp
             FROM restaurants r, users u, history h
             WHERE r.id = h.id_restaurant AND u.username = h.username AND u.username = ?
-            GROUP BY r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number
+            GROUP BY r.id, r.name, r. description, r.address, r.culinary_experience, r.phone_number, h.timestamp
+            ORDER BY h.timestamp DESC
         `;
 
         const result = await db.getAllAsync(sql, [username]);
@@ -351,8 +352,28 @@ const getUserHistory = async (username: string) => {
     }
 }
 
+const insertRestaurantInHistory = async (id_restaurant: number, username: string) => {
+    try{
+        const db = await getDatabase();
+
+        const now = Date.now()
+
+        const sql = `
+                INSERT INTO history(id_restaurant, username, timestamp)
+                VALUES(?, ?, ?)
+            `;
+
+        const result = await db.runAsync(sql, [id_restaurant, username, now]);
+
+        console.log(result);
+    }catch(error){
+        console.error("Error in insertRestaurantInHistroy: ", error);
+        return null;
+    }
+}
+
 export { 
     getRestaurants, getRestaurantById, getRestaurantsByTypeDeal, getWorkingHoursByRestaurant, getClosureDaysByRestaurant, getDaysWeek, getTagsByRestaurant, 
-    getHoursByRestaurant, getTableReservationsByHour_Date_Deal_Restaurant, getUserHistory
+    getHoursByRestaurant, getTableReservationsByHour_Date_Deal_Restaurant, getUserHistory, insertRestaurantInHistory
 }
 
