@@ -18,11 +18,13 @@ import { User } from '../../App';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { preloadImages, userImages } from '../utils/images';
+import FilterApplied from './FiltersApplied';
 
 interface AnimatedSearchViewProps {
   user: User,
   restaurants: Restaurant[];
   isExpanded: boolean;
+  filters: FiltersOptions | undefined;
   setIsExpanded: Dispatch<SetStateAction<boolean>>;
   onSelectRestaurant: (restaurant: Restaurant) => void;
   onShowFilters: () => void;
@@ -41,6 +43,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   user,
   restaurants,
+  filters,
   onSelectRestaurant,
   onShowFilters,
   setFilters,
@@ -53,6 +56,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
   
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
+  const animatedBackgroundOpacity = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
 
   const [isReady, setIsReady] = useState(false);
@@ -95,17 +99,21 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
         duration: 200,
         useNativeDriver: false,
       }),
+      Animated.timing(animatedBackgroundOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      })
     ]).start(() => {
       searchInputRef.current?.focus();
     });
   };
 
   const goToProfile= () => {
-    navigation.navigate('Profile'); // Naviga alla tab "Maps"
+    navigation.navigate('Profile');
   };
 
   const collapseSearch = () => {
-    setFilters(undefined);
     Keyboard.dismiss();
     Animated.parallel([
       Animated.timing(animatedHeight, {
@@ -115,7 +123,12 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
       }),
       Animated.timing(animatedOpacity, {
         toValue: 0,
-        duration: 200,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(animatedBackgroundOpacity, {
+        toValue: 0,
+        duration: 300,
         useNativeDriver: false,
       }),
     ]).start(() => {
@@ -151,8 +164,17 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
     }),
   };
 
+  const animatedBackgroundStyle = {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'white',
+    opacity: animatedBackgroundOpacity,
+    zIndex: 1,
+  };
+
   return (
     <>
+      {/* Animated white background */}
+      <Animated.View style={animatedBackgroundStyle} pointerEvents="none" />
       <View style={styles.searchbarContainer}>
         <View style={styles.searchWrapper}>
             {!isExpanded ?
@@ -190,15 +212,50 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
         </TouchableOpacity>
       </View>
 
-      <Animated.View style={animatedContainerStyle}>
-        <FlatList
-          data={filteredRestaurants}
-          renderItem={renderRestaurantItem}
-          keyExtractor={(item, index) => `${item.name}-${index}`}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.listContent}
-        />
-      </Animated.View>
+      {/* Filters Applied (if exist and not expanded) */}
+      {filters && !isExpanded && (
+        <View style={styles.appliedFiltersContainer}>
+          <FilterApplied 
+            filters={filters} 
+            setFilters={setFilters} 
+          />
+        </View>
+      )}
+
+      {isExpanded && (
+        <Animated.View 
+          style={{
+            ...styles.expandedContainer,
+            opacity: animatedOpacity,
+            height: animatedHeight.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, SCREEN_HEIGHT],
+            }),
+          }}
+        >
+          {/* Contenitore principale con flex */}
+            <View style={styles.contentContainer}>
+              {/* Container per i filtri */}
+              {filters && (
+                <View style={styles.filtersContainer}>
+                  <FilterApplied 
+                    filters={filters} 
+                    setFilters={setFilters} 
+                  />
+                </View>
+              )}
+
+              {/* Lista dei ristoranti */}
+              <FlatList
+                data={filteredRestaurants}
+                renderItem={renderRestaurantItem}
+                keyExtractor={(item, index) => `${item.name}-${index}`}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={styles.listContent}
+              />
+            </View>
+        </Animated.View>
+      )}
     </>
   );
 };
@@ -276,9 +333,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  appliedFiltersContainer: {
+    marginTop: 50, // Posiziona i filtri sotto la search bar
+    width: '100%',
+    zIndex: 2, // Mantiene i filtri visibili sopra altri elementi
+  },
   expandedContainer: {
     position: 'absolute',
-    paddingTop: 80,
+    paddingTop: 70,
     paddingBottom: 100,
     top: 0,
     left: 0,
@@ -288,6 +350,16 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 80
+  },
+  contentContainer: {
+    flex: 1, 
+    flexDirection: 'column',
+  },
+  filtersContainer: {
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    zIndex: 3,
   },
   restaurantItem: {
     flexDirection: 'row',

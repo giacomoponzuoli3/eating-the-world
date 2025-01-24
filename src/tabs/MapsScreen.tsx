@@ -14,8 +14,8 @@ import imagesRestaurants from '../utils/imagesRestaurants';
 import { filterByDistance } from '../utils/filterDistance';
 import { User } from '../../App';
 import { BottomTabNavigationProp, BottomTabOptionsArgs } from '@react-navigation/bottom-tabs';
+import _ from 'lodash';
 interface MapScreenProps{
-  restaurants: Restaurant[],
   user: User,
 }
 
@@ -42,10 +42,11 @@ type RootTabParamList = {
   Favorites: undefined;
 };
 
-const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
+const MapScreen: FC<MapScreenProps> = ({user}) => {
   const [initialRegion, setInitialRegion] = useState<Region | undefined>(undefined);
   const [showRestaurantNotFound, setShowRestaurantNotFound] = useState<boolean>(false);
   const [restaurantMarkers, setRestaurantMarkers] = useState<RestaurantMarker[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filters, setFilters] = useState<FiltersOptions | undefined>(undefined);
   const [isReady, setIsReady] = useState<number>(0);
   const mapRef = React.useRef<MapView>(null);
@@ -91,8 +92,9 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
       const fetchRestaurants = async () => {
         try {
           const restaurants = await getRestaurants(filters);
+          setRestaurants(restaurants as Restaurant[]); 
           if (restaurants?.length) {
-            let restaurantMarkers = (await Promise.all(
+            let newRestaurantMarkers = (await Promise.all(
               restaurants.map(async (restaurant) => {
                 const coordinates = await getCoordinatesFromAddress(restaurant.address);
                 if (coordinates) {
@@ -107,12 +109,18 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
               const current_location = await getCurrentLocation();
               if(current_location){
                 const user_coordinates = {lat: current_location?.latitude, lng: current_location?.longitude}
-                restaurantMarkers = filterByDistance(restaurantMarkers, user_coordinates, filters.distance)
+                newRestaurantMarkers = filterByDistance(newRestaurantMarkers, user_coordinates, filters.distance);
+                const filteredRestaurants = restaurants.filter((restaurant) =>
+                  newRestaurantMarkers.some((marker) => marker.restaurant.id === restaurant.id)
+                );
+      
+                setRestaurants(filteredRestaurants); 
               }
             }
-            if(!filters && !isExpanded){
-              setRestaurantMarkers(restaurantMarkers);
-              setIsReady((prev) => prev + 1);
+            // Confronto con i marker esistenti
+            if (!_.isEqual(newRestaurantMarkers, restaurantMarkers)) {
+              setRestaurantMarkers(newRestaurantMarkers);
+              setIsReady((prev) => prev + 1); 
             }
           }else{
             setFilters(undefined);
@@ -123,8 +131,12 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
         }
       };
       fetchRestaurants();
-    }, [filters])
+    }, [filters, isExpanded])
   );
+
+  useEffect(() => {
+    console.log(restaurantMarkers.length);
+  }, [restaurantMarkers])
   
   // Function to center the map on the user's current location
   const centerOnUserLocation = async () => {
@@ -149,20 +161,21 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
       const coordinates = await getCoordinatesFromAddress(restaurant.address);
       if(coordinates){
         mapRef.current?.animateToRegion({
-          latitude: coordinates.lat + 0.005,
+          latitude: coordinates.lat + 0.007,
           longitude: coordinates.lng,
           latitudeDelta: 0.02,
           longitudeDelta: 0.02,
         }, 500);
         setTimeout(() => {
-          const markerIndex = restaurantMarkers.findIndex((marker) => {
+          let markerIndex = restaurantMarkers.findIndex((marker) => {
             return (
               marker.coordinates.lat === coordinates.lat &&
               marker.coordinates.lng === coordinates.lng
             );
           });
+          markerIndex += 1;
           if(markerIndex){
-            markersRef.current[markerIndex].showCallout();
+            markersRef.current[markerIndex - 1].showCallout();
           }
         }, 1000);
       }
@@ -205,7 +218,7 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
                   description={restaurantMarker.restaurant.description}
                   onPress={() => {
                     mapRef.current?.animateToRegion({
-                      latitude: restaurantMarker.coordinates.lat + 0.005,
+                      latitude: restaurantMarker.coordinates.lat + 0.007,
                       longitude: restaurantMarker.coordinates.lng,
                       latitudeDelta: 0.02,
                       longitudeDelta: 0.02,
@@ -282,7 +295,6 @@ const MapScreen: FC<MapScreenProps> = ({restaurants, user}) => {
           )}
         </>
       )}
-      {filters && (<FiltersApplied filters={filters} setFilters={setFilters}/>)}
     </View>
   );
 };

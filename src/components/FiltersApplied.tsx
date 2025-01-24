@@ -87,18 +87,15 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    top: 80,
     width: "95%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    zIndex: 0,
   },
   scrollContainer: {
     gap: 10,
-    paddingBottom: 20
+    padding: 10,
   },
   filterBox: {
     display: "flex",
