@@ -146,7 +146,7 @@ const App = () => {
               </Tab.Screen>
             
             <Tab.Screen name="Maps">
-                {() => <MapsScreen user={user} restaurants={restaurants}/>}
+                {() => <MapsScreen user={user}/>}
             </Tab.Screen>
             
             <Tab.Screen name="Bookings">

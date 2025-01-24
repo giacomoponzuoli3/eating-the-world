@@ -176,7 +176,7 @@ const deleteExpiredReservations = async () => {
         const sql = `
             DELETE FROM table_reservations
             WHERE (data < ?)
-            OR (data = ? AND hour <= ?)
+            OR (data = ? AND hour < ?)
         `;
 
         const sql2 = `
