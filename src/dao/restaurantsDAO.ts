@@ -1,4 +1,3 @@
-import { User } from '../../App';
 import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 
@@ -364,8 +363,6 @@ const insertRestaurantInHistory = async (id_restaurant: number, username: string
             `;
 
         const result = await db.runAsync(sql, [id_restaurant, username, now]);
-
-        console.log(result);
     }catch(error){
         console.error("Error in insertRestaurantInHistroy: ", error);
         return null;

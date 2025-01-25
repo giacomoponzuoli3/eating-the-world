@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator, Alert } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, FlatList, Image, TouchableOpacity, ActionSheetIOS, ActivityIndicator, Alert } from 'react-native';
 import { stylesFavorite } from '../styles/stylesFavorites';
 
 import { getFavoriteRestaurantsByUsername, deleteFavoriteRestaurant } from '../dao/favoritesDAO';

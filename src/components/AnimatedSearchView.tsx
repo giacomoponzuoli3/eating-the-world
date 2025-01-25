@@ -110,7 +110,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
       }),
       Animated.timing(animatedOpacity, {
         toValue: 1,
-        duration: 200,
+        duration: 300,
         useNativeDriver: false,
       }),
       Animated.timing(animatedBackgroundOpacity, {
@@ -241,7 +241,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
       </View>
 
       {/* Filters Applied (if exist and not expanded) */}
-      {filters && !isExpanded && (
+      {filters && (
         <View style={styles.appliedFiltersContainer}>
           <FilterApplied 
             filters={filters} 
@@ -265,14 +265,8 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
             <View style={styles.contentContainer}>
               {/* Container per i filtri */}
               {filters && (
-                <View style={styles.filtersContainer}>
-                  <FilterApplied 
-                    filters={filters} 
-                    setFilters={setFilters} 
-                  />
-                </View>
+                <View style={styles.filtersContainer} />
               )}
-
               {/* Lista dei ristoranti */}
               {(searchText || filters) ? (
                 filteredRestaurants.length !== 0 ? (
@@ -289,7 +283,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
                 ) : (
                   <View style={styles.noResultsContainer}>
                     <Text style={styles.noResultsText}>
-                      No restaurants found
+                      No restaurants found 😭
                     </Text>
                   </View>
                 )
@@ -388,7 +382,7 @@ const styles = StyleSheet.create({
   appliedFiltersContainer: {
     marginTop: 50, 
     width: '100%',
-    zIndex: 2, 
+    zIndex: 3, 
   },
   expandedContainer: {
     position: 'absolute',
@@ -409,6 +403,7 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     backgroundColor: 'white',
+    paddingTop: 50,
     zIndex: 3,
   },
   restaurantItem: {

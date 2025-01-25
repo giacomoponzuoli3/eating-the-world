@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Button, Text, TouchableOpacity, FlatList, Image, LayoutAnimation, ActionSheetIOS, Animated} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
-import {deleteTableReservation, deleteCulinaryExperienceReservation, deleteExpiredReservations, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername} from '../dao/reservationsDAO';
+import {deleteTableReservation, deleteCulinaryExperienceReservation, getTableReservartionsByUsername, getCulinaryExperienceReservartionsByUsername} from '../dao/reservationsDAO';
 import { Reservation } from '../utils/interfaces';
 import Modal from 'react-native-modal';
 import { getClosureDaysByRestaurant, getRestaurantById } from '../dao/restaurantsDAO';

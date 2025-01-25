@@ -1,6 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { FiltersOptions } from "../utils/interfaces";
 import { View, ScrollView, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+import { filtersImages } from "../utils/images";
 
 interface FilterAppliedProps {
   filters: FiltersOptions;
@@ -13,37 +14,37 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
       key: "typeOfMeal",
       label: filters.typeOfMeal,
       displayName: filters.typeOfMeal,
-      image: require("../../assets/fork_knife.png"),
+      image: filtersImages["typeOfMeal"],
     },
     {
       key: "foodRestrictions",
       label: filters.foodRestrictions,
       displayName: filters.foodRestrictions,
-      image: require("../../assets/restrictions.png"),
+      image: filtersImages["foodRestrictions"],
     },
     {
       key: "priceRange",
       label: filters.priceRange,
       displayName: filters.priceRange,
-      image: require("../../assets/priceRange.png"),
+      image: filtersImages["priceRange"],
     },
     {
       key: "distance",
       label: filters.distance,
       displayName: filters.distance,
-      image: require("../../assets/distance.png"),
+      image: filtersImages["distance"],
     },
     {
       key: "specialExperience",
       label: filters.specialExperience,
       displayName: "Special Experience",
-      image: require("../../assets/special_experience.png"),
+      image: filtersImages["specialExperience"],
     },
     {
       key: "openNow",
       label: filters.openNow,
       displayName: "Open Now",
-      image: require("../../assets/open_now.png"),
+      image: filtersImages["openNow"],
     },
   ].filter((filter) => filter.label); 
 
@@ -79,8 +80,8 @@ const FilterApplied: FC<FilterAppliedProps> = ({ filters, setFilters }) => {
           <View key={index} style={styles.filterBox}>
             <Image source={filter.image} style={styles.image} />
             <Text style={styles.text}>{filter.displayName}</Text>
-            <TouchableOpacity onPress={() => handleRemoveFilter(filter.key)}>
-              <Text style={styles.removeButton}>X</Text>
+            <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveFilter(filter.key)}>
+              <Text>❌</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -127,7 +128,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   removeButton: {
-    fontSize: 14,
     fontWeight: "bold",
     color: "red",
     marginLeft: 10,
