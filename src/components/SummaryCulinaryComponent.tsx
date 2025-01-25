@@ -1,12 +1,10 @@
-import React, { FC, useState } from "react";
-import { ActionSheetIOS, Alert, Keyboard, KeyboardAvoidingView, Linking, Platform, Text, TouchableOpacity, View } from "react-native";
-import { ScrollView, TextInput, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import React, { FC } from "react";
+import { ActionSheetIOS, Alert, Linking, Text, TouchableOpacity, View } from "react-native";
 
 // Stili
 import { stylesSummaryCulinaryBook } from "../styles/stylesSummaryCulinaryBook";
 // Icone
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 

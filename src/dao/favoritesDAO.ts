@@ -1,4 +1,3 @@
-import { Restaurant } from '../utils/interfaces';
 import getDatabase from './connectionDB';
 import { getTagsByRestaurant } from './restaurantsDAO';
 

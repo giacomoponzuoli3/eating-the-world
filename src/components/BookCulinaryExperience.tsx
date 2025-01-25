@@ -1,6 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { CalendarComponent } from "./CalendarComponent";
 
 // Stili
 import { stylesBookCulinaryExperience } from "../styles/stylesBookCulinaryExperience";
@@ -8,13 +7,9 @@ import { stylesBookCulinaryExperience } from "../styles/stylesBookCulinaryExperi
 // Icone
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
 //dao
-import { HoursComponent } from "./HoursComponent";
-import { NumberComponent } from "./NumberComponent";
-import { SummaryComponent } from "./SummaryComponent";
 import { NumberCulinaryComponent } from "./NumberCulinaryComponent";
 import { SummaryCulinaryComponent } from "./SummaryCulinaryComponent";
 import { CalendarCulinaryComponent } from "./CalendarCulinaryComponent";

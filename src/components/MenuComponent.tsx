@@ -1,13 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View, Image, Modal } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 //images
 import imagesDishes from "../utils/imagesDishes";
 //style
 import { stylesMenuComponent } from "../styles/stylesMenuComponent";
 // Icone
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { ScrollView } from "react-native-gesture-handler";
 import { getDishesByRestaurant } from "../dao/dishesDAO";
 

@@ -1,19 +1,18 @@
-import React, { Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Alert, TouchableOpacity, Image, Text, ScrollView} from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, Alert, TouchableOpacity, Image, Text} from "react-native";
 import MapView, { Callout, MapMarker, Marker, Region } from 'react-native-maps';
 import getCoordinatesFromAddress, { getCurrentLocation, requestLocationPermission } from '../services/locationService';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import SearchWithFilter from '../components/SearchWithFilters';
 import RestaurantNotFound from '../components/RestaurantNotFound';
 import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interfaces';
-import { getRestaurants, getUserHistory } from '../dao/restaurantsDAO';
-import FiltersApplied from '../components/FiltersApplied';
+import { getRestaurants } from '../dao/restaurantsDAO';
 import { PageRestaurant } from '../components/PageRestaurant';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import imagesRestaurants from '../utils/imagesRestaurants';
 import { filterByDistance } from '../utils/filterDistance';
 import { User } from '../../App';
-import { BottomTabNavigationProp, BottomTabOptionsArgs } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import _ from 'lodash';
 interface MapScreenProps{
   user: User,

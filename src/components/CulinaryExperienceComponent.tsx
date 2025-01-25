@@ -10,7 +10,6 @@ import imagesCulinaryExperiences from "../utils/imagesCulinaryExperiences";
 // Icone
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { BookCulinaryExperience } from "./BookCulinaryExperience";

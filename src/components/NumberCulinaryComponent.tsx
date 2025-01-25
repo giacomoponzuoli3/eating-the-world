@@ -1,21 +1,11 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 
 // Stili
 import { stylesBookTable } from '../styles/stylesBookTable';
-
-// Icone
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import { CalendarComponent } from "./CalendarComponent";
-
 //dao
-import { getHoursByRestaurant } from "../dao/restaurantsDAO";
 import { ScrollView } from "react-native-gesture-handler";
-import { HoursComponent } from "./HoursComponent";
-import { getTableReservationsByHour_Date_Deal_Restaurant } from "../dao/restaurantsDAO";
 
 interface NumberCulinaryComponentProps {
     setSelectedPeople: (number: number) => void,

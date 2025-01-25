@@ -16,8 +16,6 @@ export const CalendarCulinaryComponent: FC<CalendarCulinaryComponentProps>  = ({
     const today = new Date();
     const todayFormatted = today.toISOString().split('T')[0];
 
-    const [reservations, setReservations] = useState<any[] | null>(null);
-
     // Mappatura dei numeri dei giorni con i nomi
     const dayNamesMap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -67,7 +65,7 @@ export const CalendarCulinaryComponent: FC<CalendarCulinaryComponentProps>  = ({
                     arrowColor: '#6200ee', // Colore delle frecce
                 }}
                 // Selezione giorno
-                onDayPress={(day) => {
+                onDayPress={(day: { dateString: string; }) => {
                     setSelectedDate(day.dateString); // Imposta la data selezionata
                     setStep(2);
                 }}

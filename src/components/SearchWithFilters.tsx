@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
-import { FiltersOptions, Restaurant, RestaurantMarker } from '../utils/interfaces';
+import { FiltersOptions, Restaurant } from '../utils/interfaces';
 import AnimatedSearchView from './AnimatedSearchView';
 import Filters from './Filters';
 import { User } from '../../App';

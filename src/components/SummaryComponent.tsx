@@ -10,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 //dao
-import { getTableReservartionsByUsername, insertTableReservation, updateTableReservation } from "../dao/reservationsDAO";
+import { insertTableReservation, updateTableReservation } from "../dao/reservationsDAO";
 
 interface SummaryComponentProps{
     user: any,

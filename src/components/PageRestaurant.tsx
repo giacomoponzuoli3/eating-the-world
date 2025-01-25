@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, ImageBackground, ScrollView, Linking, ActionSheetIOS, InteractionManager, Button } from "react-native";
+import { View, TouchableOpacity, Text, ImageBackground, ScrollView, Linking, ActionSheetIOS } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 //style
 import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
@@ -26,7 +26,6 @@ interface PageRestaurantProps{
 }
 
 const PageRestaurant: FC<PageRestaurantProps> = ({ onSpecialExperience, restaurant, onClose, user}: any) => {
-  const navigation = useNavigation();  // Ottieni l'oggetto di navigazione
   const [isFavorite, setIsFavorite] = useState<Boolean>(false);
   const [workingHours, setWorkingHours] = useState<any[] | null>(null);
   const [closingDays, setClosingDays] = useState<any[] | null>(null);

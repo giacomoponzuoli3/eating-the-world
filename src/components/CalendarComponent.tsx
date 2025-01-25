@@ -65,7 +65,7 @@ export const CalendarComponent: FC<CalendarComponentProps>  = ({setSelectedDate,
                     arrowColor: '#6200ee', // Colore delle frecce
                 }}
                 // Selezione giorno
-                onDayPress={(day) => {
+                onDayPress={(day: { dateString: string; }) => {
                     setSelectedDate(day.dateString); // Imposta la data selezionata
                     setStep(2);
                 }}

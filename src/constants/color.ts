@@ -1,5 +1,3 @@
-import { iconSize } from "./dimensions";
-
 export const colors = {
   iconPrimary: "#000000",
   iconSecondary: "#ABABAB",
