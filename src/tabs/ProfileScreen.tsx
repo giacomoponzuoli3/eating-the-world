@@ -8,23 +8,22 @@ import {
 } from "react-native";
 import { styles } from "../styles/styles";
 import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { colors } from "../constants/color";
 import { iconSize } from "../constants/dimensions";
 import { TextInput } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { User } from "../../App";
 
-type CustomInputProps = {
+// CustomInput Component
+const CustomInput: React.FC<{
   label?: string;
   icon?: React.ReactNode;
   placeholder: string;
   type?: string;
   value?: string;
   textStyle?: object;
-};
-
-const CustomInput: React.FC<CustomInputProps> = ({
+}> = ({
   label,
   icon,
   placeholder,
@@ -53,25 +52,41 @@ const CustomInput: React.FC<CustomInputProps> = ({
   );
 };
 
+// Define supported languages
+export const LANGUAGES = {
+  ENGLISH: 'en',
+  ITALIAN: 'it',
+  GERMAN: 'de',
+  FRENCH: 'fr'
+};
+
+type LanguageOption = {
+  code: string;
+  name: string;
+};
+
+const LANGUAGE_OPTIONS: LanguageOption[] = [
+  { code: LANGUAGES.ENGLISH, name: 'English' },
+  { code: LANGUAGES.ITALIAN, name: 'Italiano' },
+  { code: LANGUAGES.GERMAN, name: 'Deutsch' },
+  { code: LANGUAGES.FRENCH, name: 'Français' }
+];
+
 interface ProfileScreenProps {
   user: User | undefined;
   users: User[];
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 }
 
-const userImages: { [key: string]: any } = {
-  giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
-  alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
-  lorenzo_gugu: require("../../assets/img/profile/lorenzo_gugu.png"),
-  francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
-};
-
 const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
   const [selectedUser, setSelectedUser] = useState<string | undefined>(
     user?.username
   );
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(
+    user?.language || LANGUAGES.ENGLISH
+  );
 
-  const showActionSheet = () => {
+  const showUserActionSheet = () => {
     const options = users.map((user) => user.username).concat("Cancel");
     ActionSheetIOS.showActionSheetWithOptions(
       {
@@ -92,18 +107,38 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
     );
   };
 
+  const showLanguageActionSheet = () => {
+    const options = LANGUAGE_OPTIONS.map(lang => lang.name).concat("Cancel");
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: options,
+        cancelButtonIndex: options.length - 1,
+        destructiveButtonIndex: options.length - 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex !== options.length - 1) {
+          const selectedLangName = options[buttonIndex];
+          const selectedLang = LANGUAGE_OPTIONS.find(lang => lang.name === selectedLangName);
+          if (selectedLang) {
+            setSelectedLanguage(selectedLang.code);
+            if (user) {
+              setUser({
+                ...user,
+                language: selectedLang.code
+              });
+            }
+          }
+        }
+      }
+    );
+  };
+
   useEffect(() => {
     if (user) {
       setSelectedUser(user.username);
+      setSelectedLanguage(user.language || LANGUAGES.ENGLISH);
     }
   }, [user]);
-
-  useEffect(() => {
-    const selected = users.find((u) => u.username === selectedUser);
-    if (selected) {
-      setUser(selected);
-    }
-  }, [selectedUser, users, setUser]);
 
   return (
     <KeyboardAwareScrollView
@@ -125,13 +160,11 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
           <Text style={styles.name}>
             {user?.username || "Username not available"}
           </Text>
-          <TouchableOpacity onPress={showActionSheet}>
+          <TouchableOpacity onPress={showUserActionSheet}>
             <Text style={styles.role}>{"Tap to change user"}</Text>
           </TouchableOpacity>
         </View>
-        {/* Input fields container */}
         <View style={styles.inputFieldsWrapper}>
-          {/* All the input fields */}
           <CustomInput
             label="First name:"
             placeholder="John"
@@ -155,10 +188,26 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             icon={<Feather name="phone" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
             value={user?.phone_number}
           />
+          <Text style={[styles.headerText, { fontSize: 20, marginTop: 20, textAlign: 'left' }]}>Language Preferences</Text>
+          <TouchableOpacity onPress={showLanguageActionSheet}>
+            <CustomInput
+           
+              placeholder="Select Language"
+              value={LANGUAGE_OPTIONS.find(lang => lang.code === selectedLanguage)?.name}
+              icon={<MaterialIcons name="language" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAwareScrollView>
   );
+};
+
+const userImages: { [key: string]: any } = {
+  giacomo_gugu: require("../../assets/img/profile/giacomo_gugu.png"),
+  alice_gugu: require("../../assets/img/profile/alice_gugu.png"),
+  lorenzo_gugu: require("../../assets/img/profile/lorenzo_gugu.png"),
+  francesca_gugu: require("../../assets/img/profile/francesca_gugu.png"),
 };
 
 export { ProfileScreen };
