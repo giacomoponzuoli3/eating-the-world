@@ -177,7 +177,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             value={user?.surname}
             textStyle={{ color: 'rgba(98, 0, 238, 1)' }}
           />
-          <Text style={[styles.headerText, { fontSize: 20, marginTop: 20, textAlign: 'left' }]}>Contacts</Text>
+          <Text style={[styles.headerText, { fontSize: 20, textAlign: 'left' }]}>Contacts</Text>
           <CustomInput
             placeholder="example@gmail.com"
             icon={<Ionicons name="mail-outline" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
@@ -188,7 +188,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ user, users, setUser }) => {
             icon={<Feather name="phone" style={stylesPageRestaurant.iconInformation} size={iconSize.medium} />}
             value={user?.phone_number}
           />
-          <Text style={[styles.headerText, { fontSize: 20, marginTop: 20, textAlign: 'left' }]}>Language Preferences</Text>
+          <Text style={[styles.headerText, { fontSize: 20, textAlign: 'left' }]}>App Language </Text>
           <TouchableOpacity onPress={showLanguageActionSheet}>
             <CustomInput
            

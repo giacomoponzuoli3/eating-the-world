@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   profileHeaderContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   nameRoleContainer: {
     alignItems: "center",
@@ -66,11 +66,11 @@ export const styles = StyleSheet.create({
   label: { marginRight: 10, fontSize: 16, color: colors.iconSecondary },
   scrollViewContent: { flexGrow: 1 },
   headerText: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     color: colors.textPrimary,
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   container3: {
     padding: 20,
