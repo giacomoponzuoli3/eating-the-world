@@ -60,8 +60,6 @@ export const stylesCulinaryExperience = StyleSheet.create({
     textTitleRestaurant: {
         fontFamily: 'Poppins-Medium',
         fontSize: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#6200ee',
         color: '#6200ee'
     },
 
@@ -110,6 +108,12 @@ export const stylesCulinaryExperience = StyleSheet.create({
     textInformation: {
         marginLeft: 8,
         fontFamily: 'Poppins-Light'
+    },
+
+    textAddress: {
+        marginLeft: 8,
+        fontFamily: 'Poppins-Light',
+        borderBottomWidth: 0.5
     },
 
     textNumber: {

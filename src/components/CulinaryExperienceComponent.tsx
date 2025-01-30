@@ -156,7 +156,7 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
                                         <Ionicons name="location-outline" style={stylesCulinaryExperience.iconInformation} />
                                     </View>
 
-                                    <Text style={stylesCulinaryExperience.textInformation}>{restaurant.address}</Text>
+                                    <Text style={stylesCulinaryExperience.textAddress}>{restaurant.address}</Text>
                                 </View>
                             </TouchableOpacity>
 
