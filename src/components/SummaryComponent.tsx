@@ -45,14 +45,26 @@ export const SummaryComponent: FC<SummaryComponentProps> = ({specialRequest, old
     const confirmReservation = async () => {
         try{
             
-            await insertTableReservation(user.username, restaurant.id, selectedDate, selectedHour, selectedPeople, text != '' ? text : null);
+            const result = await insertTableReservation(user.username, restaurant.id, selectedDate, selectedHour, selectedPeople, text != '' ? text : null);
 
-            // Popup di conferma
-            Alert.alert(
-                "Booking Confirmed",
-                "Your booking has been successfully registered!",
-                [{ text: "OK", onPress: () => onClose() }]
-            );
+            console.log(result);
+
+            if(result == undefined){
+                // Mostra il popup di errore
+                Alert.alert(
+                    "Booking Error",
+                    "An error occurred while registering your booking. Please try again.",
+                    [{ text: "OK", onPress: () => onClose() }]
+                );
+            }else{
+                // Popup di conferma
+                Alert.alert(
+                    "Booking Confirmed",
+                    "Your booking has been successfully registered!",
+                    [{ text: "OK", onPress: () => onClose() }]
+                );
+            }
+            
         }catch(error){
 
             // Mostra il popup di errore

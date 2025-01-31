@@ -65,9 +65,11 @@ const insertTableReservation = async (username: string, id_restaurant: number, d
             await db.runAsync(sql, [id_restaurant, username, data, hour, number_people, special_request]);
         }
 
+        return 1;
+
     }catch(error){
         console.error("Error in the insertTableReservation: ", error);
-        return error;
+        return undefined;
     }
 }
 
@@ -152,9 +154,10 @@ const insertCulinaryExperienzeReservation = async (id_restaurant: number, userna
 
         await db.runAsync(sql, [id_restaurant, username, data, number_people, price, id_language_selected]);
 
+        return 1;
     }catch(error){
         console.error("Error in insertCulinaryExperienceReservation: ", error);
-        return error;
+        return null;
     }
 }
 

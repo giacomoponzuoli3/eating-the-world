@@ -40,17 +40,25 @@ export const SummaryCulinaryComponent: FC<SummaryCulinaryComponentProps> = ({isU
 
     const confirmBookingSpecialExperience = async () => {
         try{
+            const result = await insertCulinaryExperienzeReservation(restaurant.id, user.username, selectedDate, selectedPeople, selectedPeople*culinaryExperience.price, selectedLanguage.id );
+
+            if(result == null){
+                // Mostra il popup di errore
+                Alert.alert(
+                    "Special Experience Booking Error",
+                    "An error occurred while registering your booking. Please try again.",
+                    [{ text: "OK", onPress: () => onClose() }]
+                );
+            }else{
+                // Popup di conferma
+                Alert.alert(
+                    "Special Experience Booking Confirmed",
+                    "Your booking has been successfully registered!",
+                    [{ text: "OK", onPress: () => onClose() }]
+                );
+            }
             
-            await insertCulinaryExperienzeReservation(restaurant.id, user.username, selectedDate, selectedPeople, selectedPeople*culinaryExperience.price, selectedLanguage.id );
-
-            // Popup di conferma
-            Alert.alert(
-                "Special Experience Booking Confirmed",
-                "Your booking has been successfully registered!",
-                [{ text: "OK", onPress: () => onClose() }]
-            );
         }catch(error){
-
             // Mostra il popup di errore
             Alert.alert(
                 "Special Experience Booking Error",
