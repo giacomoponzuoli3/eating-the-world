@@ -47,8 +47,6 @@ export const SummaryComponent: FC<SummaryComponentProps> = ({specialRequest, old
             
             const result = await insertTableReservation(user.username, restaurant.id, selectedDate, selectedHour, selectedPeople, text != '' ? text : null);
 
-            console.log(result);
-
             if(result == undefined){
                 // Mostra il popup di errore
                 Alert.alert(
