@@ -277,6 +277,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
             setBookingSelected(item);
           } else if (buttonIndex === 1) {
             setIsModalVisible(true);
+            setBookingSelected(item);
           }
         }
       );
@@ -337,13 +338,13 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
                       onPress={() => handleViewQRCode(item.restaurantId)} 
                       style={stylesBookings.actionButton}>
                       <View style={stylesBookings.actionButtonContent}>
-                        <Text style={stylesBookings.actionButtonText}>View QR Code</Text>
+                        <Text style={stylesBookings.actionButtonText}>View Discount Code</Text>
                       </View>
                     </TouchableOpacity>
                   ) : !item.isSpecialExperience && (
                     <TouchableOpacity style={[stylesBookings.actionButton]}>
                       <View style={stylesBookings.actionButtonContent}>
-                        <Text style={stylesBookings.actionButtonText}>No QR Code Available</Text>
+                        <Text style={stylesBookings.actionButtonText}>No Discount Available</Text>
                       </View>
                     </TouchableOpacity>
                   )
@@ -371,7 +372,7 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
               />
               <ConfirmationModal
                   isVisible={isModalVisible}
-                  onConfirm={() => deleteReservation(item)}
+                  onConfirm={() => bookingSelected && deleteReservation(bookingSelected)}
                   onCancel={() => setIsModalVisible(false)}
               />
               {isExpanded && (
