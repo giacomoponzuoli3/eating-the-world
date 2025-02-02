@@ -169,7 +169,6 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   useFocusEffect(
     useCallback(() => {
       fetchBookings(); 
-      console.log(user);
     }, [user])
   );
 
