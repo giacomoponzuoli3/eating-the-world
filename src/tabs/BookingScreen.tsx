@@ -169,7 +169,8 @@ const BookingsScreen: FC<BookingScreenProps> = ({user, tableBookings, specialBoo
   useFocusEffect(
     useCallback(() => {
       fetchBookings(); 
-    }, [])
+      console.log(user);
+    }, [user])
   );
 
   const RestaurantLearnModal = ({ isVisible, onClose, restaurantName, description, quizFound}: { isVisible: boolean; onClose: () => void; restaurantName: string; description: string; quizFound: boolean;}) => {
