@@ -25,7 +25,8 @@ const imagesCulinaryExperiences: { [key: string]: any } = {
     "Ristorante Sapore di Mare": require('../../assets/img/special_experiences/RistoranteSaporediMare.png'),
     "Sapore e Passione": require('../../assets/img/special_experiences/SaporeePassione.png'),
     "Sogno di Torino": require('../../assets/img/special_experiences/SognodiTorino.png'),
-    "Trattoria Le Colline": require('../../assets/img/special_experiences/TrattoriaLeColline.png')
+    "Trattoria Le Colline": require('../../assets/img/special_experiences/TrattoriaLeColline.png'),
+    "Gusto e Passione": require('../../assets/img/special_experiences/GustoePassione.png')
 };
 
 
