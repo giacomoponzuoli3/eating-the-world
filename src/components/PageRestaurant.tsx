@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, ImageBackground, ScrollView, Linking, ActionSheetIOS } from "react-native";
+import { View, TouchableOpacity, Text, ImageBackground, ScrollView, Linking, ActionSheetIOS, Alert } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 //style
 import { stylesPageRestaurant } from "../styles/stylesPageRestaurant";
@@ -147,7 +147,17 @@ const PageRestaurant: FC<PageRestaurantProps> = ({ onSpecialExperience, restaura
         onCloseRestaurant={onClose} 
         restaurant={restaurant} 
         user={user} 
-        onClose={() => setShowBookTable(false)} 
+        onClose={() => {
+          Alert.alert(
+            "Cancel Booking",
+            "Are you sure you want to cancel the current booking?",
+            [
+              { text: "No", style: "cancel" },
+              { text: "Yes", onPress: () => setShowBookTable(false) }
+            ]
+          );
+          
+        }} 
         closingDays={closingDays}
         date={undefined}
         hour={undefined}

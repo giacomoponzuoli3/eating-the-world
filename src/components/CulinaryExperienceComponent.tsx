@@ -99,7 +99,17 @@ export const CulinaryExperienceComponent: FC<CulinaryExperienceComponentProps> =
         return (
                 <BookCulinaryExperience 
                     onCloseRestaurant={onCloseRestaurant} 
-                    onClose={() => setShowBookCulinary(false)} 
+                    onClose={() => {
+                        Alert.alert(
+                            "Cancel Booking",
+                            "Are you sure you want to cancel the current booking?",
+                            [
+                              { text: "No", style: "cancel" },
+                              { text: "Yes", onPress: () => setShowBookCulinary(false) }
+                            ]
+                          );
+                        }
+                    } 
                     culinaryExperience={culinaryExperience}
                     date={undefined}
                     people={undefined}
