@@ -151,7 +151,7 @@ const App = () => {
             </Tab.Screen>
             
             <Tab.Screen name="Bookings">
-                {() => user ? <BookingsScreen user={user} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
+                {() => user ? <BookingsScreen key={user.username} user={user} tableBookings={tableReservations} specialBookings={specialReservations} fetchBookings={fetchBookings} /> : <Text>Login for view your reservations</Text>}
             </Tab.Screen> 
             <Tab.Screen name="Favorites">
               {() => <FavoritesScreen user={user}/>}
