@@ -291,7 +291,7 @@ const AnimatedSearchView: React.FC<AnimatedSearchViewProps> = ({
                 <>
                   <Text style={styles.historyText}>Recents</Text>
                   <FlatList
-                    data={restaurantHistory}
+                    data={restaurantHistory.slice(0, 5)}
                     renderItem={renderHistoryItem}
                     keyExtractor={(item, index) => `${item.name}-${index}`}
                     keyboardShouldPersistTaps="handled"
