@@ -79,7 +79,7 @@ If you have any questions, issues, or feedback, feel free to reach out to us:
 </p>
 
 <p style="display: flex; align-items: center;">
-  <a href="https://github.com/giacomoponzuoli3/Emergency-Backup/issues" style="display: flex; align-items: center;">
+  <a href="https://github.com/giacomoponzuoli3/eating-the-world/issues" style="display: flex; align-items: center;">
     <img src="https://img.icons8.com/color/25/000000/github.png" alt="GitHub" style="margin-right: 10px;" />
     Open an issue
   </a>
